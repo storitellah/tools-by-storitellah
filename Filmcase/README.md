@@ -63,9 +63,20 @@ that the grain offsets are the pinned values rather than anything derived from
 Two checks run anywhere, with or without Xcode:
 
 ```bash
-python3 Scripts/check_sources.py      # delimiters, memberwise-init calls, Apple-only imports, no network APIs
+python3 Scripts/check_sources.py      # parses the Swift, memberwise-init calls, Apple-only imports, no network APIs
 python3 Scripts/check_xcodeproj.py    # project references, build phases, settings, plists, scheme
 ```
+
+`check_sources.py` parses the sources properly if you give it a grammar:
+
+```bash
+pip install tree-sitter tree_sitter_swift
+```
+
+Without it, it falls back to a string- and comment-aware delimiter balance and
+says so in its output. Neither mode type-checks — that is what Xcode is for —
+but the grammar catches real syntax errors, and the rest of the checks catch
+the project-file and initialiser mistakes that are easy to make by hand.
 
 `Scripts/make_xcodeproj.py` regenerates `Filmcase.xcodeproj` from what is on
 disk. The project file is committed, so you only need it after adding, moving

@@ -3,7 +3,9 @@
 
 Not a substitute for building — it is what can be verified anywhere:
 
-  * brackets, braces and parentheses balance (string and comment aware)
+  * the sources parse as Swift, using the tree-sitter Swift grammar when it is
+    installed (`pip install tree-sitter tree_sitter_swift`), falling back to a
+    string- and comment-aware delimiter balance when it is not
   * nothing is imported except Apple frameworks: no third-party packages
   * no networking API is referenced anywhere: the app is on-device only
   * every file ends in a newline
@@ -156,6 +158,40 @@ def struct_bodies(code):
 
 
 
+# --- real parsing, when a grammar is available -----------------------------
+#
+# tree-sitter's Swift grammar is a genuine parser, so it catches the syntax
+# errors a brace count cannot. It is optional: the checks below still run
+# without it, they just see less.
+
+def parse_with_tree_sitter(files):
+    """Returns (ran, errors). `ran` is False when the grammar is not installed."""
+    try:
+        from tree_sitter import Language, Parser
+        import tree_sitter_swift
+    except ImportError:
+        return False, []
+
+    parser = Parser(Language(tree_sitter_swift.language()))
+    errors = []
+    for path in files:
+        source = open(path, "rb").read()
+        tree = parser.parse(source)
+        if not tree.root_node.has_error:
+            continue
+        stack = [tree.root_node]
+        while stack:
+            node = stack.pop()
+            if node.type == "ERROR" or node.is_missing:
+                snippet = source[node.start_byte:node.end_byte].decode("utf8", "replace").strip()
+                first_line = snippet.splitlines()[0][:80] if snippet else ""
+                kind = "missing " + node.type if node.is_missing else "does not parse"
+                errors.append((path, node.start_point[0] + 1, f"{kind}: {first_line}"))
+                continue
+            stack.extend(node.children)
+    return True, errors
+
+
 def stored_properties(body):
     """Instance stored properties of a struct body, in declaration order.
 
@@ -288,9 +324,16 @@ def main():
             fail(path, "does not end with a newline")
         code = strip_code(text)
         stripped[path] = code
-        check_balance(path, code)
         check_imports(path, code)
         check_no_network(path, code)
+
+    parsed, parse_errors = parse_with_tree_sitter(files)
+    if parsed:
+        for path, line, message in sorted(parse_errors):
+            fail(path, f"line {line}: {message}")
+    else:
+        for path, code in stripped.items():
+            check_balance(path, code)
 
     structs = collect_memberwise_structs(stripped.values())
     for path, code in stripped.items():
@@ -303,8 +346,9 @@ def main():
             print(f"  - {problem}")
         return 1
 
-    print(f"{len(files)} Swift files: delimiters balanced, memberwise calls ordered and "
-          f"reachable, Apple frameworks only, no network APIs")
+    how = "parsed by the tree-sitter Swift grammar" if parsed else "delimiters balanced (grammar not installed)"
+    print(f"{len(files)} Swift files: {how}, memberwise calls ordered and reachable, "
+          f"Apple frameworks only, no network APIs")
     return 0
 
 
