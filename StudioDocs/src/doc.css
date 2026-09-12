@@ -1,0 +1,220 @@
+/* ==========================================================================
+   Paper documents — shared page model
+   Every document module renders into `.page`. Presets only change the
+   CSS custom properties declared here, so a new preset can never break
+   the underlying layout.
+   ========================================================================== */
+.page{
+  --pAccent:#CF7752;
+  --pInk:#231F20;
+  --pMuted:#5F5853;
+  --pLine:#C9C2BC;
+  --pPaper:#FFFFFF;
+  --pBody:"Inter","Poppins",Arial,Helvetica,sans-serif;
+  --pDisplay:"Inter","Poppins",Arial,Helvetica,sans-serif;
+  --pTitleSize:20pt;
+  --pTitleWeight:700;
+  --pTitleCase:none;
+  --pTitleTrack:-.01em;
+  --pRuleW:1pt;
+  --pRuleColor:var(--pInk);
+  --pLabelColor:var(--pAccent);
+  --pPad:17mm;
+  --pBase:9.6pt;
+  --pLead:1.52;
+  --pGap:5.2mm;
+
+  width:210mm;min-height:297mm;
+  background:var(--pPaper);color:var(--pInk);
+  font:400 var(--pBase)/var(--pLead) var(--pBody);
+  padding:var(--pPad);
+  box-shadow:var(--sh-page);
+  position:relative;overflow:hidden;
+  display:flex;flex-direction:column;
+  flex:0 0 auto;
+}
+.page.letter{width:216mm;min-height:279mm}
+.page.a5{width:148mm;min-height:210mm;--pPad:12mm;--pBase:8.6pt;--pTitleSize:15pt}
+.page.dense{--pBase:9pt;--pLead:1.44;--pGap:4.3mm}
+.page.roomy{--pBase:10.2pt;--pLead:1.62;--pGap:6.2mm}
+.page *{box-sizing:border-box}
+.page p{margin:0}
+.page h1,.page h2,.page h3,.page h4,.page h5{margin:0;font-family:var(--pDisplay)}
+
+/* Header archetypes ------------------------------------------------------ */
+.docHead{display:grid;gap:4mm;padding-bottom:4mm;margin-bottom:var(--pGap);flex:0 0 auto}
+.docHead .logo{display:block;align-self:start;height:13mm;width:auto;object-fit:contain;object-position:left center}
+.docHead .org{font-size:8pt;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--pAccent)}
+.docHead .titleBlock{min-width:0}
+.docHead h3{
+  font-size:var(--pTitleSize);font-weight:var(--pTitleWeight);
+  letter-spacing:var(--pTitleTrack);text-transform:var(--pTitleCase);line-height:1.14;color:var(--pInk);
+}
+.docHead .ref{font-size:7.6pt;color:var(--pMuted);margin-top:1.6mm;letter-spacing:.03em}
+
+.docHead.h-split{grid-template-columns:auto minmax(0,1fr);align-items:end;border-bottom:var(--pRuleW) solid var(--pRuleColor)}
+.docHead.h-split .titleBlock{text-align:right}
+.docHead.h-stack{justify-items:start;border-bottom:var(--pRuleW) solid var(--pRuleColor)}
+.docHead.h-center{justify-items:center;text-align:center;border-bottom:var(--pRuleW) solid var(--pRuleColor)}
+.docHead.h-center .logo{object-position:center}
+.docHead.h-rule{border-top:calc(var(--pRuleW) * 3) solid var(--pAccent);border-bottom:0;padding-top:4mm;justify-items:start}
+.docHead.h-band{
+  background:var(--pAccent);color:#fff;margin:calc(var(--pPad) * -1) calc(var(--pPad) * -1) var(--pGap);
+  padding:9mm var(--pPad) 7mm;grid-template-columns:auto minmax(0,1fr);align-items:end;border:0;
+}
+.docHead.h-band h3,.docHead.h-band .org,.docHead.h-band .ref{color:#fff}
+.docHead.h-band .titleBlock{text-align:right}
+.docHead.h-band .logo{filter:brightness(0) invert(1)}
+.docHead.h-boxed{border:.7pt solid var(--pLine);padding:5mm;grid-template-columns:auto minmax(0,1fr);align-items:center}
+.docHead.h-boxed .titleBlock{text-align:right}
+.docHead.h-side{grid-template-columns:34mm minmax(0,1fr);align-items:start;gap:6mm;border-bottom:var(--pRuleW) solid var(--pRuleColor)}
+
+.page.side-index{padding-left:26mm}
+.page.side-index::before{
+  content:attr(data-spine);position:absolute;left:7mm;top:18mm;
+  writing-mode:vertical-rl;transform:rotate(180deg);
+  font:700 6.6pt var(--pDisplay);letter-spacing:.3em;color:var(--pAccent);
+}
+
+/* Body ------------------------------------------------------------------- */
+.docBody{flex:1 1 auto;display:flex;flex-direction:column;gap:var(--pGap);min-height:0}
+.docBlock{break-inside:avoid;overflow-wrap:anywhere}
+.docBlock h4{
+  font-size:9pt;font-weight:700;color:var(--pInk);margin-bottom:1.6mm;letter-spacing:.01em;
+}
+.docBlock.labelled h4{
+  font-size:7.8pt;letter-spacing:.12em;text-transform:uppercase;color:var(--pLabelColor);
+}
+.docBlock p + p{margin-top:2.2mm}
+.docBlock ul{margin:1.6mm 0 0;padding-left:4.6mm}
+.docBlock li{margin-bottom:1.2mm}
+.docLead{font-size:calc(var(--pBase) + .4pt);line-height:1.56}
+.docMuted{color:var(--pMuted)}
+.docRule{height:0;border-top:.7pt solid var(--pLine);margin:0}
+.docRule.accent{border-top:var(--pRuleW) solid var(--pAccent)}
+
+/* Meta strips ------------------------------------------------------------ */
+.metaGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2.4mm 8mm}
+.metaGrid.c3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.metaItem{display:grid;grid-template-columns:26mm minmax(0,1fr);gap:3mm;align-items:baseline;font-size:8.4pt}
+.metaItem > span{font-weight:700;color:var(--pMuted);letter-spacing:.02em}
+.metaItem > div{min-width:0;overflow-wrap:anywhere}
+.metaStrip{
+  display:flex;flex-wrap:wrap;gap:2mm 6mm;font-size:8pt;color:var(--pMuted);
+  padding:2.6mm 0;border-top:.7pt solid var(--pLine);border-bottom:.7pt solid var(--pLine);
+}
+.metaStrip b{color:var(--pInk);font-weight:700}
+.metaBox{background:#F6F3F1;border-left:2.4mm solid var(--pAccent);padding:3.4mm 4mm}
+
+.partyGrid{display:grid;grid-template-columns:1fr 1fr;gap:7mm}
+.party h5{font-size:7.6pt;font-weight:750;letter-spacing:.13em;text-transform:uppercase;color:var(--pLabelColor);margin-bottom:1.8mm}
+.party b{display:block;font-size:10pt;font-weight:700;margin-bottom:1mm}
+.party div{font-size:8.4pt;color:var(--pMuted);line-height:1.5}
+
+/* Underlined form fields ------------------------------------------------- */
+.fLine{display:block;min-width:0}
+.fLine > span{display:block;font-size:6.6pt;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#8A827C;margin-bottom:.4mm}
+.fLine > .val{
+  display:block;min-height:5.2mm;border-bottom:.6pt solid #9A928C;padding:.6mm 0;font-size:8.6pt;
+}
+.fLine > .val:empty::before,.fLine > .val.isEmpty::before{content:attr(data-ph);color:#B4ACA6;font-style:italic}
+.fGrid{display:grid;grid-template-columns:1fr 1fr;gap:3.6mm 7mm}
+.page.dense .fLine > .val{min-height:4.2mm}
+.page.dense .fGrid{gap:2.6mm 6mm}
+.page.dense .optRow{gap:1.2mm 6mm}
+.page.dense .sigField{height:15mm}
+.page.roomy .fLine > .val{min-height:6mm}
+.fGrid.c1{grid-template-columns:1fr}
+.fGrid.c3{grid-template-columns:repeat(3,1fr)}
+
+/* Tables ----------------------------------------------------------------- */
+table.docTable{width:100%;border-collapse:collapse;font-size:8.4pt}
+table.docTable th{
+  text-align:left;font-size:6.9pt;font-weight:750;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--pLabelColor);padding:0 2.5mm 1.6mm 0;border-bottom:var(--pRuleW) solid var(--pAccent);
+}
+table.docTable th:last-child,table.docTable td:last-child{padding-right:0;text-align:right}
+table.docTable td{padding:2mm 2.5mm 2mm 0;border-bottom:.5pt solid var(--pLine);vertical-align:top;overflow-wrap:anywhere}
+table.docTable tr:last-child td{border-bottom:0}
+table.docTable .num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+
+.totals{display:grid;gap:1.6mm;margin-left:auto;width:74mm;font-size:8.6pt}
+.totalRow{display:flex;justify-content:space-between;gap:6mm}
+.totalRow.grand{
+  border-top:var(--pRuleW) solid var(--pAccent);margin-top:1.4mm;padding-top:2mm;
+  font-size:10.4pt;font-weight:750;color:var(--pAccent);
+}
+.totalRow span:last-child{font-variant-numeric:tabular-nums}
+
+/* Signatures ------------------------------------------------------------- */
+.sigGrid{display:grid;grid-template-columns:1fr 1fr;gap:9mm;margin-top:auto;padding-top:6mm}
+.sigGrid.c1{grid-template-columns:1fr}
+.sigCell{display:grid;gap:1.4mm}
+.sigField{
+  height:17mm;border:.6pt solid #8E8E8E;border-radius:1.2mm;background:#fff;
+  display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;cursor:pointer;
+  transition:border-color .14s,background .14s;
+}
+.sigField:hover{border-color:var(--pAccent);background:#FFFAF7}
+.sigField::before{
+  content:"SIGNATURE";position:absolute;left:2mm;top:1.2mm;
+  font:700 5.6pt var(--pBody);letter-spacing:.11em;color:#9C948E;
+}
+.sigField .ph{font:600 7.2pt var(--pBody);color:#8C847E;padding:4mm 3mm 1mm;text-align:center}
+.sigField img{display:block;max-width:92%;max-height:13mm;object-fit:contain}
+.sigMeta{font-size:7.2pt;line-height:1.4;color:#5F5853}
+.sigMeta b{display:block;color:var(--pInk);font-size:7.8pt}
+.sigLine{border-top:.6pt solid var(--pInk);padding-top:1.4mm;font-size:7.4pt;color:var(--pMuted)}
+
+/* Footer ----------------------------------------------------------------- */
+.docFoot{
+  flex:0 0 auto;margin-top:5mm;padding-top:2.6mm;border-top:.5pt solid var(--pLine);
+  font-size:6.9pt;color:#8A827C;display:flex;gap:4mm;justify-content:space-between;
+}
+
+/* Checkboxes in documents ------------------------------------------------ */
+.optRow{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.6mm 7mm}
+.optRow.c3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.opt{display:flex;align-items:flex-start;gap:2mm;font-size:8.2pt;line-height:1.4}
+.optBox{
+  flex:0 0 auto;width:3.3mm;height:3.3mm;border:.7pt solid #6E6660;border-radius:.5mm;margin-top:.5mm;
+  display:flex;align-items:center;justify-content:center;font-size:6.4pt;font-weight:800;color:var(--pAccent);background:#fff;
+}
+.optBox.on{border-color:var(--pAccent)}
+.yesNo{display:inline-flex;gap:4mm;align-items:center}
+
+/* Letterhead ------------------------------------------------------------- */
+.lhHead{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8mm;align-items:start}
+.lhWord{font-size:15pt;font-weight:600;letter-spacing:.22em;color:var(--pInk);line-height:1.1}
+.lhTag{font-size:7pt;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--pAccent);margin-top:1.6mm}
+.lhContact{font-size:7.8pt;line-height:1.6;color:var(--pMuted);text-align:right}
+.lhBody{font-size:9.6pt;line-height:1.75;white-space:pre-wrap;flex:1 1 auto}
+.lhBody:focus{outline:none}
+
+/* Business cards --------------------------------------------------------- */
+.cardStage{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start;justify-content:center}
+.cardFace{
+  --cAccent:#CF7752;--cInk:#231F20;--cPaper:#F8F8F8;--cMuted:#6E6660;
+  --cBody:"Inter","Poppins",Arial,sans-serif;--cDisplay:var(--cBody);
+  position:relative;overflow:hidden;background:var(--cPaper);color:var(--cInk);
+  box-shadow:var(--sh-page);font-family:var(--cBody);flex:0 0 auto;
+  display:flex;flex-direction:column;
+}
+.cardFace *{box-sizing:border-box}
+.cardName{display:block;font-family:var(--cDisplay);font-size:15px;font-weight:680;letter-spacing:-.015em;line-height:1.15;color:var(--cInk)}
+.cardRole{display:block;font-size:8px;font-weight:750;letter-spacing:.15em;text-transform:uppercase;color:var(--cAccent);margin-top:4px}
+.cardBio{display:block;font-size:7.5px;line-height:1.5;color:var(--cMuted);margin-top:6px}
+.cardKicker{display:block;font-size:7px;font-weight:750;letter-spacing:.2em;text-transform:uppercase;color:var(--cAccent)}
+.cardMark{height:22px;width:auto;object-fit:contain;object-position:left center;display:block}
+.cardRule{height:0;border-top:1.4px solid var(--cAccent);width:100%}
+.cardRule.thin{border-top-width:.6px;border-color:var(--cMuted);opacity:.5}
+.cardContact{display:block;font-size:7.4px;line-height:1.68;color:var(--cMuted)}
+.cardContact b{display:block;color:var(--cInk);font-weight:600}
+.cardQr{width:58px;height:58px;display:block}
+.cardQr path{fill:var(--cInk)}
+.cardLabel{position:absolute;font-size:6.2px;font-weight:750;letter-spacing:.22em;text-transform:uppercase;color:var(--cAccent)}
+.cardBleed{position:absolute;inset:0;border:1px dashed rgba(207,119,82,.55);pointer-events:none;margin:3mm}
+
+/* Email signature preview ------------------------------------------------ */
+.sigStage{background:#DAD5D1;border-radius:var(--r);padding:26px;display:flex;justify-content:center}
+.sigPaper{background:#fff;border-radius:4px;box-shadow:var(--sh-2);padding:22px 24px;max-width:640px;width:100%}
