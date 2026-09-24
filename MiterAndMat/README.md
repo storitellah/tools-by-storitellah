@@ -60,3 +60,17 @@ describe Irvine Slim's finish, so the slim natural-wood look here is an
 interpretation.
 
 The renderings are approximations for mockups, not product photos.
+
+## WordPress plugin
+
+`wordpress/miter-and-mat.zip` puts the tool on any WordPress page, using a
+block or the `[miter_and_mat]` shortcode, with a settings page for defaults.
+See [wordpress/README.md](wordpress/README.md).
+
+## Embed settings
+
+When the tool is opened with URL parameters, they set its starting state. The
+WordPress plugin uses these: `frame`, `matStyle`, `mat`, `background`,
+`layout`, `measure`, `size`, `theme` (`light`/`dark`), `accent` (hex without
+`#`), `names=descriptive`, `credit=0` and `embed=1`, which reports the tool's
+height to the parent page.
