@@ -111,6 +111,7 @@ section.group:last-child { border-bottom: 0; }
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 8px;
 }
 .group h3 {
   margin: 6px 0 0;
@@ -122,17 +123,52 @@ section.group:last-child { border-bottom: 0; }
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px;
+  padding: 12px;
   border: 1px dashed var(--line);
   border-radius: 8px;
   cursor: pointer;
 }
 .drop.over { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, transparent); }
-.drop canvas { width: 56px; height: 56px; border-radius: 4px; object-fit: cover; flex: none; background: var(--stage); }
 .drop .t { display: grid; gap: 2px; min-width: 0; }
 .drop .t strong { font-weight: 600; }
-.drop .t span { color: var(--muted); font-size: 12px; overflow-wrap: anywhere; }
+.drop .t span { color: var(--muted); font-size: 12px; }
+.drop .plus {
+  flex: none;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--accent); color: var(--accent-ink);
+  font: 600 22px/1 var(--body);
+}
 .drop input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+
+.strip { display: flex; flex-wrap: wrap; gap: 8px; }
+.ph { position: relative; width: 54px; height: 54px; }
+.ph .pick {
+  width: 100%; height: 100%;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  overflow: hidden;
+  cursor: pointer;
+  background: var(--stage);
+}
+.ph .pick img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ph .pick[aria-current="true"] { box-shadow: 0 0 0 2px var(--panel), 0 0 0 4px var(--accent); }
+.ph .rm {
+  position: absolute; top: -6px; right: -6px;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--muted);
+  font-size: 13px; line-height: 1;
+  cursor: pointer;
+  padding: 0;
+}
+.ph .rm:hover { color: var(--ink); border-color: var(--muted); }
+.stripmeta { font-size: 12px; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.linkbtn { border: 0; background: none; padding: 0; color: var(--accent); cursor: pointer; font-size: 12px; text-decoration: underline; text-underline-offset: 2px; }
 
 .frames { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .fbtn {
@@ -152,6 +188,23 @@ section.group:last-child { border-bottom: 0; }
 .fbtn:hover { border-color: var(--muted); }
 .fbtn[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
 
+.looks { display: grid; gap: 6px; }
+.look {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px 8px;
+  text-align: left;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: transparent;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+.look:hover { border-color: var(--muted); }
+.look strong { font-weight: 600; font-size: 12.5px; }
+.look span { color: var(--muted); font-size: 12px; grid-column: 1; }
+.look i { grid-row: 1 / span 2; grid-column: 2; align-self: center; font-style: normal; color: var(--accent); font-size: 12px; }
+
 .finfo { font-size: 12.5px; color: var(--muted); display: grid; gap: 4px; }
 .finfo strong { color: var(--ink); font-size: 13.5px; font-weight: 600; }
 .finfo .spec { font-family: var(--mono); font-size: 11.5px; }
@@ -170,9 +223,8 @@ section.group:last-child { border-bottom: 0; }
 .tag.soft { background: transparent; color: var(--muted); border: 1px solid var(--line); }
 
 .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-.row > label { color: var(--muted); font-size: 12.5px; }
 .field { display: grid; gap: 4px; }
-.field > label, .lbl { font-size: 12px; color: var(--muted); display: flex; justify-content: space-between; }
+.field > label, .lbl { font-size: 12px; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; }
 .field > label output, .lbl output { font-family: var(--mono); color: var(--ink); font-variant-numeric: tabular-nums; }
 select, input[type="number"] {
   border: 1px solid var(--line);
@@ -181,8 +233,9 @@ select, input[type="number"] {
   padding: 6px 8px;
   min-width: 0;
 }
-input[type="number"] { width: 72px; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+input[type="number"] { width: 76px; font-family: var(--mono); font-variant-numeric: tabular-nums; }
 input[type="range"] { width: 100%; accent-color: var(--accent); }
+.sizeRow { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; }
 
 .seg { display: flex; border: 1px solid var(--line); border-radius: 7px; overflow: hidden; }
 .seg button {
@@ -196,6 +249,29 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 }
 .seg button:last-child { border-right: 0; }
 .seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chips button {
+  border: 1px solid var(--line);
+  background: transparent;
+  border-radius: 99px;
+  padding: 5px 11px;
+  cursor: pointer;
+  font: 500 12px/1.2 var(--mono);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.chips button::before {
+  content: "";
+  width: var(--w, 10px); height: var(--h, 10px);
+  border: 1.5px solid currentColor;
+  border-radius: 2px;
+  opacity: 0.7;
+}
+.chips button.fit::before { border-style: dashed; }
+.chips button.plain::before { display: none; }
+.chips button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
 
 .swatches { display: flex; flex-wrap: wrap; gap: 8px; }
 .sw {
@@ -228,14 +304,14 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
   font-size: 13px;
 }
 .btn:hover { border-color: var(--muted); }
+.btn:disabled { opacity: 0.6; cursor: progress; }
 .btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600; }
+.btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.status { font-size: 12.5px; color: var(--muted); min-height: 1.45em; font-variant-numeric: tabular-nums; }
 
 main.stage {
   position: relative;
   overflow: hidden;
-  display: grid;
-  place-items: center;
-  padding: 28px;
   background: var(--stage);
 }
 main.stage.clear {
@@ -247,32 +323,39 @@ main.stage.clear {
   inset: 0;
   margin: auto;
   max-width: calc(100% - 48px);
-  max-height: calc(100% - 48px);
+  max-height: calc(100% - 96px);
   width: auto;
   height: auto;
   display: block;
   touch-action: none;
   cursor: grab;
-  box-shadow: 0 1px 0 rgba(0,0,0,0.04);
 }
 #view.dragging { cursor: grabbing; }
-.hint {
+.nav {
   position: absolute;
   left: 50%;
   bottom: 12px;
   transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 4px;
   font-size: 12px;
   color: var(--muted);
   background: var(--panel);
   border: 1px solid var(--line);
-  padding: 4px 10px;
+  padding: 3px;
   border-radius: 99px;
-  white-space: nowrap;
   max-width: calc(100% - 32px);
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
-.foot { font-size: 11.5px; color: var(--muted); line-height: 1.5; }
+.nav button {
+  border: 0; background: transparent; cursor: pointer;
+  width: 28px; height: 28px; border-radius: 50%;
+  font-size: 15px; line-height: 1;
+}
+.nav button:hover:not(:disabled) { background: var(--ground); }
+.nav button:disabled { opacity: 0.35; cursor: default; }
+.nav span { padding-inline: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-variant-numeric: tabular-nums; }
+.foot { font-size: 11.5px; color: var(--muted); line-height: 1.5; margin: 0; }
 
 .overlay {
   position: fixed;
@@ -305,10 +388,10 @@ main.stage.clear {
 
 @media (max-width: 760px) {
   .app { grid-template-columns: 1fr; grid-template-rows: auto auto 1fr; height: auto; }
-  main.stage { grid-row: 2; min-height: 60vh; padding: 16px; position: sticky; top: env(safe-area-inset-top, 0px); z-index: 2; min-height: 0; height: 52vh; }
+  main.stage { grid-row: 2; position: sticky; top: env(safe-area-inset-top, 0px); z-index: 2; height: 52vh; }
+  #view { max-height: calc(100% - 70px); max-width: calc(100% - 24px); }
   aside.controls { grid-row: 3; border-right: 0; padding-inline: 16px; overflow: visible; }
   header.bar { padding-inline: 16px; }
-  .hint { display: none; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
@@ -321,22 +404,37 @@ main.stage.clear {
 
   <aside class="controls">
     <section class="group">
-      <h2>Photo</h2>
+      <h2>Photos <span id="photoCount"></span></h2>
       <label class="drop" id="drop" for="file">
-        <canvas id="photoThumb" width="112" height="112" aria-hidden="true"></canvas>
+        <span class="plus" aria-hidden="true">+</span>
         <span class="t">
-          <strong id="photoName">Sample photo</strong>
-          <span>Drop, paste or choose an image to replace it.</span>
+          <strong>Add photos</strong>
+          <span>Choose, drop or paste one or many. Each frame takes its photo's shape.</span>
         </span>
-        <input type="file" id="file" accept="image/*">
+        <input type="file" id="file" accept="image/*" multiple>
       </label>
-      <div class="seg" role="group" aria-label="How the photo fills the opening">
-        <button type="button" id="fitCover" aria-pressed="true">Fill opening</button>
-        <button type="button" id="fitContain" aria-pressed="false">Show whole photo</button>
-      </div>
+      <div class="strip" id="strip"></div>
+      <div class="stripmeta"><span id="photoMeta"></span><button type="button" class="linkbtn" id="clearAll">Remove all</button></div>
       <div class="field">
-        <label for="zoom">Zoom <output id="zoomOut">1.00×</output></label>
+        <label for="zoom">Crop zoom, this photo <output id="zoomOut">1.00×</output></label>
         <input type="range" id="zoom" min="1" max="3" step="0.01" value="1">
+      </div>
+    </section>
+
+    <section class="group">
+      <h2>Frame size</h2>
+      <div class="seg" role="group" aria-label="Measure the size on">
+        <button type="button" data-measure="art" aria-pressed="true">Art (long side)</button>
+        <button type="button" data-measure="outside" aria-pressed="false">Outside of frame</button>
+      </div>
+      <div class="sizeRow">
+        <input type="range" id="sizeRange" min="4" max="48" step="0.25" value="10" aria-label="Frame size in inches">
+        <span class="row"><input type="number" id="sizeNum" min="4" max="48" step="0.25" value="10" aria-label="Frame size in inches"><span class="swname">in</span></span>
+      </div>
+      <div class="chips" id="sizeChips" role="group" aria-label="Common sizes"></div>
+      <div class="field">
+        <label for="moulding">Moulding width <output id="mouldingOut"></output></label>
+        <input type="range" id="moulding" min="0.375" max="2.5" step="0.0625" value="0.8125">
       </div>
     </section>
 
@@ -349,34 +447,8 @@ main.stage.clear {
       <h3>Also named on the page</h3>
       <div class="frames" id="framesOther"></div>
       <div class="finfo" id="finfo"></div>
-      <div class="field">
-        <label for="moulding">Moulding width <output id="mouldingOut"></output></label>
-        <input type="range" id="moulding" min="0.375" max="2" step="0.0625" value="0.8125">
-      </div>
-    </section>
-
-    <section class="group">
-      <h2>Art size</h2>
-      <div class="row">
-        <select id="preset" aria-label="Print size preset">
-          <option value="5x7">5 × 7</option>
-          <option value="8x10" selected>8 × 10</option>
-          <option value="11x14">11 × 14</option>
-          <option value="12x16">12 × 16</option>
-          <option value="16x20">16 × 20</option>
-          <option value="18x24">18 × 24</option>
-          <option value="24x36">24 × 36</option>
-          <option value="custom">Custom</option>
-        </select>
-        <input type="number" id="artW" min="2" max="60" step="0.25" value="8" aria-label="Art width in inches">
-        <span>×</span>
-        <input type="number" id="artH" min="2" max="60" step="0.25" value="10" aria-label="Art height in inches">
-        <span class="swname">in</span>
-      </div>
-      <div class="row">
-        <button type="button" class="btn" id="rotate">Swap orientation</button>
-        <button type="button" class="btn" id="matchPhoto">Match photo shape</button>
-      </div>
+      <h3>Looks from the page</h3>
+      <div class="looks" id="looks"></div>
     </section>
 
     <section class="group">
@@ -390,35 +462,53 @@ main.stage.clear {
         <label for="matW">Mat border <output id="matWOut"></output></label>
         <input type="range" id="matW" min="0.5" max="5" step="0.125" value="2">
       </div>
-      <div class="swatches" id="matSwatches" role="group" aria-label="Mat color"></div>
-      <div class="swname" id="matName"></div>
+      <div id="matColorWrap" class="field">
+        <div class="swatches" id="matSwatches" role="group" aria-label="Mat color"></div>
+        <div class="swname" id="matName"></div>
+      </div>
     </section>
 
     <section class="group">
-      <h2>Wall</h2>
-      <div class="swatches" id="wallSwatches" role="group" aria-label="Wall color"></div>
+      <h2>Background</h2>
+      <div class="swatches" id="wallSwatches" role="group" aria-label="Background color"></div>
       <div class="swname" id="wallName"></div>
-      <label class="check"><input type="checkbox" id="shadow" checked> Cast shadow on the wall</label>
+      <label class="check"><input type="checkbox" id="light" checked> Soft wall light</label>
+      <label class="check"><input type="checkbox" id="shadow" checked> Cast shadow</label>
       <label class="check"><input type="checkbox" id="glare" checked> Acrylic glazing reflection</label>
     </section>
 
     <section class="group">
-      <h2>Export</h2>
-      <div class="row">
-        <div class="seg" role="group" aria-label="Export resolution" style="flex:1">
-          <button type="button" data-res="1" aria-pressed="false">1600 px</button>
-          <button type="button" data-res="2" aria-pressed="true">3200 px</button>
-          <button type="button" data-res="3" aria-pressed="false">4800 px</button>
-        </div>
+      <h2>Layout</h2>
+      <div class="chips" id="layoutChips" role="group" aria-label="Image shape"></div>
+      <div class="field">
+        <label for="pad">Space around the frame <output id="padOut"></output></label>
+        <input type="range" id="pad" min="0" max="80" step="1" value="18">
       </div>
-      <button type="button" class="btn primary" id="export">Export PNG</button>
-      <p class="foot">Frame styles are transcribed from a Framebridge “American Hardwoods” product page. The mouldings are drawn procedurally from their described wood, finish and profile. They are close approximations for mockups, not product photos, and every export gets its own grain.</p>
+    </section>
+
+    <section class="group">
+      <h2>Export</h2>
+      <div class="seg" role="group" aria-label="Export resolution">
+        <button type="button" data-res="1" aria-pressed="false">1600 px</button>
+        <button type="button" data-res="2" aria-pressed="true">3200 px</button>
+        <button type="button" data-res="3" aria-pressed="false">4800 px</button>
+      </div>
+      <div class="btns">
+        <button type="button" class="btn" id="export">This photo</button>
+        <button type="button" class="btn primary" id="exportAll">All photos (ZIP)</button>
+      </div>
+      <div class="status" id="status" aria-live="polite"></div>
+      <p class="foot">Frame styles are transcribed from a Framebridge “Walnut Gallery” product page. The mouldings are drawn procedurally from the wood, finish and profile the page describes. They are close approximations for mockups, not product photos, and each photo in a batch gets its own boards.</p>
     </section>
   </aside>
 
   <main class="stage" id="stage">
     <canvas id="view" aria-label="Framed photo preview"></canvas>
-    <div class="hint">Drag the photo to reposition the crop</div>
+    <div class="nav">
+      <button type="button" id="prev" aria-label="Previous photo">‹</button>
+      <span id="navLabel"></span>
+      <button type="button" id="next" aria-label="Next photo">›</button>
+    </div>
   </main>
 </div>
 
@@ -434,6 +524,7 @@ main.stage.clear {
   </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script>
 (() => {
 // ---------------------------------------------------------------------------
@@ -449,16 +540,18 @@ const WOOD = {
   ash:      { base: '#d2b288', dark: '#9c7b52', light: '#e6cfae', grain: 0.8, pores: 0.45, variance: 0.25, freq: 2.6 },
   maple:    { base: '#e5ddcf', dark: '#c3b39a', light: '#f3eee4', grain: 0.45, pores: 0.08, variance: 0.12, freq: 1.6 },
   pine:     { base: '#6e4326', dark: '#3a2010', light: '#9a6a41', grain: 0.9, pores: 0.05, variance: 0.35, freq: 1.3 },
-  gold:     { base: '#b58c3e', dark: '#6f521e', light: '#e8cf8a', grain: 0.12, pores: 0, variance: 0.06, freq: 3.5 }
+  gold:     { base: '#b58c3e', dark: '#6f521e', light: '#e8cf8a', grain: 0.12, pores: 0, variance: 0.06, freq: 3.5 },
+  white:    { base: '#ecebe6', dark: '#cfcdc4', light: '#f8f7f3', grain: 0.14, pores: 0.02, variance: 0.04, freq: 1.8 },
+  oak:      { base: '#c7a576', dark: '#8f6f45', light: '#dcc29b', grain: 0.7, pores: 0.35, variance: 0.2, freq: 2.4 }
 };
 
 const FRAMES = [
   { id: 'walnut-gallery', name: 'Walnut Gallery', wood: 'walnut', profile: 'gallery', group: 'Gallery',
     desc: 'Solid walnut wood gallery frame. Each one is one-of-a-kind, from deep espresso to light brown tones.',
     pairing: 'Color photography and earthy, vintage landscapes. Creamy off-white or sage green walls.',
-    size: 'listed', badge: 'Bestseller', mat: 'classic', wall: 'offwhite' },
+    size: 'listed', badge: 'Bestseller' },
   { id: 'black-walnut-gallery', name: 'Black Walnut Gallery', wood: 'black', profile: 'gallery', group: 'Gallery',
-    desc: 'Solid walnut gallery frame with black finish.', mat: 'red' },
+    desc: 'Solid walnut gallery frame with black finish.' },
   { id: 'indigo-walnut-gallery', name: 'Indigo Walnut Gallery', wood: 'indigo', profile: 'gallery', group: 'Gallery',
     desc: 'Solid walnut gallery frame with deep navy blue finish.' },
   { id: 'cherry-gallery', name: 'Cherry Gallery', wood: 'cherry', profile: 'gallery', group: 'Gallery',
@@ -482,11 +575,24 @@ const FRAMES = [
     desc: 'Solid bleached maple wood rounded frame with whitewashed finish.' },
 
   { id: 'stratton', name: 'Stratton', wood: 'pine', profile: 'stepped', group: 'Other',
-    desc: 'Pine with a warm walnut stain and a more traditional design. Named in the FAQ; the stepped profile is interpreted.',
-    width: 1.25, depth: 1.25 },
+    desc: 'Pine with a warm walnut stain and a more traditional design (from the FAQ). The stepped profile is interpreted.',
+    width: 1.25 },
   { id: 'richmond', name: 'Richmond', wood: 'gold', profile: 'gilded', group: 'Other',
     desc: 'Gold frame, shown on the page float-mounting a ribbon. The profile is interpreted.',
-    width: 1.0, depth: 1.25, mat: 'offwhite', matStyle: 'float' }
+    width: 1.0 },
+  { id: 'irvine-slim', name: 'Irvine Slim', wood: 'oak', profile: 'slim', group: 'Other',
+    desc: 'Named on the page for float-mounted wedding details. Its finish isn\'t described, so this slim natural-wood moulding is an interpretation.',
+    width: 0.5 },
+  { id: 'white-gallery', name: 'White Gallery', wood: 'white', profile: 'gallery', group: 'Other',
+    desc: 'The page says Walnut Gallery "blends easily into gallery walls featuring other woods and even white frames". This is a generic white-painted gallery moulding for those walls.' }
+];
+
+// The four framed examples in the page's "You can Framebridge anything you love" strip.
+const LOOKS = [
+  { title: 'The big birthday', text: 'Walnut Gallery with off-white mat', frame: 'walnut-gallery', matStyle: 'single', mat: 'offwhite' },
+  { title: 'Vodka sauce recipe', text: 'Black Walnut Gallery with a red mat', frame: 'black-walnut-gallery', matStyle: 'single', mat: 'red' },
+  { title: 'Your bragging rights', text: 'Float mounted in Richmond', frame: 'richmond', matStyle: 'float', mat: 'offwhite' },
+  { title: 'Wedding day details', text: 'Float mounted in Irvine Slim', frame: 'irvine-slim', matStyle: 'float', mat: 'classic' }
 ];
 
 const MATS = [
@@ -501,32 +607,51 @@ const MATS = [
   { id: 'linen5',   name: 'Linen · charcoal', color: '#3b3a37', linen: true }
 ];
 const WALLS = [
-  { id: 'white',    name: 'White wall', color: '#f3f3ef' },
-  { id: 'offwhite', name: 'Creamy off-white wall', color: '#ebe3d1' },
-  { id: 'sage',     name: 'Sage green wall', color: '#b3bda2' },
-  { id: 'plaster',  name: 'Warm plaster', color: '#d9c8b3' },
-  { id: 'charcoal', name: 'Charcoal wall', color: '#3a3e3b' },
-  { id: 'clear',    name: 'Transparent background', color: null }
+  { id: 'white',     name: 'White', color: '#f3f3ef' },
+  { id: 'gallery',   name: 'Gallery grey', color: '#d8dad6' },
+  { id: 'offwhite',  name: 'Creamy off-white (suggested on the page)', color: '#ebe3d1' },
+  { id: 'sage',      name: 'Sage green (suggested on the page)', color: '#b3bda2' },
+  { id: 'plaster',   name: 'Warm plaster', color: '#d9c8b3' },
+  { id: 'blush',     name: 'Blush', color: '#e6cdc4' },
+  { id: 'dusty',     name: 'Dusty blue', color: '#b7c4d0' },
+  { id: 'terracotta',name: 'Terracotta', color: '#b3694d' },
+  { id: 'olive',     name: 'Olive', color: '#6e7258' },
+  { id: 'navy',      name: 'Deep navy', color: '#253047' },
+  { id: 'charcoal',  name: 'Charcoal', color: '#3a3e3b' },
+  { id: 'black',     name: 'Black', color: '#111111' },
+  { id: 'clear',     name: 'Transparent (PNG with alpha)', color: null }
 ];
-const PRESETS = { '5x7': [5, 7], '8x10': [8, 10], '11x14': [11, 14], '12x16': [12, 16], '16x20': [16, 20], '18x24': [18, 24], '24x36': [24, 36] };
+const LAYOUTS = [
+  { id: 'fit', label: 'Fit', r: null, w: 10, h: 12 },
+  { id: '1:1', label: '1:1', r: 1, w: 11, h: 11 },
+  { id: '4:5', label: '4:5', r: 4 / 5, w: 9, h: 11 },
+  { id: '2:3', label: '2:3', r: 2 / 3, w: 8, h: 12 },
+  { id: '3:2', label: '3:2', r: 3 / 2, w: 12, h: 8 },
+  { id: '16:9', label: '16:9', r: 16 / 9, w: 14, h: 8 },
+  { id: '9:16', label: '9:16', r: 9 / 16, w: 7, h: 12 }
+];
+const SIZE_CHIPS = [5, 7, 8, 10, 12, 14, 16, 20, 24, 30, 36];
 const LISTED_WIDTH = 13 / 16, LISTED_DEPTH = 1.25;
 
 const state = {
   frame: 'walnut-gallery',
   moulding: LISTED_WIDTH,
-  artW: 8, artH: 10,
+  measure: 'art',
+  size: 10,
   matStyle: 'single',
   matW: 2,
   mat: 'classic', matCustom: null,
   wall: 'offwhite', wallCustom: null,
-  shadow: true, glare: true,
-  fit: 'cover', zoom: 1, cx: 0.5, cy: 0.5,
+  light: true, shadow: true, glare: true,
+  layout: 'fit', pad: 18,
   seed: 1 + Math.floor(Math.random() * 9999),
   res: 2
 };
-let photo = null;       // HTMLImageElement or canvas
-let photoName = 'Sample photo';
-let lastCrop = null;    // for drag-to-pan
+// Each photo keeps its own crop. { id, name, img, w, h, cx, cy, zoom, thumb, sample }
+let photos = [];
+let active = 0;
+let nextId = 1;
+let lastCrop = null;
 
 // ---------------------------------------------------------------------------
 // Utilities
@@ -536,6 +661,7 @@ const frameById = (id) => FRAMES.find((f) => f.id === id);
 const hex = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
 const lerp = (a, b, t) => a + (b - a) * t;
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
 function inches(v) {
   // Format to the nearest 1/16", the way a framer writes it.
@@ -614,7 +740,7 @@ function woodTexture(woodKey, seed, len, wid) {
   }
   ctx.putImageData(img, 0, 0);
   texCache.set(key, c);
-  if (texCache.size > 40) texCache.delete(texCache.keys().next().value);
+  if (texCache.size > 60) texCache.delete(texCache.keys().next().value);
   return c;
 }
 
@@ -645,6 +771,8 @@ function linen(ctx) {
 const PROFILES = {
   gallery: [[0, 'rgba(0,0,0,0.30)'], [0.03, 'rgba(255,255,255,0.20)'], [0.08, 'rgba(255,255,255,0.05)'],
             [0.5, 'rgba(0,0,0,0)'], [0.9, 'rgba(0,0,0,0.04)'], [0.955, 'rgba(255,255,255,0.10)'], [0.97, 'rgba(0,0,0,0.30)'], [1, 'rgba(0,0,0,0.55)']],
+  slim:    [[0, 'rgba(0,0,0,0.30)'], [0.06, 'rgba(255,255,255,0.22)'], [0.16, 'rgba(255,255,255,0.04)'],
+            [0.8, 'rgba(0,0,0,0.04)'], [0.9, 'rgba(0,0,0,0.22)'], [1, 'rgba(0,0,0,0.5)']],
   round:   [[0, 'rgba(0,0,0,0.42)'], [0.12, 'rgba(0,0,0,0.12)'], [0.32, 'rgba(255,255,255,0.14)'], [0.45, 'rgba(255,255,255,0.20)'],
             [0.62, 'rgba(255,255,255,0.04)'], [0.85, 'rgba(0,0,0,0.14)'], [0.96, 'rgba(0,0,0,0.34)'], [1, 'rgba(0,0,0,0.6)']],
   stepped: [[0, 'rgba(0,0,0,0.40)'], [0.05, 'rgba(255,255,255,0.18)'], [0.28, 'rgba(255,255,255,0.05)'], [0.30, 'rgba(0,0,0,0.38)'],
@@ -733,7 +861,6 @@ function samplePhoto() {
   x.fillStyle = 'rgba(255,236,200,0.55)';
   for (let i = 0; i < 26; i++) x.fillRect(700 + Math.sin(i * 1.7) * 30 - i * 2, 1030 + i * 14, 120 - i * 3.5, 3);
   ridge(1500, 260, 0.01, '#1f1c22', 29);
-  // A small figure on the shore, for scale.
   x.fillStyle = '#1a171c';
   x.beginPath(); x.ellipse(360, 1226, 11, 13, 0, 0, Math.PI * 2); x.fill();
   x.fillRect(349, 1238, 22, 58);
@@ -748,26 +875,33 @@ function currentMat() {
   return MATS.find((m) => m.id === state.mat);
 }
 function currentWall() {
-  if (state.wall === 'custom') return { name: 'Custom wall', color: state.wallCustom };
+  if (state.wall === 'custom') return { name: 'Custom background', color: state.wallCustom };
   return WALLS.find((w) => w.id === state.wall);
 }
 
-function geometry() {
+// Art takes the photo's exact aspect ratio; the size setting fixes the long side.
+function geometry(entry) {
   const f = frameById(state.frame);
   const matW = state.matStyle === 'none' ? 0 : state.matW;
   const F = state.moulding;
-  const outerW = state.artW + 2 * matW + 2 * F;
-  const outerH = state.artH + 2 * matW + 2 * F;
-  const depth = f.depth || LISTED_DEPTH;
-  return { f, matW, F, outerW, outerH, depth };
+  const r = entry.w / entry.h;
+  const border = 2 * (matW + F);
+  const artLong = state.measure === 'outside' ? Math.max(1, state.size - border) : state.size;
+  const artW = r >= 1 ? artLong : artLong * r;
+  const artH = r >= 1 ? artLong / r : artLong;
+  return { f, matW, F, artW, artH, outerW: artW + border, outerH: artH + border, depth: f.depth || LISTED_DEPTH };
 }
 
-function render(canvas, longest, detail = true) {
-  const g = geometry();
+function render(canvas, longest, entry, seed, detail = true) {
+  const g = geometry(entry);
   const wall = currentWall();
   const clear = !wall.color;
-  const margin = Math.max(g.outerW, g.outerH) * (clear ? 0.05 : 0.16) + g.depth * (clear ? 1.1 : 0.6);
-  const totalW = g.outerW + 2 * margin, totalH = g.outerH + 2 * margin;
+  const pad = Math.max(g.outerW, g.outerH) * state.pad / 100;
+  let totalW = g.outerW + 2 * pad, totalH = g.outerH + 2 * pad;
+  const layout = LAYOUTS.find((l) => l.id === state.layout);
+  if (layout.r) {
+    if (totalW / totalH < layout.r) totalW = totalH * layout.r; else totalH = totalW / layout.r;
+  }
   const ppi = longest / Math.max(totalW, totalH);
   canvas.width = Math.round(totalW * ppi);
   canvas.height = Math.round(totalH * ppi);
@@ -777,14 +911,17 @@ function render(canvas, longest, detail = true) {
   if (!clear) {
     ctx.fillStyle = wall.color;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    const light = ctx.createRadialGradient(canvas.width * 0.2, canvas.height * 0.05, 0, canvas.width * 0.4, canvas.height * 0.3, Math.max(canvas.width, canvas.height) * 1.1);
-    light.addColorStop(0, 'rgba(255,255,255,0.14)');
-    light.addColorStop(1, 'rgba(0,0,0,0.12)');
-    ctx.fillStyle = light;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    if (state.light) {
+      const light = ctx.createRadialGradient(canvas.width * 0.2, canvas.height * 0.05, 0, canvas.width * 0.4, canvas.height * 0.3, Math.max(canvas.width, canvas.height) * 1.1);
+      light.addColorStop(0, 'rgba(255,255,255,0.14)');
+      light.addColorStop(1, 'rgba(0,0,0,0.12)');
+      ctx.fillStyle = light;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
   }
 
-  const X = margin * ppi, Y = margin * ppi, W = g.outerW * ppi, H = g.outerH * ppi, F = g.F * ppi;
+  const W = g.outerW * ppi, H = g.outerH * ppi, F = g.F * ppi;
+  const X = (canvas.width - W) / 2, Y = (canvas.height - H) / 2;
   const D = g.depth * ppi;
 
   if (state.shadow) {
@@ -814,7 +951,7 @@ function render(canvas, longest, detail = true) {
     ctx.fillStyle = '#111'; ctx.fillRect(mx, my, mw, mh);
   }
 
-  const ax = mx + g.matW * ppi, ay = my + g.matW * ppi, aw = state.artW * ppi, ah = state.artH * ppi;
+  const ax = mx + g.matW * ppi, ay = my + g.matW * ppi, aw = g.artW * ppi, ah = g.artH * ppi;
 
   if (state.matStyle === 'float') {
     ctx.save();
@@ -826,10 +963,10 @@ function render(canvas, longest, detail = true) {
     ctx.fillRect(ax, ay, aw, ah);
     ctx.restore();
   }
-  drawPhoto(ctx, ax, ay, aw, ah);
+  drawPhoto(ctx, entry, ax, ay, aw, ah);
 
   if (state.matStyle === 'single') {
-    // Bevel: a white-core 45° cut around the window.
+    // Bevel: a 45° cut around the window, white core unless the mat is dark.
     const b = Math.max(1.5, 0.07 * ppi);
     const core = mat.color && hex(mat.color).reduce((a, v) => a + v, 0) < 200 ? '#2a2a28' : '#fbfaf6';
     const shades = ['rgba(0,0,0,0.16)', 'rgba(255,255,255,0.10)', 'rgba(255,255,255,0.30)', 'rgba(0,0,0,0.07)'];
@@ -844,7 +981,6 @@ function render(canvas, longest, detail = true) {
       ctx.fillStyle = core; ctx.fill();
       ctx.fillStyle = shades[i]; ctx.fill();
     });
-    // Soft shade the mat casts on the art.
     const s = Math.max(2, 0.1 * ppi);
     const gg = ctx.createLinearGradient(0, ay, 0, ay + s);
     gg.addColorStop(0, 'rgba(0,0,0,0.22)'); gg.addColorStop(1, 'rgba(0,0,0,0)');
@@ -864,7 +1000,7 @@ function render(canvas, longest, detail = true) {
       ctx.fillStyle = gr; ctx.fillRect(rx, ry, rw, rh);
     });
 
-  drawFrame(ctx, X, Y, W, H, F, g.f, state.seed, detail);
+  drawFrame(ctx, X, Y, W, H, F, g.f, seed, detail);
 
   if (state.glare) {
     ctx.save();
@@ -878,30 +1014,22 @@ function render(canvas, longest, detail = true) {
     ctx.fillStyle = gl; ctx.fillRect(mx, my, mw, mh);
     ctx.restore();
   }
-  return { ppi, ax, ay, aw, ah };
 }
 
-function drawPhoto(ctx, x, y, w, h) {
-  const iw = photo.naturalWidth || photo.width, ih = photo.naturalHeight || photo.height;
+function drawPhoto(ctx, entry, x, y, w, h) {
+  const { img, w: iw, h: ih } = entry;
+  const s = Math.max(w / iw, h / ih) * entry.zoom;
+  const sw = w / s, sh = h / s;
+  entry.cx = clamp(entry.cx, sw / 2 / iw, 1 - sw / 2 / iw);
+  entry.cy = clamp(entry.cy, sh / 2 / ih, 1 - sh / 2 / ih);
   ctx.save();
   ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip();
-  if (state.fit === 'contain') {
-    ctx.fillStyle = '#fbfaf7'; ctx.fillRect(x, y, w, h);
-    const s = Math.min(w / iw, h / ih) * 0.94 * state.zoom;
-    const dw = iw * s, dh = ih * s;
-    ctx.drawImage(photo, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh);
-    lastCrop = null;
-  } else {
-    const s = Math.max(w / iw, h / ih) * state.zoom;
-    const sw = w / s, sh = h / s;
-    state.cx = clamp(state.cx, sw / 2 / iw, 1 - sw / 2 / iw);
-    state.cy = clamp(state.cy, sh / 2 / ih, 1 - sh / 2 / ih);
-    const sx = state.cx * iw - sw / 2, sy = state.cy * ih - sh / 2;
-    ctx.drawImage(photo, sx, sy, sw, sh, x, y, w, h);
-    lastCrop = { s, iw, ih };
-  }
+  ctx.drawImage(img, entry.cx * iw - sw / 2, entry.cy * ih - sh / 2, sw, sh, x, y, w, h);
   ctx.restore();
+  lastCrop = { entry, s };
 }
+
+const seedFor = (i) => state.seed + i * 101;
 
 // ---------------------------------------------------------------------------
 // UI
@@ -914,19 +1042,25 @@ function draw() {
   requestAnimationFrame(() => {
     queued = false;
     const stage = $('stage');
+    const entry = photos[active];
+    if (!entry) return;
     const longest = Math.min(2000, Math.max(900, Math.max(stage.clientWidth, stage.clientHeight) * Math.min(2, window.devicePixelRatio || 1)));
-    render(view, longest);
+    render(view, longest, entry, seedFor(active));
     stage.classList.toggle('clear', !currentWall().color);
     updateReadout();
   });
 }
 
 function updateReadout() {
-  const g = geometry();
+  const entry = photos[active];
+  const g = geometry(entry);
   const mat = state.matStyle === 'none' ? 'no mat' : `${inches(g.matW)} ${state.matStyle === 'float' ? 'float' : 'mat'}`;
   $('readout').innerHTML =
-    `<b>${g.f.name}</b> · art ${inches(state.artW)} × ${inches(state.artH)} · ${mat} · ` +
+    `<b>${esc(g.f.name)}</b> · art ${inches(g.artW)} × ${inches(g.artH)} · ${mat} · ` +
     `outside <b>${inches(g.outerW)} × ${inches(g.outerH)}</b>`;
+  $('navLabel').textContent = `${active + 1} of ${photos.length} · ${entry.name}`;
+  $('prev').disabled = active === 0;
+  $('next').disabled = active === photos.length - 1;
 }
 
 function renderFrameInfo() {
@@ -936,7 +1070,7 @@ function renderFrameInfo() {
   $('finfo').innerHTML =
     `<div><strong>${f.name}</strong>${f.badge ? `<span class="tag">${f.badge}</span>` : ''}` +
     `${f.group === 'Other' ? '<span class="tag soft">Interpreted</span>' : ''}</div>` +
-    `<div>${f.desc}</div>` +
+    `<div>${esc(f.desc)}</div>` +
     (f.pairing ? `<div>Pairs with: ${f.pairing}</div>` : '') +
     `<div class="spec">${inches(w)} wide × ${inches(d)} deep${listed ? ' · listed' : ' · assumed, not listed on page'}</div>`;
   $('mouldingOut').textContent = inches(state.moulding);
@@ -944,7 +1078,7 @@ function renderFrameInfo() {
 
 function buildFrames() {
   const targets = { Gallery: $('framesGallery'), Round: $('framesRound'), Other: $('framesOther') };
-  FRAMES.forEach((f, i) => {
+  FRAMES.forEach((f) => {
     const b = document.createElement('button');
     b.type = 'button';
     b.className = 'fbtn';
@@ -957,6 +1091,19 @@ function buildFrames() {
     targets[f.group].append(b);
   });
   paintThumbs();
+  LOOKS.forEach((l) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'look';
+    b.innerHTML = `<strong>${l.title}</strong><span>${l.text}</span><i>Apply</i>`;
+    b.addEventListener('click', () => {
+      state.mat = l.mat;
+      setMatStyle(l.matStyle);
+      selectFrame(l.frame);
+      syncSwatches();
+    });
+    $('looks').append(b);
+  });
 }
 function paintThumbs() {
   document.querySelectorAll('.fbtn').forEach((b) => {
@@ -965,8 +1112,7 @@ function paintThumbs() {
     const x = c.getContext('2d');
     x.clearRect(0, 0, 104, 104);
     x.fillStyle = '#efece4'; x.fillRect(0, 0, 104, 104);
-    const F = f.profile === 'stepped' ? 34 : f.profile === 'gilded' ? 30 : 26;
-    // Show the top-left corner, cropped.
+    const F = { stepped: 34, gilded: 30, slim: 16 }[f.profile] || 26;
     drawFrame(x, 6, 6, 170, 170, F, f, state.seed + 3, false);
   });
 }
@@ -977,12 +1123,11 @@ function selectFrame(id) {
   state.moulding = f.width || LISTED_WIDTH;
   $('moulding').value = state.moulding;
   document.querySelectorAll('.fbtn').forEach((b) => b.setAttribute('aria-pressed', b.dataset.id === id));
-  if (f.matStyle) setMatStyle(f.matStyle);
   renderFrameInfo();
   draw();
 }
 
-function buildSwatches(el, list, key, nameEl) {
+function buildSwatches(el, list, key) {
   el.innerHTML = '';
   list.forEach((item) => {
     const b = document.createElement('button');
@@ -1004,7 +1149,7 @@ function buildSwatches(el, list, key, nameEl) {
   inp.type = 'color';
   inp.id = key + 'Custom';
   inp.value = key === 'mat' ? '#d9cbb2' : '#c7cfc4';
-  inp.setAttribute('aria-label', `Custom ${key} color`);
+  inp.setAttribute('aria-label', `Custom ${key === 'mat' ? 'mat' : 'background'} color`);
   inp.addEventListener('input', () => { state[key + 'Custom'] = inp.value; state[key] = 'custom'; syncSwatches(); draw(); });
   cb.append(inp);
   el.append(cb);
@@ -1014,99 +1159,264 @@ function syncSwatches() {
     $(el).querySelectorAll('[data-id]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.id === state[key]));
     $(nm).textContent = cur().name + (key === 'mat' && cur().linen ? ' (the page offers five linen neutrals; tones here are approximate)' : '');
   });
+  $('light').disabled = !currentWall().color;
 }
 
 function setMatStyle(m) {
   state.matStyle = m;
   document.querySelectorAll('[data-mat]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.mat === m));
   $('matWField').hidden = m === 'none';
-  $('matSwatches').parentElement.querySelector('.swname').hidden = m === 'none';
-  $('matSwatches').hidden = m === 'none';
-}
-
-function setArt(w, h, fromPreset) {
-  state.artW = clamp(+w || 8, 2, 60);
-  state.artH = clamp(+h || 10, 2, 60);
-  $('artW').value = state.artW;
-  $('artH').value = state.artH;
-  if (!fromPreset) {
-    const key = Object.keys(PRESETS).find((k) => {
-      const [a, b] = PRESETS[k];
-      return (a === state.artW && b === state.artH) || (b === state.artW && a === state.artH);
-    });
-    $('preset').value = key || 'custom';
-  }
+  $('matColorWrap').hidden = m === 'none';
   draw();
 }
 
-function matchPhoto() {
-  const iw = photo.naturalWidth || photo.width, ih = photo.naturalHeight || photo.height;
-  const long = Math.max(state.artW, state.artH);
-  const r = iw / ih;
-  const q = (v) => Math.round(v * 4) / 4;
-  if (r >= 1) setArt(long, q(long / r)); else setArt(q(long * r), long);
-  state.cx = state.cy = 0.5;
+function setSize(v) {
+  state.size = clamp(+v || 10, 4, 48);
+  $('sizeRange').value = state.size;
+  $('sizeNum').value = state.size;
+  document.querySelectorAll('#sizeChips button').forEach((b) => b.setAttribute('aria-pressed', +b.dataset.size === state.size));
+  draw();
 }
 
-function paintPhotoThumb() {
-  const c = $('photoThumb'), x = c.getContext('2d');
-  const iw = photo.naturalWidth || photo.width, ih = photo.naturalHeight || photo.height;
-  const s = Math.max(112 / iw, 112 / ih);
-  x.clearRect(0, 0, 112, 112);
-  x.drawImage(photo, (112 - iw * s) / 2, (112 - ih * s) / 2, iw * s, ih * s);
-  $('photoName').textContent = photoName;
+function buildChips() {
+  SIZE_CHIPS.forEach((s) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.dataset.size = s;
+    b.textContent = `${s}"`;
+    b.className = 'plain';
+    b.addEventListener('click', () => setSize(s));
+    $('sizeChips').append(b);
+  });
+  LAYOUTS.forEach((l) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.dataset.layout = l.id;
+    b.textContent = l.label;
+    if (!l.r) b.classList.add('fit');
+    b.style.setProperty('--w', l.w + 'px'); b.style.setProperty('--h', l.h + 'px');
+    b.setAttribute('aria-pressed', l.id === state.layout);
+    b.addEventListener('click', () => {
+      state.layout = l.id;
+      document.querySelectorAll('#layoutChips button').forEach((o) => o.setAttribute('aria-pressed', o === b));
+      draw();
+    });
+    $('layoutChips').append(b);
+  });
 }
 
-function loadFile(file) {
-  if (!file || !file.type.startsWith('image/')) return;
-  const url = URL.createObjectURL(file);
-  const img = new Image();
-  img.onload = () => {
-    photo = img;
-    photoName = file.name || 'Pasted image';
-    state.zoom = 1; $('zoom').value = 1; $('zoomOut').textContent = '1.00×';
-    paintPhotoThumb();
-    matchPhoto();
-  };
-  img.onerror = () => { $('photoName').textContent = 'That file could not be read as an image. Try a JPG or PNG.'; };
-  img.src = url;
+// Photos ----------------------------------------------------------------------
+function thumbFor(img, w, h) {
+  const c = document.createElement('canvas');
+  c.width = c.height = 108;
+  const s = Math.max(108 / w, 108 / h);
+  c.getContext('2d').drawImage(img, (108 - w * s) / 2, (108 - h * s) / 2, w * s, h * s);
+  return c.toDataURL('image/jpeg', 0.8);
 }
+function addPhoto(img, name, sample = false) {
+  const w = img.naturalWidth || img.width, h = img.naturalHeight || img.height;
+  photos.push({ id: nextId++, name, img, w, h, cx: 0.5, cy: 0.5, zoom: 1, thumb: thumbFor(img, w, h), sample });
+}
+function renderStrip() {
+  const strip = $('strip');
+  strip.innerHTML = '';
+  photos.forEach((p, i) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'ph';
+    const pick = document.createElement('button');
+    pick.type = 'button';
+    pick.className = 'pick';
+    pick.title = p.name;
+    pick.setAttribute('aria-label', `Show ${p.name}`);
+    pick.setAttribute('aria-current', i === active);
+    const im = document.createElement('img');
+    im.src = p.thumb; im.alt = '';
+    pick.append(im);
+    pick.addEventListener('click', () => setActive(i));
+    const rm = document.createElement('button');
+    rm.type = 'button';
+    rm.className = 'rm';
+    rm.textContent = '×';
+    rm.setAttribute('aria-label', `Remove ${p.name}`);
+    rm.addEventListener('click', () => removePhoto(i));
+    wrap.append(pick, rm);
+    strip.append(wrap);
+  });
+  const real = photos.filter((p) => !p.sample).length;
+  $('photoCount').textContent = real ? `${real} added` : '';
+  $('photoMeta').textContent = photos[0]?.sample ? 'Showing a sample photo. Add your own to replace it.' : `${photos.length} photo${photos.length === 1 ? '' : 's'} in the batch`;
+  $('clearAll').hidden = !real;
+  $('exportAll').textContent = `All ${photos.length} photo${photos.length === 1 ? '' : 's'} (ZIP)`;
+}
+function setActive(i) {
+  active = clamp(i, 0, photos.length - 1);
+  const e = photos[active];
+  $('zoom').value = e.zoom;
+  $('zoomOut').textContent = e.zoom.toFixed(2) + '×';
+  renderStrip();
+  draw();
+}
+function removePhoto(i) {
+  const [gone] = photos.splice(i, 1);
+  if (gone.img.src?.startsWith('blob:')) URL.revokeObjectURL(gone.img.src);
+  if (!photos.length) addPhoto(samplePhoto(), 'Sample photo', true);
+  setActive(Math.min(active, photos.length - 1));
+}
+
+function loadImage(file) {
+  return new Promise((resolve) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => { URL.revokeObjectURL(url); resolve(null); };
+    img.src = url;
+  });
+}
+async function loadFiles(list) {
+  const files = [...(list || [])].filter((f) => f.type.startsWith('image/'));
+  if (!files.length) return;
+  setStatus(`Loading ${files.length} photo${files.length === 1 ? '' : 's'}…`);
+  if (photos.length === 1 && photos[0].sample) photos = [];
+  const first = photos.length;
+  let failed = 0;
+  for (const f of files) {
+    const img = await loadImage(f);
+    if (img) addPhoto(img, f.name || 'Pasted image'); else failed++;
+  }
+  if (!photos.length) addPhoto(samplePhoto(), 'Sample photo', true);
+  setStatus(failed ? `${failed} file${failed === 1 ? '' : 's'} couldn't be read as images. Try JPG, PNG or WebP.` : '');
+  setActive(Math.min(first, photos.length - 1));
+}
+
+// Saving ------------------------------------------------------------------------
+// Inside the claude.ai viewer, saves go through its downloads capability;
+// opened as a plain file, a normal download link does the job.
+const downloadsReady = window.claude?.use ? window.claude.use('downloads').catch(() => null) : Promise.resolve(null);
+async function saveBlob(blob, filename) {
+  const downloads = await downloadsReady;
+  if (downloads) {
+    try { await downloads.save({ filename, data: blob }); return 'saved'; }
+    catch (err) { return err?.code || 'unavailable'; }
+  }
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.append(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+  return 'saved';
+}
+const setStatus = (t) => { $('status').textContent = t; };
+const baseName = (n) => n.replace(/\.[^.]+$/, '').replace(/[^\w\-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'photo';
+function fileNameFor(entry, used) {
+  let name = `${baseName(entry.name)}-${state.frame}.png`, k = 2;
+  while (used && used.has(name)) name = `${baseName(entry.name)}-${state.frame}-${k++}.png`;
+  used?.add(name);
+  return name;
+}
+function renderBlob(i) {
+  const c = document.createElement('canvas');
+  render(c, 1600 * state.res, photos[i], seedFor(i));
+  return new Promise((resolve) => c.toBlob((b) => resolve({ blob: b, w: c.width, h: c.height }), 'image/png'));
+}
+const pause = () => new Promise((r) => setTimeout(r, 16));
+const outcome = (r) => ({ saved: 'Saved.', declined: 'Save cancelled.', too_large: 'That file is too large to save here. Choose a smaller export size.' }[r] || 'Saving isn\'t available in this view.');
+
+let single = null;
+$('export').addEventListener('click', async () => {
+  const btn = $('export');
+  btn.disabled = true; setStatus('Rendering…');
+  await pause();
+  const { blob, w, h } = await renderBlob(active);
+  const name = fileNameFor(photos[active]);
+  if (single) URL.revokeObjectURL(single.url);
+  single = { blob, name, url: URL.createObjectURL(blob) };
+  $('exportImg').src = single.url;
+  $('sheetTitle').textContent = `${name} · ${w} × ${h} px`;
+  $('overlay').hidden = false;
+  setStatus(outcome(await saveBlob(blob, name)));
+  btn.disabled = false;
+  draw();
+});
+$('download').addEventListener('click', async () => { if (single) setStatus(outcome(await saveBlob(single.blob, single.name))); });
+
+$('exportAll').addEventListener('click', async () => {
+  const btn = $('exportAll'), one = $('export');
+  btn.disabled = one.disabled = true;
+  const used = new Set();
+  const zip = window.JSZip ? new window.JSZip() : null;
+  let last = 'saved';
+  for (let i = 0; i < photos.length; i++) {
+    setStatus(`Rendering ${i + 1} of ${photos.length}…`);
+    await pause();
+    const { blob } = await renderBlob(i);
+    const name = fileNameFor(photos[i], used);
+    if (zip) zip.file(name, blob);
+    else {
+      // No ZIP library (offline): offer the files one at a time.
+      last = await saveBlob(blob, name);
+      if (last !== 'saved') break;
+    }
+  }
+  if (zip) {
+    setStatus('Packing the ZIP…');
+    const z = await zip.generateAsync({ type: 'blob', compression: 'STORE' });
+    last = await saveBlob(z, `framed-mockups-${state.frame}.zip`);
+  }
+  setStatus(last === 'saved' ? `Saved ${photos.length} mockup${photos.length === 1 ? '' : 's'}.` : outcome(last));
+  btn.disabled = one.disabled = false;
+  draw();
+});
 
 // Events --------------------------------------------------------------------
-$('file').addEventListener('change', (e) => loadFile(e.target.files[0]));
+$('file').addEventListener('change', (e) => { loadFiles(e.target.files); e.target.value = ''; });
 const drop = $('drop');
 ['dragenter', 'dragover'].forEach((t) => drop.addEventListener(t, (e) => { e.preventDefault(); drop.classList.add('over'); }));
 ['dragleave', 'drop'].forEach((t) => drop.addEventListener(t, (e) => { e.preventDefault(); drop.classList.remove('over'); }));
-drop.addEventListener('drop', (e) => loadFile(e.dataTransfer.files[0]));
+drop.addEventListener('drop', (e) => loadFiles(e.dataTransfer.files));
 $('stage').addEventListener('dragover', (e) => e.preventDefault());
-$('stage').addEventListener('drop', (e) => { e.preventDefault(); loadFile(e.dataTransfer.files[0]); });
+$('stage').addEventListener('drop', (e) => { e.preventDefault(); loadFiles(e.dataTransfer.files); });
 window.addEventListener('paste', (e) => {
-  const item = [...(e.clipboardData?.items || [])].find((i) => i.type.startsWith('image/'));
-  if (item) loadFile(item.getAsFile());
+  const files = [...(e.clipboardData?.items || [])].filter((i) => i.type.startsWith('image/')).map((i) => i.getAsFile());
+  if (files.length) loadFiles(files);
+});
+$('clearAll').addEventListener('click', () => {
+  photos.forEach((p) => p.img.src?.startsWith('blob:') && URL.revokeObjectURL(p.img.src));
+  photos = [];
+  addPhoto(samplePhoto(), 'Sample photo', true);
+  setActive(0);
+});
+$('prev').addEventListener('click', () => setActive(active - 1));
+$('next').addEventListener('click', () => setActive(active + 1));
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') $('overlay').hidden = true;
+  if (e.target.closest('input, select, textarea') || !$('overlay').hidden) return;
+  if (e.key === 'ArrowLeft') setActive(active - 1);
+  if (e.key === 'ArrowRight') setActive(active + 1);
 });
 
-$('fitCover').addEventListener('click', () => { state.fit = 'cover'; $('fitCover').setAttribute('aria-pressed', true); $('fitContain').setAttribute('aria-pressed', false); draw(); });
-$('fitContain').addEventListener('click', () => { state.fit = 'contain'; $('fitContain').setAttribute('aria-pressed', true); $('fitCover').setAttribute('aria-pressed', false); draw(); });
-$('zoom').addEventListener('input', (e) => { state.zoom = +e.target.value; $('zoomOut').textContent = state.zoom.toFixed(2) + '×'; draw(); });
+$('zoom').addEventListener('input', (e) => {
+  photos[active].zoom = +e.target.value;
+  $('zoomOut').textContent = photos[active].zoom.toFixed(2) + '×';
+  draw();
+});
+
+document.querySelectorAll('[data-measure]').forEach((b) => b.addEventListener('click', () => {
+  state.measure = b.dataset.measure;
+  document.querySelectorAll('[data-measure]').forEach((o) => o.setAttribute('aria-pressed', o === b));
+  draw();
+}));
+$('sizeRange').addEventListener('input', (e) => setSize(e.target.value));
+$('sizeNum').addEventListener('change', (e) => setSize(e.target.value));
 
 $('reroll').addEventListener('click', () => { state.seed = 1 + Math.floor(Math.random() * 9999); paintThumbs(); draw(); });
 $('moulding').addEventListener('input', (e) => { state.moulding = +e.target.value; $('mouldingOut').textContent = inches(state.moulding); draw(); });
 
-$('preset').addEventListener('change', (e) => {
-  const p = PRESETS[e.target.value];
-  if (!p) return;
-  const landscape = state.artW > state.artH;
-  setArt(landscape ? p[1] : p[0], landscape ? p[0] : p[1], true);
-});
-$('artW').addEventListener('change', (e) => setArt(e.target.value, state.artH));
-$('artH').addEventListener('change', (e) => setArt(state.artW, e.target.value));
-$('rotate').addEventListener('click', () => setArt(state.artH, state.artW));
-$('matchPhoto').addEventListener('click', matchPhoto);
-
-document.querySelectorAll('[data-mat]').forEach((b) => b.addEventListener('click', () => { setMatStyle(b.dataset.mat); draw(); }));
+document.querySelectorAll('[data-mat]').forEach((b) => b.addEventListener('click', () => setMatStyle(b.dataset.mat)));
 $('matW').addEventListener('input', (e) => { state.matW = +e.target.value; $('matWOut').textContent = inches(state.matW); draw(); });
+$('light').addEventListener('change', (e) => { state.light = e.target.checked; draw(); });
 $('shadow').addEventListener('change', (e) => { state.shadow = e.target.checked; draw(); });
 $('glare').addEventListener('change', (e) => { state.glare = e.target.checked; draw(); });
+$('pad').addEventListener('input', (e) => { state.pad = +e.target.value; $('padOut').textContent = state.pad + '%'; draw(); });
 
 document.querySelectorAll('[data-res]').forEach((b) => b.addEventListener('click', () => {
   state.res = +b.dataset.res;
@@ -1116,76 +1426,37 @@ document.querySelectorAll('[data-res]').forEach((b) => b.addEventListener('click
 // Drag to pan the crop.
 let drag = null;
 view.addEventListener('pointerdown', (e) => {
-  if (!lastCrop) return;
   drag = { x: e.clientX, y: e.clientY };
   view.setPointerCapture(e.pointerId);
   view.classList.add('dragging');
 });
 view.addEventListener('pointermove', (e) => {
   if (!drag || !lastCrop) return;
-  const k = view.width / view.clientWidth; // canvas px per CSS px
+  const k = view.width / view.clientWidth;
   const dx = (e.clientX - drag.x) * k, dy = (e.clientY - drag.y) * k;
   drag = { x: e.clientX, y: e.clientY };
-  state.cx -= dx / lastCrop.s / lastCrop.iw;
-  state.cy -= dy / lastCrop.s / lastCrop.ih;
+  const { entry, s } = lastCrop;
+  entry.cx -= dx / s / entry.w;
+  entry.cy -= dy / s / entry.h;
   draw();
 });
 ['pointerup', 'pointercancel'].forEach((t) => view.addEventListener(t, () => { drag = null; view.classList.remove('dragging'); }));
 window.addEventListener('resize', draw);
 
-// Export.
-let exportURL = null, exportBlob = null;
-// Inside the claude.ai viewer, saves go through its downloads capability;
-// opened as a plain file, a normal download link does the job.
-const downloadsReady = window.claude?.use ? window.claude.use('downloads').catch(() => null) : Promise.resolve(null);
-function fileName() {
-  return `mockup-${state.frame}-${state.artW}x${state.artH}.png`;
-}
-async function triggerDownload() {
-  if (!exportURL) return;
-  const downloads = await downloadsReady;
-  if (downloads) {
-    try { await downloads.save({ filename: fileName(), data: exportBlob }); }
-    catch (err) { if (err?.code === 'too_large') $('sheetTitle').textContent = 'That file is too large to save here. Try a smaller export size.'; }
-    return;
-  }
-  const a = document.createElement('a');
-  a.href = exportURL; a.download = fileName();
-  document.body.append(a); a.click(); a.remove();
-}
-$('export').addEventListener('click', () => {
-  const btn = $('export');
-  btn.textContent = 'Rendering…'; btn.disabled = true;
-  setTimeout(() => {
-    const c = document.createElement('canvas');
-    render(c, 1600 * state.res);
-    c.toBlob((blob) => {
-      if (exportURL) URL.revokeObjectURL(exportURL);
-      exportBlob = blob;
-      exportURL = URL.createObjectURL(blob);
-      $('exportImg').src = exportURL;
-      $('sheetTitle').textContent = `${fileName()} · ${c.width} × ${c.height} px`;
-      $('overlay').hidden = false;
-      triggerDownload();
-      btn.textContent = 'Export PNG'; btn.disabled = false;
-      draw();
-    }, 'image/png');
-  }, 30);
-});
-$('download').addEventListener('click', triggerDownload);
 $('closeSheet').addEventListener('click', () => { $('overlay').hidden = true; });
 $('overlay').addEventListener('click', (e) => { if (e.target.id === 'overlay') $('overlay').hidden = true; });
-window.addEventListener('keydown', (e) => { if (e.key === 'Escape') $('overlay').hidden = true; });
 
 // Boot ------------------------------------------------------------------------
-photo = samplePhoto();
+addPhoto(samplePhoto(), 'Sample photo', true);
 buildFrames();
-buildSwatches($('matSwatches'), MATS, 'mat', $('matName'));
-buildSwatches($('wallSwatches'), WALLS, 'wall', $('wallName'));
+buildChips();
+buildSwatches($('matSwatches'), MATS, 'mat');
+buildSwatches($('wallSwatches'), WALLS, 'wall');
 syncSwatches();
 $('matWOut').textContent = inches(state.matW);
+$('padOut').textContent = state.pad + '%';
 renderFrameInfo();
-paintPhotoThumb();
-draw();
+setSize(state.size);
+setActive(0);
 })();
 </script>
