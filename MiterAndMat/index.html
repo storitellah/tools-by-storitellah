@@ -1134,12 +1134,21 @@ view.addEventListener('pointermove', (e) => {
 window.addEventListener('resize', draw);
 
 // Export.
-let exportURL = null;
+let exportURL = null, exportBlob = null;
+// Inside the claude.ai viewer, saves go through its downloads capability;
+// opened as a plain file, a normal download link does the job.
+const downloadsReady = window.claude?.use ? window.claude.use('downloads').catch(() => null) : Promise.resolve(null);
 function fileName() {
   return `mockup-${state.frame}-${state.artW}x${state.artH}.png`;
 }
-function triggerDownload() {
+async function triggerDownload() {
   if (!exportURL) return;
+  const downloads = await downloadsReady;
+  if (downloads) {
+    try { await downloads.save({ filename: fileName(), data: exportBlob }); }
+    catch (err) { if (err?.code === 'too_large') $('sheetTitle').textContent = 'That file is too large to save here. Try a smaller export size.'; }
+    return;
+  }
   const a = document.createElement('a');
   a.href = exportURL; a.download = fileName();
   document.body.append(a); a.click(); a.remove();
@@ -1152,6 +1161,7 @@ $('export').addEventListener('click', () => {
     render(c, 1600 * state.res);
     c.toBlob((blob) => {
       if (exportURL) URL.revokeObjectURL(exportURL);
+      exportBlob = blob;
       exportURL = URL.createObjectURL(blob);
       $('exportImg').src = exportURL;
       $('sheetTitle').textContent = `${fileName()} · ${c.width} × ${c.height} px`;
