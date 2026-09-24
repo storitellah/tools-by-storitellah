@@ -58,7 +58,7 @@ Media that's already been processed is skipped, so only new posts cost time.
 ## Deploy
 
 `.github/workflows/instagram-archive-pages.yml` publishes `site/` to GitHub
-Pages whenever it changes on `main`. Turn it on once under **Settings → Pages →
+Pages whenever it changes on the default branch. Turn it on once under **Settings → Pages →
 Source: GitHub Actions**.
 
 To preview locally, run `python3 -m http.server -d site`.

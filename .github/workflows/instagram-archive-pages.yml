@@ -2,7 +2,6 @@ name: Deploy Instagram archive
 
 on:
   push:
-    branches: [main]
     paths: ["instagram-archive/site/**"]
   workflow_dispatch:
 
@@ -17,6 +16,8 @@ concurrency:
 
 jobs:
   deploy:
+    # Only the repository's default branch publishes.
+    if: github.ref_name == github.event.repository.default_branch
     runs-on: ubuntu-latest
     environment:
       name: github-pages
