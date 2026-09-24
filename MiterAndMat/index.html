@@ -1,0 +1,1521 @@
+<title>Miter &amp; Mat</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root {
+  --ground: #e9ece8;
+  --panel: #f7f8f5;
+  --stage: #dfe3dd;
+  --ink: #1b201d;
+  --muted: #5d6660;
+  --line: #d2d7d0;
+  --accent: #6b3f24;
+  --accent-ink: #ffffff;
+  --focus: #b0662f;
+  --check-a: #d6dad3;
+  --check-b: #eceee9;
+  --display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --ground: #141715;
+    --panel: #1c201e;
+    --stage: #101211;
+    --ink: #e5e9e3;
+    --muted: #98a29b;
+    --line: #2d3430;
+    --accent: #cf9165;
+    --accent-ink: #1a120c;
+    --focus: #e0a57a;
+    --check-a: #1a1d1b;
+    --check-b: #222724;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --ground: #141715;
+  --panel: #1c201e;
+  --stage: #101211;
+  --ink: #e5e9e3;
+  --muted: #98a29b;
+  --line: #2d3430;
+  --accent: #cf9165;
+  --accent-ink: #1a120c;
+  --focus: #e0a57a;
+  --check-a: #1a1d1b;
+  --check-b: #222724;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font: 14px/1.45 var(--body);
+  -webkit-font-smoothing: antialiased;
+}
+button, input, select { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+.app {
+  display: grid;
+  grid-template-columns: minmax(300px, 360px) 1fr;
+  grid-template-rows: auto 1fr;
+  height: 100%;
+}
+header.bar {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 20px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--line);
+  background: var(--panel);
+}
+header.bar h1 {
+  margin: 0;
+  font: 700 22px/1 var(--display);
+  letter-spacing: -0.01em;
+}
+header.bar h1 span { color: var(--accent); }
+.readout {
+  font: 12px/1.4 var(--mono);
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.readout b { color: var(--ink); font-weight: 500; }
+
+aside.controls {
+  overflow-y: auto;
+  background: var(--panel);
+  border-right: 1px solid var(--line);
+  padding: 4px 20px 32px;
+}
+section.group { padding-block: 18px; border-bottom: 1px solid var(--line); display: grid; gap: 10px; }
+section.group:last-child { border-bottom: 0; }
+.group h2 {
+  margin: 0;
+  font: 600 11px/1 var(--body);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+.group h3 {
+  margin: 6px 0 0;
+  font: 500 12px/1.2 var(--body);
+  color: var(--muted);
+}
+
+.drop {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  cursor: pointer;
+}
+.drop.over { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, transparent); }
+.drop .t { display: grid; gap: 2px; min-width: 0; }
+.drop .t strong { font-weight: 600; }
+.drop .t span { color: var(--muted); font-size: 12px; }
+.drop .plus {
+  flex: none;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--accent); color: var(--accent-ink);
+  font: 600 22px/1 var(--body);
+}
+.drop input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+
+.strip { display: flex; flex-wrap: wrap; gap: 8px; }
+.ph { position: relative; width: 54px; height: 54px; }
+.ph .pick {
+  width: 100%; height: 100%;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  overflow: hidden;
+  cursor: pointer;
+  background: var(--stage);
+}
+.ph .pick img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ph .pick[aria-current="true"] { box-shadow: 0 0 0 2px var(--panel), 0 0 0 4px var(--accent); }
+.ph .rm {
+  position: absolute; top: -6px; right: -6px;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--muted);
+  font-size: 13px; line-height: 1;
+  cursor: pointer;
+  padding: 0;
+}
+.ph .rm:hover { color: var(--ink); border-color: var(--muted); }
+.stripmeta { font-size: 12px; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.linkbtn { border: 0; background: none; padding: 0; color: var(--accent); cursor: pointer; font-size: 12px; text-decoration: underline; text-underline-offset: 2px; }
+
+.frames { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.fbtn {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  padding: 8px 4px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+  text-align: center;
+  font-size: 11.5px;
+  line-height: 1.2;
+}
+.fbtn canvas { width: 52px; height: 52px; display: block; }
+.fbtn:hover { border-color: var(--muted); }
+.fbtn[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+
+.looks { display: grid; gap: 6px; }
+.look {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px 8px;
+  text-align: left;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: transparent;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+.look:hover { border-color: var(--muted); }
+.look strong { font-weight: 600; font-size: 12.5px; }
+.look span { color: var(--muted); font-size: 12px; grid-column: 1; }
+.look i { grid-row: 1 / span 2; grid-column: 2; align-self: center; font-style: normal; color: var(--accent); font-size: 12px; }
+
+.finfo { font-size: 12.5px; color: var(--muted); display: grid; gap: 4px; }
+.finfo strong { color: var(--ink); font-size: 13.5px; font-weight: 600; }
+.finfo .spec { font-family: var(--mono); font-size: 11.5px; }
+.tag {
+  display: inline-block;
+  font: 500 10px/1 var(--body);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 3px 6px;
+  border-radius: 99px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  vertical-align: 2px;
+  margin-left: 6px;
+}
+.tag.soft { background: transparent; color: var(--muted); border: 1px solid var(--line); }
+
+.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.field { display: grid; gap: 4px; }
+.field > label, .lbl { font-size: 12px; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; }
+.field > label output, .lbl output { font-family: var(--mono); color: var(--ink); font-variant-numeric: tabular-nums; }
+select, input[type="number"] {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--ground);
+  padding: 6px 8px;
+  min-width: 0;
+}
+input[type="number"] { width: 76px; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+input[type="range"] { width: 100%; accent-color: var(--accent); }
+.sizeRow { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; }
+
+.seg { display: flex; border: 1px solid var(--line); border-radius: 7px; overflow: hidden; }
+.seg button {
+  flex: 1;
+  border: 0;
+  background: transparent;
+  padding: 7px 6px;
+  cursor: pointer;
+  font-size: 12.5px;
+  border-right: 1px solid var(--line);
+}
+.seg button:last-child { border-right: 0; }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chips button {
+  border: 1px solid var(--line);
+  background: transparent;
+  border-radius: 99px;
+  padding: 5px 11px;
+  cursor: pointer;
+  font: 500 12px/1.2 var(--mono);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.chips button::before {
+  content: "";
+  width: var(--w, 10px); height: var(--h, 10px);
+  border: 1.5px solid currentColor;
+  border-radius: 2px;
+  opacity: 0.7;
+}
+.chips button.fit::before { border-style: dashed; }
+.chips button.plain::before { display: none; }
+.chips button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+
+.swatches { display: flex; flex-wrap: wrap; gap: 8px; }
+.sw {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  cursor: pointer;
+  padding: 0;
+  position: relative;
+  background-size: cover;
+}
+.sw[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--panel), 0 0 0 4px var(--accent); }
+.sw.clear {
+  background-image: conic-gradient(var(--check-a) 25%, var(--check-b) 0 50%, var(--check-a) 0 75%, var(--check-b) 0);
+  background-size: 12px 12px;
+}
+.sw input[type="color"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; border: 0; padding: 0; }
+.sw.custom { background: conic-gradient(#d4523b, #d9b43c, #5c9e5b, #3f78b8, #8a5aa8, #d4523b); }
+.swname { font-size: 12px; color: var(--muted); }
+
+.check { display: flex; gap: 8px; align-items: center; font-size: 13px; cursor: pointer; }
+.check input { accent-color: var(--accent); width: 16px; height: 16px; }
+
+.btn {
+  border: 1px solid var(--line);
+  background: var(--ground);
+  border-radius: 7px;
+  padding: 7px 12px;
+  cursor: pointer;
+  font-size: 13px;
+}
+.btn:hover { border-color: var(--muted); }
+.btn:disabled { opacity: 0.6; cursor: progress; }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600; }
+.btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.status { font-size: 12.5px; color: var(--muted); min-height: 1.45em; font-variant-numeric: tabular-nums; }
+
+main.stage {
+  position: relative;
+  overflow: hidden;
+  background: var(--stage);
+}
+main.stage.clear {
+  background-image: conic-gradient(var(--check-a) 25%, var(--check-b) 0 50%, var(--check-a) 0 75%, var(--check-b) 0);
+  background-size: 22px 22px;
+}
+#view {
+  position: absolute;
+  /* The bottom inset keeps the preview clear of the photo navigation pill. */
+  inset: 24px 24px 60px;
+  margin: auto;
+  max-width: calc(100% - 48px);
+  max-height: calc(100% - 84px);
+  width: auto;
+  height: auto;
+  display: block;
+  touch-action: none;
+  cursor: grab;
+}
+#view.dragging { cursor: grabbing; }
+.nav {
+  position: absolute;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--muted);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  padding: 3px;
+  border-radius: 99px;
+  max-width: calc(100% - 32px);
+}
+.nav button {
+  border: 0; background: transparent; cursor: pointer;
+  width: 28px; height: 28px; border-radius: 50%;
+  font-size: 15px; line-height: 1;
+}
+.nav button:hover:not(:disabled) { background: var(--ground); }
+.nav button:disabled { opacity: 0.35; cursor: default; }
+.nav span { padding-inline: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-variant-numeric: tabular-nums; }
+.foot { font-size: 11.5px; color: var(--muted); line-height: 1.5; margin: 0; }
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 12, 11, 0.72);
+  display: grid;
+  place-items: center;
+  padding: 24px 16px;
+  z-index: 10;
+}
+.sheet {
+  background: var(--panel);
+  border-radius: 12px;
+  padding: 16px;
+  display: grid;
+  gap: 12px;
+  max-width: min(900px, 100%);
+  max-height: 100%;
+  overflow: auto;
+}
+.sheet img {
+  max-width: 100%;
+  max-height: 64vh;
+  display: block;
+  margin: 0 auto;
+  background-image: conic-gradient(var(--check-a) 25%, var(--check-b) 0 50%, var(--check-a) 0 75%, var(--check-b) 0);
+  background-size: 18px 18px;
+}
+.sheet p { margin: 0; color: var(--muted); font-size: 13px; }
+
+@media (max-width: 760px) {
+  .app { grid-template-columns: 1fr; grid-template-rows: auto auto 1fr; height: auto; }
+  main.stage { grid-row: 2; position: sticky; top: env(safe-area-inset-top, 0px); z-index: 2; height: 52vh; }
+  #view { inset: 12px 12px 56px; max-height: calc(100% - 68px); max-width: calc(100% - 24px); }
+  aside.controls { grid-row: 3; border-right: 0; padding-inline: 16px; overflow: visible; }
+  header.bar { padding-inline: 16px; }
+  .embed main.stage { position: relative; top: auto; height: clamp(280px, 95vw, 560px); }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="app">
+  <header class="bar">
+    <h1>Miter <span>&amp;</span> Mat</h1>
+    <div class="readout" id="readout" aria-live="polite"></div>
+  </header>
+
+  <aside class="controls">
+    <section class="group">
+      <h2>Photos <span id="photoCount"></span></h2>
+      <label class="drop" id="drop" for="file">
+        <span class="plus" aria-hidden="true">+</span>
+        <span class="t">
+          <strong>Add photos</strong>
+          <span>Choose, drop or paste one or many. Each frame takes its photo's shape.</span>
+        </span>
+        <input type="file" id="file" accept="image/*" multiple>
+      </label>
+      <div class="strip" id="strip"></div>
+      <div class="stripmeta"><span id="photoMeta"></span><button type="button" class="linkbtn" id="clearAll">Remove all</button></div>
+      <div class="field">
+        <label for="zoom">Crop zoom, this photo <output id="zoomOut">1.00×</output></label>
+        <input type="range" id="zoom" min="1" max="3" step="0.01" value="1">
+      </div>
+    </section>
+
+    <section class="group">
+      <h2>Frame size</h2>
+      <div class="seg" role="group" aria-label="Measure the size on">
+        <button type="button" data-measure="art" aria-pressed="true">Art (long side)</button>
+        <button type="button" data-measure="outside" aria-pressed="false">Outside of frame</button>
+      </div>
+      <div class="sizeRow">
+        <input type="range" id="sizeRange" min="4" max="48" step="0.25" value="10" aria-label="Frame size in inches">
+        <span class="row"><input type="number" id="sizeNum" min="4" max="48" step="0.25" value="10" aria-label="Frame size in inches"><span class="swname">in</span></span>
+      </div>
+      <div class="chips" id="sizeChips" role="group" aria-label="Common sizes"></div>
+      <div class="field">
+        <label for="moulding">Moulding width <output id="mouldingOut"></output></label>
+        <input type="range" id="moulding" min="0.375" max="2.5" step="0.0625" value="0.8125">
+      </div>
+    </section>
+
+    <section class="group">
+      <h2>Frame <button type="button" class="btn" id="reroll" title="Each hardwood rail is cut from a different board">New boards</button></h2>
+      <h3 id="galleryHead">Gallery profile · flat face</h3>
+      <div class="frames" id="framesGallery"></div>
+      <h3 id="roundHead">Round profile · softened face</h3>
+      <div class="frames" id="framesRound"></div>
+      <h3 id="otherHead">Also named on the page</h3>
+      <div class="frames" id="framesOther"></div>
+      <div class="finfo" id="finfo"></div>
+      <h3 id="looksHead">Looks from the page</h3>
+      <div class="looks" id="looks"></div>
+    </section>
+
+    <section class="group">
+      <h2>Mat</h2>
+      <div class="seg" role="group" aria-label="Mat style">
+        <button type="button" data-mat="single" aria-pressed="true">Beveled mat</button>
+        <button type="button" data-mat="float" aria-pressed="false">Float mount</button>
+        <button type="button" data-mat="none" aria-pressed="false">No mat</button>
+      </div>
+      <div class="field" id="matWField">
+        <label for="matW">Mat border <output id="matWOut"></output></label>
+        <input type="range" id="matW" min="0.5" max="5" step="0.125" value="2">
+      </div>
+      <div id="matColorWrap" class="field">
+        <div class="swatches" id="matSwatches" role="group" aria-label="Mat color"></div>
+        <div class="swname" id="matName"></div>
+      </div>
+    </section>
+
+    <section class="group">
+      <h2>Background</h2>
+      <div class="swatches" id="wallSwatches" role="group" aria-label="Background color"></div>
+      <div class="swname" id="wallName"></div>
+      <label class="check"><input type="checkbox" id="light" checked> Soft wall light</label>
+      <label class="check"><input type="checkbox" id="shadow" checked> Cast shadow</label>
+      <label class="check"><input type="checkbox" id="glare" checked> Acrylic glazing reflection</label>
+    </section>
+
+    <section class="group">
+      <h2>Layout</h2>
+      <div class="chips" id="layoutChips" role="group" aria-label="Image shape"></div>
+      <div class="field">
+        <label for="pad">Space around the frame <output id="padOut"></output></label>
+        <input type="range" id="pad" min="0" max="80" step="1" value="18">
+      </div>
+    </section>
+
+    <section class="group">
+      <h2>Export</h2>
+      <div class="seg" role="group" aria-label="Export resolution">
+        <button type="button" data-res="1" aria-pressed="false">1600 px</button>
+        <button type="button" data-res="2" aria-pressed="true">3200 px</button>
+        <button type="button" data-res="3" aria-pressed="false">4800 px</button>
+      </div>
+      <div class="btns">
+        <button type="button" class="btn" id="export">This photo</button>
+        <button type="button" class="btn primary" id="exportAll">All photos (ZIP)</button>
+      </div>
+      <div class="status" id="status" aria-live="polite"></div>
+      <p class="foot" id="credit">Frame styles are transcribed from a Framebridge “Walnut Gallery” product page. The mouldings are drawn procedurally from the wood, finish and profile the page describes. They are close approximations for mockups, not product photos, and each photo in a batch gets its own boards.</p>
+    </section>
+  </aside>
+
+  <main class="stage" id="stage">
+    <canvas id="view" aria-label="Framed photo preview"></canvas>
+    <div class="nav">
+      <button type="button" id="prev" aria-label="Previous photo">‹</button>
+      <span id="navLabel"></span>
+      <button type="button" id="next" aria-label="Next photo">›</button>
+    </div>
+  </main>
+</div>
+
+<div class="overlay" id="overlay" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+    <strong id="sheetTitle">Your mockup</strong>
+    <img id="exportImg" alt="Exported framed mockup">
+    <p>If the download didn't start, right-click the image (or long-press on a phone) and save it.</p>
+    <div class="row">
+      <button type="button" class="btn primary" id="download">Download again</button>
+      <button type="button" class="btn" id="closeSheet">Close</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+(() => {
+// ---------------------------------------------------------------------------
+// Frame catalogue, as extracted from the product page.
+// Only Walnut Gallery lists its dimensions (13/16" wide x 1 1/4" deep); the
+// other mouldings reuse that size and are marked as assumed.
+// ---------------------------------------------------------------------------
+const WOOD = {
+  walnut:   { base: '#5c3b26', dark: '#2c1a0f', light: '#936342', grain: 0.75, pores: 0.5, variance: 0.55, freq: 2.2 },
+  black:    { base: '#221e1b', dark: '#0e0c0b', light: '#3b342e', grain: 0.45, pores: 0.25, variance: 0.12, freq: 2.2 },
+  indigo:   { base: '#1f2a45', dark: '#10172a', light: '#34436a', grain: 0.5, pores: 0.3, variance: 0.14, freq: 2.2 },
+  cherry:   { base: '#9a4d2c', dark: '#5e2a16', light: '#c07047', grain: 0.55, pores: 0.12, variance: 0.3, freq: 1.8 },
+  ash:      { base: '#d2b288', dark: '#9c7b52', light: '#e6cfae', grain: 0.8, pores: 0.45, variance: 0.25, freq: 2.6 },
+  maple:    { base: '#e5ddcf', dark: '#c3b39a', light: '#f3eee4', grain: 0.45, pores: 0.08, variance: 0.12, freq: 1.6 },
+  pine:     { base: '#6e4326', dark: '#3a2010', light: '#9a6a41', grain: 0.9, pores: 0.05, variance: 0.35, freq: 1.3 },
+  gold:     { base: '#b58c3e', dark: '#6f521e', light: '#e8cf8a', grain: 0.12, pores: 0, variance: 0.06, freq: 3.5 },
+  white:    { base: '#ecebe6', dark: '#cfcdc4', light: '#f8f7f3', grain: 0.14, pores: 0.02, variance: 0.04, freq: 1.8 },
+  oak:      { base: '#c7a576', dark: '#8f6f45', light: '#dcc29b', grain: 0.7, pores: 0.35, variance: 0.2, freq: 2.4 }
+};
+
+const FRAMES = [
+  { id: 'walnut-gallery', alt: 'Walnut · Flat', plain: 'Solid walnut with a flat gallery face. Tones range from deep espresso to light brown.', name: 'Walnut Gallery', wood: 'walnut', profile: 'gallery', group: 'Gallery',
+    desc: 'Solid walnut wood gallery frame. Each one is one-of-a-kind, from deep espresso to light brown tones.',
+    pairing: 'Color photography and earthy, vintage landscapes. Creamy off-white or sage green walls.',
+    size: 'listed', badge: 'Bestseller' },
+  { id: 'black-walnut-gallery', alt: 'Black Walnut · Flat', plain: 'Walnut with a black finish and a flat gallery face.', name: 'Black Walnut Gallery', wood: 'black', profile: 'gallery', group: 'Gallery',
+    desc: 'Solid walnut gallery frame with black finish.' },
+  { id: 'indigo-walnut-gallery', alt: 'Indigo Walnut · Flat', plain: 'Walnut with a deep navy blue finish and a flat gallery face.', name: 'Indigo Walnut Gallery', wood: 'indigo', profile: 'gallery', group: 'Gallery',
+    desc: 'Solid walnut gallery frame with deep navy blue finish.' },
+  { id: 'cherry-gallery', alt: 'Cherry · Flat', plain: 'Solid cherry with a flat gallery face.', name: 'Cherry Gallery', wood: 'cherry', profile: 'gallery', group: 'Gallery',
+    desc: 'Solid cherry wood gallery frame.' },
+  { id: 'ash-gallery', alt: 'Ash · Flat', plain: 'Natural ash, light and beachy, with a flat gallery face.', name: 'Ash Gallery', wood: 'ash', profile: 'gallery', group: 'Gallery',
+    desc: 'Solid ash wood gallery frame. Natural ash reads lighter and beachier than the darker woods.' },
+  { id: 'bleached-maple-gallery', alt: 'Whitewashed Maple · Flat', plain: 'Maple with a whitewashed finish and a flat gallery face.', name: 'Bleached Maple Gallery', wood: 'maple', profile: 'gallery', group: 'Gallery',
+    desc: 'Solid maple gallery frame with whitewashed finish.' },
+
+  { id: 'walnut-round', alt: 'Walnut · Rounded', plain: 'Solid walnut with a softly rounded face.', name: 'Walnut Round', wood: 'walnut', profile: 'round', group: 'Round',
+    desc: 'Solid walnut wood rounded frame.' },
+  { id: 'black-walnut-round', alt: 'Black Walnut · Rounded', plain: 'Walnut with a black finish and a softly rounded face.', name: 'Black Walnut Round', wood: 'black', profile: 'round', group: 'Round',
+    desc: 'Solid walnut wood rounded frame with black finish.' },
+  { id: 'indigo-walnut-round', alt: 'Indigo Walnut · Rounded', plain: 'Walnut with a deep navy blue finish and a softly rounded face.', name: 'Indigo Walnut Round', wood: 'indigo', profile: 'round', group: 'Round',
+    desc: 'Solid walnut wood rounded frame with deep navy blue finish.' },
+  { id: 'cherry-round', alt: 'Cherry · Rounded', plain: 'Cherry with a softly rounded face.', name: 'Cherry Round', wood: 'cherry', profile: 'round', group: 'Round',
+    desc: 'Cherry wood rounded frame.' },
+  { id: 'ash-round', alt: 'Ash · Rounded', plain: 'Natural ash with a softly rounded face.', name: 'Ash Round', wood: 'ash', profile: 'round', group: 'Round',
+    desc: 'Solid ash wood rounded frame.' },
+  { id: 'bleached-maple-round', alt: 'Whitewashed Maple · Rounded', plain: 'Maple with a whitewashed finish and a softly rounded face.', name: 'Bleached Maple Round', wood: 'maple', profile: 'round', group: 'Round',
+    desc: 'Solid bleached maple wood rounded frame with whitewashed finish.' },
+
+  { id: 'stratton', alt: 'Stained Pine · Stepped', plain: 'Pine with a warm walnut stain and a traditional stepped profile.', name: 'Stratton', wood: 'pine', profile: 'stepped', group: 'Other',
+    desc: 'Pine with a warm walnut stain and a more traditional design (from the FAQ). The stepped profile is interpreted.',
+    width: 1.25 },
+  { id: 'richmond', alt: 'Gold · Gilded', plain: 'A gilded gold moulding. Lovely for float-mounted objects.', name: 'Richmond', wood: 'gold', profile: 'gilded', group: 'Other',
+    desc: 'Gold frame, shown on the page float-mounting a ribbon. The profile is interpreted.',
+    width: 1.0 },
+  { id: 'irvine-slim', alt: 'Natural Oak · Slim', plain: 'A slim natural-wood moulding for float-mounted keepsakes.', name: 'Irvine Slim', wood: 'oak', profile: 'slim', group: 'Other',
+    desc: 'Named on the page for float-mounted wedding details. Its finish isn\'t described, so this slim natural-wood moulding is an interpretation.',
+    width: 0.5 },
+  { id: 'white-gallery', alt: 'White · Flat', plain: 'White painted wood with a flat gallery face.', name: 'White Gallery', wood: 'white', profile: 'gallery', group: 'Other',
+    desc: 'The page says Walnut Gallery "blends easily into gallery walls featuring other woods and even white frames". This is a generic white-painted gallery moulding for those walls.' }
+];
+
+// The four framed examples in the page's "You can Framebridge anything you love" strip.
+const LOOKS = [
+  { title: 'The big birthday', text: (n) => `${n} with off-white mat`, frame: 'walnut-gallery', matStyle: 'single', mat: 'offwhite' },
+  { title: 'Vodka sauce recipe', text: (n) => `${n} with a red mat`, frame: 'black-walnut-gallery', matStyle: 'single', mat: 'red' },
+  { title: 'Your bragging rights', text: (n) => `Float mounted in ${n}`, frame: 'richmond', matStyle: 'float', mat: 'offwhite' },
+  { title: 'Wedding day details', text: (n) => `Float mounted in ${n}`, frame: 'irvine-slim', matStyle: 'float', mat: 'classic' }
+];
+
+const MATS = [
+  { id: 'classic',  name: 'Classic white', color: '#f6f5f0' },
+  { id: 'offwhite', name: 'Off-white', color: '#eee7d8' },
+  { id: 'black',    name: 'Black', color: '#1d1d1c' },
+  { id: 'red',      name: 'Red', color: '#962a24' },
+  { id: 'linen1',   name: 'Linen · white', color: '#f1eee6', linen: true },
+  { id: 'linen2',   name: 'Linen · natural', color: '#e2d8c4', linen: true },
+  { id: 'linen3',   name: 'Linen · stone', color: '#cbc4b5', linen: true },
+  { id: 'linen4',   name: 'Linen · grey', color: '#a6a39b', linen: true },
+  { id: 'linen5',   name: 'Linen · charcoal', color: '#3b3a37', linen: true }
+];
+const WALLS = [
+  { id: 'white',     name: 'White', color: '#f3f3ef' },
+  { id: 'gallery',   name: 'Gallery grey', color: '#d8dad6' },
+  { id: 'offwhite',  name: 'Creamy off-white (suggested on the page)', color: '#ebe3d1' },
+  { id: 'sage',      name: 'Sage green (suggested on the page)', color: '#b3bda2' },
+  { id: 'plaster',   name: 'Warm plaster', color: '#d9c8b3' },
+  { id: 'blush',     name: 'Blush', color: '#e6cdc4' },
+  { id: 'dusty',     name: 'Dusty blue', color: '#b7c4d0' },
+  { id: 'terracotta',name: 'Terracotta', color: '#b3694d' },
+  { id: 'olive',     name: 'Olive', color: '#6e7258' },
+  { id: 'navy',      name: 'Deep navy', color: '#253047' },
+  { id: 'charcoal',  name: 'Charcoal', color: '#3a3e3b' },
+  { id: 'black',     name: 'Black', color: '#111111' },
+  { id: 'clear',     name: 'Transparent (PNG with alpha)', color: null }
+];
+const LAYOUTS = [
+  { id: 'fit', label: 'Fit', r: null, w: 10, h: 12 },
+  { id: '1:1', label: '1:1', r: 1, w: 11, h: 11 },
+  { id: '4:5', label: '4:5', r: 4 / 5, w: 9, h: 11 },
+  { id: '2:3', label: '2:3', r: 2 / 3, w: 8, h: 12 },
+  { id: '3:2', label: '3:2', r: 3 / 2, w: 12, h: 8 },
+  { id: '16:9', label: '16:9', r: 16 / 9, w: 14, h: 8 },
+  { id: '9:16', label: '9:16', r: 9 / 16, w: 7, h: 12 }
+];
+const SIZE_CHIPS = [5, 7, 8, 10, 12, 14, 16, 20, 24, 30, 36];
+const LISTED_WIDTH = 13 / 16, LISTED_DEPTH = 1.25;
+
+const state = {
+  frame: 'walnut-gallery',
+  moulding: LISTED_WIDTH,
+  measure: 'art',
+  size: 10,
+  matStyle: 'single',
+  matW: 2,
+  mat: 'classic', matCustom: null,
+  wall: 'offwhite', wallCustom: null,
+  light: true, shadow: true, glare: true,
+  layout: 'fit', pad: 18,
+  seed: 1 + Math.floor(Math.random() * 9999),
+  res: 2
+};
+// Each photo keeps its own crop. { id, name, img, w, h, cx, cy, zoom, thumb, sample }
+let photos = [];
+let active = 0;
+
+// Embed settings. The WordPress plugin passes these on the iframe URL;
+// opened directly, none are present and the defaults above apply.
+const params = new URLSearchParams(location.search);
+const CONFIG = {
+  descriptive: params.get('names') === 'descriptive',
+  credit: params.get('credit') !== '0',
+  embed: params.get('embed') === '1'
+};
+(function applyParams() {
+  const pick = (key, list) => { const v = params.get(key); return v && list.includes(v) ? v : null; };
+  const frame = pick('frame', FRAMES.map((f) => f.id));
+  if (frame) { state.frame = frame; state.moulding = FRAMES.find((f) => f.id === frame).width || LISTED_WIDTH; }
+  state.mat = pick('mat', MATS.map((m) => m.id)) || state.mat;
+  state.matStyle = pick('matStyle', ['single', 'float', 'none']) || state.matStyle;
+  state.wall = pick('background', WALLS.map((w) => w.id)) || state.wall;
+  state.layout = pick('layout', LAYOUTS.map((l) => l.id)) || state.layout;
+  state.measure = pick('measure', ['art', 'outside']) || state.measure;
+  const size = parseFloat(params.get('size'));
+  if (size >= 4 && size <= 48) state.size = size;
+  const theme = pick('theme', ['light', 'dark']);
+  if (theme) document.documentElement.dataset.theme = theme;
+  const accent = params.get('accent');
+  if (/^#?[0-9a-f]{6}$/i.test(accent || '')) {
+    const hexv = accent.replace('#', '');
+    const [r, g, b] = [0, 2, 4].map((i) => parseInt(hexv.slice(i, i + 2), 16) / 255);
+    const lum = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    document.documentElement.style.setProperty('--accent', '#' + hexv);
+    document.documentElement.style.setProperty('--accent-ink', lum > 0.55 ? '#1a1a1a' : '#ffffff');
+  }
+  if (CONFIG.embed) document.documentElement.classList.add('embed');
+})();
+const frameName = (f) => (CONFIG.descriptive ? f.alt : f.name);
+const pageNote = (t) => (CONFIG.descriptive ? t.replace(/\s*\((suggested on the page|the page offers[^)]*)\)/, '') : t);
+let nextId = 1;
+let lastCrop = null;
+
+// ---------------------------------------------------------------------------
+// Utilities
+// ---------------------------------------------------------------------------
+const $ = (id) => document.getElementById(id);
+const frameById = (id) => FRAMES.find((f) => f.id === id);
+const hex = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
+const lerp = (a, b, t) => a + (b - a) * t;
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+function inches(v) {
+  // Format to the nearest 1/16", the way a framer writes it.
+  const s = Math.round(v * 16);
+  const whole = Math.floor(s / 16);
+  let num = s % 16, den = 16;
+  while (num && num % 2 === 0) { num /= 2; den /= 2; }
+  if (!num) return `${whole}"`;
+  return whole ? `${whole} ${num}/${den}"` : `${num}/${den}"`;
+}
+
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function makeNoise(seed) {
+  const r = mulberry32(seed);
+  const p = new Uint8Array(512), g = new Float32Array(256);
+  for (let i = 0; i < 256; i++) { p[i] = i; g[i] = r(); }
+  for (let i = 255; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [p[i], p[j]] = [p[j], p[i]]; }
+  for (let i = 0; i < 256; i++) p[i + 256] = p[i];
+  const v = (i, j) => g[p[p[i & 255] + (j & 255)]];
+  const n = (x, y) => {
+    const xi = Math.floor(x), yi = Math.floor(y);
+    const xf = x - xi, yf = y - yi;
+    const u = xf * xf * (3 - 2 * xf), w = yf * yf * (3 - 2 * yf);
+    return lerp(lerp(v(xi, yi), v(xi + 1, yi), u), lerp(v(xi, yi + 1), v(xi + 1, yi + 1), u), w);
+  };
+  n.fbm = (x, y, o = 3) => { let s = 0, a = 0.5, f = 1, t = 0; for (let i = 0; i < o; i++) { s += a * n(x * f, y * f); t += a; a *= 0.5; f *= 2; } return s / t; };
+  return n;
+}
+
+// ---------------------------------------------------------------------------
+// Wood texture: grain runs along x. Cached per wood + seed + size.
+// ---------------------------------------------------------------------------
+const texCache = new Map();
+function woodTexture(woodKey, seed, len, wid) {
+  const key = `${woodKey}|${seed}|${len}|${wid}`;
+  if (texCache.has(key)) return texCache.get(key);
+  const w = WOOD[woodKey];
+  const base = hex(w.base), dark = hex(w.dark), light = hex(w.light);
+  const n = makeNoise(seed * 31 + woodKey.length * 7);
+  const rnd = mulberry32(seed * 97 + 3);
+  const c = document.createElement('canvas');
+  c.width = len; c.height = wid;
+  const ctx = c.getContext('2d');
+  const img = ctx.createImageData(len, wid);
+  const d = img.data;
+  const sx = 1024 / len;
+  for (let y = 0; y < wid; y++) {
+    const yy = (y / wid) * 6;
+    for (let x = 0; x < len; x++) {
+      const X = x * sx;
+      const warp = n.fbm(X * 0.0035, yy * 0.25, 3) * 3.4 + n(X * 0.03, yy * 1.4) * 0.3;
+      const ring = (yy + warp) * w.freq;
+      const s = 0.5 + 0.5 * Math.sin(ring * Math.PI * 2);
+      const line = Math.pow(s, 7);
+      const slow = n.fbm(X * 0.0012 + 40, yy * 0.08, 2);
+      const fleckN = n(X * 0.55 + 90, y * 0.45 * (96 / wid));
+      const pore = fleckN > 0.78 ? (fleckN - 0.78) * 4 * w.pores : 0;
+      const tLight = clamp((1 - s) * 0.28 * w.grain + (slow - 0.5) * w.variance * 1.4, -0.4, 0.8);
+      const tDark = clamp(line * w.grain * 0.85 + pore, 0, 1);
+      const j = (rnd() - 0.5) * 6;
+      const i = (y * len + x) * 4;
+      for (let k = 0; k < 3; k++) {
+        let col = tLight >= 0 ? lerp(base[k], light[k], tLight) : lerp(base[k], dark[k], -tLight);
+        col = lerp(col, dark[k], tDark) + j;
+        d[i + k] = col;
+      }
+      d[i + 3] = 255;
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+  texCache.set(key, c);
+  if (texCache.size > 60) texCache.delete(texCache.keys().next().value);
+  return c;
+}
+
+let linenPattern = null;
+function linen(ctx) {
+  if (!linenPattern) {
+    const c = document.createElement('canvas');
+    c.width = c.height = 160;
+    const x = c.getContext('2d');
+    const r = mulberry32(7);
+    for (let i = 0; i < 160; i++) {
+      x.fillStyle = `rgba(0,0,0,${0.02 + r() * 0.05})`; x.fillRect(0, i, 160, 1);
+      x.fillStyle = `rgba(255,255,255,${0.02 + r() * 0.05})`; x.fillRect(i, 0, 1, 160);
+    }
+    for (let i = 0; i < 900; i++) {
+      x.fillStyle = r() > 0.5 ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.08)';
+      x.fillRect(r() * 160, r() * 160, 1 + r() * 4, 1);
+    }
+    linenPattern = c;
+  }
+  return ctx.createPattern(linenPattern, 'repeat');
+}
+
+// ---------------------------------------------------------------------------
+// Profiles: light/shade across the moulding face, outer edge (0) to sight
+// edge (1). Light comes from the upper left.
+// ---------------------------------------------------------------------------
+const PROFILES = {
+  gallery: [[0, 'rgba(0,0,0,0.30)'], [0.03, 'rgba(255,255,255,0.20)'], [0.08, 'rgba(255,255,255,0.05)'],
+            [0.5, 'rgba(0,0,0,0)'], [0.9, 'rgba(0,0,0,0.04)'], [0.955, 'rgba(255,255,255,0.10)'], [0.97, 'rgba(0,0,0,0.30)'], [1, 'rgba(0,0,0,0.55)']],
+  slim:    [[0, 'rgba(0,0,0,0.30)'], [0.06, 'rgba(255,255,255,0.22)'], [0.16, 'rgba(255,255,255,0.04)'],
+            [0.8, 'rgba(0,0,0,0.04)'], [0.9, 'rgba(0,0,0,0.22)'], [1, 'rgba(0,0,0,0.5)']],
+  round:   [[0, 'rgba(0,0,0,0.42)'], [0.12, 'rgba(0,0,0,0.12)'], [0.32, 'rgba(255,255,255,0.14)'], [0.45, 'rgba(255,255,255,0.20)'],
+            [0.62, 'rgba(255,255,255,0.04)'], [0.85, 'rgba(0,0,0,0.14)'], [0.96, 'rgba(0,0,0,0.34)'], [1, 'rgba(0,0,0,0.6)']],
+  stepped: [[0, 'rgba(0,0,0,0.40)'], [0.05, 'rgba(255,255,255,0.18)'], [0.28, 'rgba(255,255,255,0.05)'], [0.30, 'rgba(0,0,0,0.38)'],
+            [0.34, 'rgba(0,0,0,0.05)'], [0.55, 'rgba(255,255,255,0.12)'], [0.70, 'rgba(0,0,0,0.20)'], [0.74, 'rgba(255,255,255,0.28)'],
+            [0.80, 'rgba(0,0,0,0.10)'], [0.94, 'rgba(0,0,0,0.25)'], [1, 'rgba(0,0,0,0.6)']],
+  gilded:  [[0, 'rgba(0,0,0,0.45)'], [0.08, 'rgba(255,240,200,0.45)'], [0.22, 'rgba(0,0,0,0.12)'], [0.40, 'rgba(255,244,210,0.42)'],
+            [0.55, 'rgba(0,0,0,0.22)'], [0.68, 'rgba(255,236,190,0.30)'], [0.82, 'rgba(0,0,0,0.18)'], [0.9, 'rgba(255,240,200,0.35)'], [1, 'rgba(0,0,0,0.6)']]
+};
+// top, right, bottom, left
+const SIDE_LIGHT = ['rgba(255,255,255,0.07)', 'rgba(0,0,0,0.10)', 'rgba(0,0,0,0.18)', 'rgba(255,255,255,0.02)'];
+
+function drawFrame(ctx, x, y, W, H, F, frame, seed, detail) {
+  const len = detail ? 2048 : 256, wid = detail ? 96 : 24;
+  const tex = woodTexture(frame.wood, seed, len, wid);
+  const texScale = F / wid;
+  const rnd = mulberry32(seed * 13 + 5);
+  const wood = WOOD[frame.wood];
+  const sides = [
+    { tx: x, ty: y, rot: 0, L: W },
+    { tx: x + W, ty: y, rot: Math.PI / 2, L: H },
+    { tx: x + W, ty: y + H, rot: Math.PI, L: W },
+    { tx: x, ty: y + H, rot: -Math.PI / 2, L: H }
+  ];
+  sides.forEach((s, i) => {
+    ctx.save();
+    ctx.translate(s.tx, s.ty);
+    ctx.rotate(s.rot);
+    ctx.beginPath();
+    ctx.moveTo(0, 0); ctx.lineTo(s.L, 0); ctx.lineTo(s.L - F, F); ctx.lineTo(F, F); ctx.closePath();
+    ctx.clip();
+    // Each rail comes from a different stretch of board.
+    const srcLen = Math.min(len, s.L / texScale);
+    const off = rnd() * Math.max(0, len - srcLen);
+    const flip = rnd() > 0.5;
+    ctx.save();
+    if (flip) { ctx.translate(0, F); ctx.scale(1, -1); }
+    ctx.drawImage(tex, off, 0, srcLen, wid, 0, 0, s.L, F);
+    ctx.restore();
+    // Board-to-board tone variation (walnut varies the most).
+    const tone = (rnd() - 0.5) * wood.variance * 0.5;
+    if (tone) { ctx.fillStyle = tone > 0 ? `rgba(255,235,210,${tone})` : `rgba(0,0,0,${-tone})`; ctx.fillRect(0, 0, s.L, F); }
+    const g = ctx.createLinearGradient(0, 0, 0, F);
+    PROFILES[frame.profile].forEach(([o, c]) => g.addColorStop(o, c));
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, s.L, F);
+    ctx.fillStyle = SIDE_LIGHT[i];
+    ctx.fillRect(0, 0, s.L, F);
+    ctx.restore();
+  });
+  // Miter joints.
+  ctx.save();
+  ctx.strokeStyle = 'rgba(0,0,0,0.38)';
+  ctx.lineWidth = Math.max(0.6, F / 80);
+  ctx.beginPath();
+  [[x, y, x + F, y + F], [x + W, y, x + W - F, y + F], [x + W, y + H, x + W - F, y + H - F], [x, y + H, x + F, y + H - F]]
+    .forEach(([a, b, c, d]) => { ctx.moveTo(a, b); ctx.lineTo(c, d); });
+  ctx.stroke();
+  ctx.restore();
+}
+
+// ---------------------------------------------------------------------------
+// Sample photo (a generated landscape) so the tool opens in a working state.
+// ---------------------------------------------------------------------------
+function samplePhoto() {
+  const c = document.createElement('canvas');
+  c.width = 1200; c.height = 1500;
+  const x = c.getContext('2d');
+  const sky = x.createLinearGradient(0, 0, 0, 900);
+  sky.addColorStop(0, '#34506e'); sky.addColorStop(0.45, '#c98a62'); sky.addColorStop(0.75, '#efc38a'); sky.addColorStop(1, '#f4dcae');
+  x.fillStyle = sky; x.fillRect(0, 0, 1200, 1500);
+  const sun = x.createRadialGradient(760, 760, 10, 760, 760, 260);
+  sun.addColorStop(0, 'rgba(255,244,214,1)'); sun.addColorStop(0.18, 'rgba(255,230,180,0.9)'); sun.addColorStop(1, 'rgba(255,220,170,0)');
+  x.fillStyle = sun; x.fillRect(0, 0, 1200, 1500);
+  const n = makeNoise(42);
+  const ridge = (base, amp, sc, col, seedOff) => {
+    x.beginPath(); x.moveTo(0, 1500);
+    for (let i = 0; i <= 1200; i += 6) x.lineTo(i, base - n.fbm(i * sc + seedOff, seedOff, 4) * amp);
+    x.lineTo(1200, 1500); x.closePath(); x.fillStyle = col; x.fill();
+  };
+  ridge(900, 420, 0.004, '#8d6f78', 3);
+  ridge(960, 330, 0.006, '#6b5462', 9);
+  ridge(1020, 240, 0.008, '#4a3c48', 17);
+  const lake = x.createLinearGradient(0, 1020, 0, 1500);
+  lake.addColorStop(0, '#e7b98a'); lake.addColorStop(0.3, '#8a7382'); lake.addColorStop(1, '#2d2a36');
+  x.fillStyle = lake; x.fillRect(0, 1020, 1200, 480);
+  x.fillStyle = 'rgba(255,236,200,0.55)';
+  for (let i = 0; i < 26; i++) x.fillRect(700 + Math.sin(i * 1.7) * 30 - i * 2, 1030 + i * 14, 120 - i * 3.5, 3);
+  ridge(1500, 260, 0.01, '#1f1c22', 29);
+  x.fillStyle = '#1a171c';
+  x.beginPath(); x.ellipse(360, 1226, 11, 13, 0, 0, Math.PI * 2); x.fill();
+  x.fillRect(349, 1238, 22, 58);
+  return c;
+}
+
+// ---------------------------------------------------------------------------
+// Scene rendering
+// ---------------------------------------------------------------------------
+function currentMat() {
+  if (state.mat === 'custom') return { name: 'Custom mat', color: state.matCustom, linen: false };
+  return MATS.find((m) => m.id === state.mat);
+}
+function currentWall() {
+  if (state.wall === 'custom') return { name: 'Custom background', color: state.wallCustom };
+  return WALLS.find((w) => w.id === state.wall);
+}
+
+// Art takes the photo's exact aspect ratio; the size setting fixes the long side.
+function geometry(entry) {
+  const f = frameById(state.frame);
+  const matW = state.matStyle === 'none' ? 0 : state.matW;
+  const F = state.moulding;
+  const r = entry.w / entry.h;
+  const border = 2 * (matW + F);
+  const artLong = state.measure === 'outside' ? Math.max(1, state.size - border) : state.size;
+  const artW = r >= 1 ? artLong : artLong * r;
+  const artH = r >= 1 ? artLong / r : artLong;
+  return { f, matW, F, artW, artH, outerW: artW + border, outerH: artH + border, depth: f.depth || LISTED_DEPTH };
+}
+
+function render(canvas, longest, entry, seed, detail = true) {
+  const g = geometry(entry);
+  const wall = currentWall();
+  const clear = !wall.color;
+  const pad = Math.max(g.outerW, g.outerH) * state.pad / 100;
+  let totalW = g.outerW + 2 * pad, totalH = g.outerH + 2 * pad;
+  const layout = LAYOUTS.find((l) => l.id === state.layout);
+  if (layout.r) {
+    if (totalW / totalH < layout.r) totalW = totalH * layout.r; else totalH = totalW / layout.r;
+  }
+  const ppi = longest / Math.max(totalW, totalH);
+  canvas.width = Math.round(totalW * ppi);
+  canvas.height = Math.round(totalH * ppi);
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  if (!clear) {
+    ctx.fillStyle = wall.color;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    if (state.light) {
+      const light = ctx.createRadialGradient(canvas.width * 0.2, canvas.height * 0.05, 0, canvas.width * 0.4, canvas.height * 0.3, Math.max(canvas.width, canvas.height) * 1.1);
+      light.addColorStop(0, 'rgba(255,255,255,0.14)');
+      light.addColorStop(1, 'rgba(0,0,0,0.12)');
+      ctx.fillStyle = light;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+  }
+
+  const W = g.outerW * ppi, H = g.outerH * ppi, F = g.F * ppi;
+  const X = (canvas.width - W) / 2, Y = (canvas.height - H) / 2;
+  const D = g.depth * ppi;
+
+  if (state.shadow) {
+    ctx.save();
+    ctx.fillStyle = '#000';
+    ctx.shadowColor = 'rgba(0,0,0,0.30)';
+    ctx.shadowBlur = D * 1.3;
+    ctx.shadowOffsetX = D * 0.15;
+    ctx.shadowOffsetY = D * 0.5;
+    ctx.fillRect(X + 2, Y + 2, W - 4, H - 4);
+    ctx.shadowColor = 'rgba(0,0,0,0.35)';
+    ctx.shadowBlur = D * 0.18;
+    ctx.shadowOffsetX = D * 0.03;
+    ctx.shadowOffsetY = D * 0.08;
+    ctx.fillRect(X + 1, Y + 1, W - 2, H - 2);
+    ctx.restore();
+  }
+
+  // Mat surface (or backing when there is no mat).
+  const mx = X + F, my = Y + F, mw = W - 2 * F, mh = H - 2 * F;
+  const mat = currentMat();
+  if (g.matW > 0) {
+    ctx.fillStyle = mat.color;
+    ctx.fillRect(mx, my, mw, mh);
+    if (mat.linen) { ctx.save(); ctx.fillStyle = linen(ctx); ctx.fillRect(mx, my, mw, mh); ctx.restore(); }
+  } else {
+    ctx.fillStyle = '#111'; ctx.fillRect(mx, my, mw, mh);
+  }
+
+  const ax = mx + g.matW * ppi, ay = my + g.matW * ppi, aw = g.artW * ppi, ah = g.artH * ppi;
+
+  if (state.matStyle === 'float') {
+    ctx.save();
+    ctx.shadowColor = 'rgba(0,0,0,0.32)';
+    ctx.shadowBlur = Math.max(2, 0.12 * ppi);
+    ctx.shadowOffsetX = 0.02 * ppi;
+    ctx.shadowOffsetY = 0.06 * ppi;
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(ax, ay, aw, ah);
+    ctx.restore();
+  }
+  drawPhoto(ctx, entry, ax, ay, aw, ah);
+
+  if (state.matStyle === 'single') {
+    // Bevel: a 45° cut around the window, white core unless the mat is dark.
+    const b = Math.max(1.5, 0.07 * ppi);
+    const core = mat.color && hex(mat.color).reduce((a, v) => a + v, 0) < 200 ? '#2a2a28' : '#fbfaf6';
+    const shades = ['rgba(0,0,0,0.16)', 'rgba(255,255,255,0.10)', 'rgba(255,255,255,0.30)', 'rgba(0,0,0,0.07)'];
+    const quads = [
+      [[ax - b, ay - b], [ax + aw + b, ay - b], [ax + aw, ay], [ax, ay]],
+      [[ax + aw + b, ay - b], [ax + aw + b, ay + ah + b], [ax + aw, ay + ah], [ax + aw, ay]],
+      [[ax + aw + b, ay + ah + b], [ax - b, ay + ah + b], [ax, ay + ah], [ax + aw, ay + ah]],
+      [[ax - b, ay + ah + b], [ax - b, ay - b], [ax, ay], [ax, ay + ah]]
+    ];
+    quads.forEach((q, i) => {
+      ctx.beginPath(); q.forEach(([px, py], k) => (k ? ctx.lineTo(px, py) : ctx.moveTo(px, py))); ctx.closePath();
+      ctx.fillStyle = core; ctx.fill();
+      ctx.fillStyle = shades[i]; ctx.fill();
+    });
+    const s = Math.max(2, 0.1 * ppi);
+    const gg = ctx.createLinearGradient(0, ay, 0, ay + s);
+    gg.addColorStop(0, 'rgba(0,0,0,0.22)'); gg.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = gg; ctx.fillRect(ax, ay, aw, s);
+    const gl = ctx.createLinearGradient(ax, 0, ax + s * 0.7, 0);
+    gl.addColorStop(0, 'rgba(0,0,0,0.14)'); gl.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = gl; ctx.fillRect(ax, ay, s * 0.7, ah);
+  }
+
+  // Shadow the moulding casts onto the mat / art, deepest along the top.
+  const sd = Math.max(3, D * 0.28);
+  [[mx, my, mw, sd, 0, my, 0, my + sd, 0.28], [mx, my, sd * 0.8, mh, mx, 0, mx + sd * 0.8, 0, 0.18],
+   [mx + mw - sd * 0.5, my, sd * 0.5, mh, mx + mw, 0, mx + mw - sd * 0.5, 0, 0.1], [mx, my + mh - sd * 0.4, mw, sd * 0.4, 0, my + mh, 0, my + mh - sd * 0.4, 0.08]]
+    .forEach(([rx, ry, rw, rh, x0, y0, x1, y1, a]) => {
+      const gr = ctx.createLinearGradient(x0, y0, x1, y1);
+      gr.addColorStop(0, `rgba(0,0,0,${a})`); gr.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = gr; ctx.fillRect(rx, ry, rw, rh);
+    });
+
+  drawFrame(ctx, X, Y, W, H, F, g.f, seed, detail);
+
+  if (state.glare) {
+    ctx.save();
+    ctx.beginPath(); ctx.rect(mx, my, mw, mh); ctx.clip();
+    const gl = ctx.createLinearGradient(mx, my, mx + mw, my + mh);
+    gl.addColorStop(0, 'rgba(255,255,255,0.10)');
+    gl.addColorStop(0.28, 'rgba(255,255,255,0.03)');
+    gl.addColorStop(0.36, 'rgba(255,255,255,0.09)');
+    gl.addColorStop(0.44, 'rgba(255,255,255,0.0)');
+    gl.addColorStop(1, 'rgba(255,255,255,0.0)');
+    ctx.fillStyle = gl; ctx.fillRect(mx, my, mw, mh);
+    ctx.restore();
+  }
+}
+
+function drawPhoto(ctx, entry, x, y, w, h) {
+  const { img, w: iw, h: ih } = entry;
+  const s = Math.max(w / iw, h / ih) * entry.zoom;
+  const sw = w / s, sh = h / s;
+  entry.cx = clamp(entry.cx, sw / 2 / iw, 1 - sw / 2 / iw);
+  entry.cy = clamp(entry.cy, sh / 2 / ih, 1 - sh / 2 / ih);
+  ctx.save();
+  ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip();
+  ctx.drawImage(img, entry.cx * iw - sw / 2, entry.cy * ih - sh / 2, sw, sh, x, y, w, h);
+  ctx.restore();
+  lastCrop = { entry, s };
+}
+
+const seedFor = (i) => state.seed + i * 101;
+
+// ---------------------------------------------------------------------------
+// UI
+// ---------------------------------------------------------------------------
+const view = $('view');
+let queued = false;
+function draw() {
+  if (queued) return;
+  queued = true;
+  requestAnimationFrame(() => {
+    queued = false;
+    const stage = $('stage');
+    const entry = photos[active];
+    if (!entry) return;
+    const longest = Math.min(2000, Math.max(900, Math.max(stage.clientWidth, stage.clientHeight) * Math.min(2, window.devicePixelRatio || 1)));
+    render(view, longest, entry, seedFor(active));
+    stage.classList.toggle('clear', !currentWall().color);
+    updateReadout();
+  });
+}
+
+function updateReadout() {
+  const entry = photos[active];
+  const g = geometry(entry);
+  const mat = state.matStyle === 'none' ? 'no mat' : `${inches(g.matW)} ${state.matStyle === 'float' ? 'float' : 'mat'}`;
+  $('readout').innerHTML =
+    `<b>${esc(frameName(g.f))}</b> · art ${inches(g.artW)} × ${inches(g.artH)} · ${mat} · ` +
+    `outside <b>${inches(g.outerW)} × ${inches(g.outerH)}</b>`;
+  $('navLabel').textContent = `${active + 1} of ${photos.length} · ${entry.name}`;
+  $('prev').disabled = active === 0;
+  $('next').disabled = active === photos.length - 1;
+}
+
+function renderFrameInfo() {
+  const f = frameById(state.frame);
+  const w = f.width || LISTED_WIDTH, d = f.depth || LISTED_DEPTH;
+  const listed = f.size === 'listed';
+  if (CONFIG.descriptive) {
+    $('finfo').innerHTML =
+      `<div><strong>${esc(f.alt)}</strong></div><div>${esc(f.plain)}</div>` +
+      `<div class="spec">${inches(w)} wide × ${inches(d)} deep</div>`;
+  } else {
+    $('finfo').innerHTML =
+      `<div><strong>${f.name}</strong>${f.badge ? `<span class="tag">${f.badge}</span>` : ''}` +
+      `${f.group === 'Other' ? '<span class="tag soft">Interpreted</span>' : ''}</div>` +
+      `<div>${esc(f.desc)}</div>` +
+      (f.pairing ? `<div>Pairs with: ${f.pairing}</div>` : '') +
+      `<div class="spec">${inches(w)} wide × ${inches(d)} deep${listed ? ' · listed' : ' · assumed, not listed on page'}</div>`;
+  }
+  $('mouldingOut').textContent = inches(state.moulding);
+}
+
+function buildFrames() {
+  const targets = { Gallery: $('framesGallery'), Round: $('framesRound'), Other: $('framesOther') };
+  FRAMES.forEach((f) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'fbtn';
+    b.dataset.id = f.id;
+    b.setAttribute('aria-pressed', f.id === state.frame);
+    const c = document.createElement('canvas');
+    c.width = c.height = 104;
+    b.append(c, document.createTextNode(frameName(f)));
+    b.addEventListener('click', () => selectFrame(f.id));
+    targets[f.group].append(b);
+  });
+  paintThumbs();
+  LOOKS.forEach((l) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'look';
+    b.innerHTML = `<strong>${l.title}</strong><span>${esc(l.text(frameName(frameById(l.frame))))}</span><i>Apply</i>`;
+    b.addEventListener('click', () => {
+      state.mat = l.mat;
+      setMatStyle(l.matStyle);
+      selectFrame(l.frame);
+      syncSwatches();
+    });
+    $('looks').append(b);
+  });
+}
+function paintThumbs() {
+  document.querySelectorAll('.fbtn').forEach((b) => {
+    const f = frameById(b.dataset.id);
+    const c = b.querySelector('canvas');
+    const x = c.getContext('2d');
+    x.clearRect(0, 0, 104, 104);
+    x.fillStyle = '#efece4'; x.fillRect(0, 0, 104, 104);
+    const F = { stepped: 34, gilded: 30, slim: 16 }[f.profile] || 26;
+    drawFrame(x, 6, 6, 170, 170, F, f, state.seed + 3, false);
+  });
+}
+
+function selectFrame(id) {
+  const f = frameById(id);
+  state.frame = id;
+  state.moulding = f.width || LISTED_WIDTH;
+  $('moulding').value = state.moulding;
+  document.querySelectorAll('.fbtn').forEach((b) => b.setAttribute('aria-pressed', b.dataset.id === id));
+  renderFrameInfo();
+  draw();
+}
+
+function buildSwatches(el, list, key) {
+  el.innerHTML = '';
+  list.forEach((item) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'sw' + (item.color ? '' : ' clear');
+    b.title = pageNote(item.name);
+    b.setAttribute('aria-label', pageNote(item.name));
+    if (item.color) b.style.background = item.color;
+    if (item.linen) b.style.backgroundImage = `repeating-linear-gradient(0deg, rgba(0,0,0,.08) 0 1px, transparent 1px 3px), repeating-linear-gradient(90deg, rgba(255,255,255,.12) 0 1px, transparent 1px 3px)`;
+    b.dataset.id = item.id;
+    b.addEventListener('click', () => { state[key] = item.id; syncSwatches(); draw(); });
+    el.append(b);
+  });
+  const cb = document.createElement('span');
+  cb.className = 'sw custom';
+  cb.title = 'Custom color';
+  cb.dataset.id = 'custom';
+  const inp = document.createElement('input');
+  inp.type = 'color';
+  inp.id = key + 'Custom';
+  inp.value = key === 'mat' ? '#d9cbb2' : '#c7cfc4';
+  inp.setAttribute('aria-label', `Custom ${key === 'mat' ? 'mat' : 'background'} color`);
+  inp.addEventListener('input', () => { state[key + 'Custom'] = inp.value; state[key] = 'custom'; syncSwatches(); draw(); });
+  cb.append(inp);
+  el.append(cb);
+}
+function syncSwatches() {
+  [['matSwatches', 'mat', 'matName', currentMat], ['wallSwatches', 'wall', 'wallName', currentWall]].forEach(([el, key, nm, cur]) => {
+    $(el).querySelectorAll('[data-id]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.id === state[key]));
+    $(nm).textContent = pageNote(cur().name + (key === 'mat' && cur().linen ? ' (the page offers five linen neutrals; tones here are approximate)' : ''));
+  });
+  $('light').disabled = !currentWall().color;
+}
+
+function setMatStyle(m) {
+  state.matStyle = m;
+  document.querySelectorAll('[data-mat]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.mat === m));
+  $('matWField').hidden = m === 'none';
+  $('matColorWrap').hidden = m === 'none';
+  draw();
+}
+
+function setSize(v) {
+  state.size = clamp(+v || 10, 4, 48);
+  $('sizeRange').value = state.size;
+  $('sizeNum').value = state.size;
+  document.querySelectorAll('#sizeChips button').forEach((b) => b.setAttribute('aria-pressed', +b.dataset.size === state.size));
+  draw();
+}
+
+function buildChips() {
+  SIZE_CHIPS.forEach((s) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.dataset.size = s;
+    b.textContent = `${s}"`;
+    b.className = 'plain';
+    b.addEventListener('click', () => setSize(s));
+    $('sizeChips').append(b);
+  });
+  LAYOUTS.forEach((l) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.dataset.layout = l.id;
+    b.textContent = l.label;
+    if (!l.r) b.classList.add('fit');
+    b.style.setProperty('--w', l.w + 'px'); b.style.setProperty('--h', l.h + 'px');
+    b.setAttribute('aria-pressed', l.id === state.layout);
+    b.addEventListener('click', () => {
+      state.layout = l.id;
+      document.querySelectorAll('#layoutChips button').forEach((o) => o.setAttribute('aria-pressed', o === b));
+      draw();
+    });
+    $('layoutChips').append(b);
+  });
+}
+
+// Photos ----------------------------------------------------------------------
+function thumbFor(img, w, h) {
+  const c = document.createElement('canvas');
+  c.width = c.height = 108;
+  const s = Math.max(108 / w, 108 / h);
+  c.getContext('2d').drawImage(img, (108 - w * s) / 2, (108 - h * s) / 2, w * s, h * s);
+  return c.toDataURL('image/jpeg', 0.8);
+}
+function addPhoto(img, name, sample = false) {
+  const w = img.naturalWidth || img.width, h = img.naturalHeight || img.height;
+  photos.push({ id: nextId++, name, img, w, h, cx: 0.5, cy: 0.5, zoom: 1, thumb: thumbFor(img, w, h), sample });
+}
+function renderStrip() {
+  const strip = $('strip');
+  strip.innerHTML = '';
+  photos.forEach((p, i) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'ph';
+    const pick = document.createElement('button');
+    pick.type = 'button';
+    pick.className = 'pick';
+    pick.title = p.name;
+    pick.setAttribute('aria-label', `Show ${p.name}`);
+    pick.setAttribute('aria-current', i === active);
+    const im = document.createElement('img');
+    im.src = p.thumb; im.alt = '';
+    pick.append(im);
+    pick.addEventListener('click', () => setActive(i));
+    const rm = document.createElement('button');
+    rm.type = 'button';
+    rm.className = 'rm';
+    rm.textContent = '×';
+    rm.setAttribute('aria-label', `Remove ${p.name}`);
+    rm.addEventListener('click', () => removePhoto(i));
+    wrap.append(pick, rm);
+    strip.append(wrap);
+  });
+  const real = photos.filter((p) => !p.sample).length;
+  $('photoCount').textContent = real ? `${real} added` : '';
+  $('photoMeta').textContent = photos[0]?.sample ? 'Showing a sample photo. Add your own to replace it.' : `${photos.length} photo${photos.length === 1 ? '' : 's'} in the batch`;
+  $('clearAll').hidden = !real;
+  $('exportAll').textContent = `All ${photos.length} photo${photos.length === 1 ? '' : 's'} (ZIP)`;
+}
+function setActive(i) {
+  active = clamp(i, 0, photos.length - 1);
+  const e = photos[active];
+  $('zoom').value = e.zoom;
+  $('zoomOut').textContent = e.zoom.toFixed(2) + '×';
+  renderStrip();
+  draw();
+}
+function removePhoto(i) {
+  const [gone] = photos.splice(i, 1);
+  if (gone.img.src?.startsWith('blob:')) URL.revokeObjectURL(gone.img.src);
+  if (!photos.length) addPhoto(samplePhoto(), 'Sample photo', true);
+  setActive(Math.min(active, photos.length - 1));
+}
+
+function loadImage(file) {
+  return new Promise((resolve) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => { URL.revokeObjectURL(url); resolve(null); };
+    img.src = url;
+  });
+}
+async function loadFiles(list) {
+  const files = [...(list || [])].filter((f) => f.type.startsWith('image/'));
+  if (!files.length) return;
+  setStatus(`Loading ${files.length} photo${files.length === 1 ? '' : 's'}…`);
+  if (photos.length === 1 && photos[0].sample) photos = [];
+  const first = photos.length;
+  let failed = 0;
+  for (const f of files) {
+    const img = await loadImage(f);
+    if (img) addPhoto(img, f.name || 'Pasted image'); else failed++;
+  }
+  if (!photos.length) addPhoto(samplePhoto(), 'Sample photo', true);
+  setStatus(failed ? `${failed} file${failed === 1 ? '' : 's'} couldn't be read as images. Try JPG, PNG or WebP.` : '');
+  setActive(Math.min(first, photos.length - 1));
+}
+
+// Saving ------------------------------------------------------------------------
+// Inside the claude.ai viewer, saves go through its downloads capability;
+// opened as a plain file, a normal download link does the job.
+const downloadsReady = window.claude?.use ? window.claude.use('downloads').catch(() => null) : Promise.resolve(null);
+async function saveBlob(blob, filename) {
+  const downloads = await downloadsReady;
+  if (downloads) {
+    try { await downloads.save({ filename, data: blob }); return 'saved'; }
+    catch (err) { return err?.code || 'unavailable'; }
+  }
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.append(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+  return 'saved';
+}
+const setStatus = (t) => { $('status').textContent = t; };
+const baseName = (n) => n.replace(/\.[^.]+$/, '').replace(/[^\w\-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'photo';
+function fileNameFor(entry, used) {
+  let name = `${baseName(entry.name)}-${state.frame}.png`, k = 2;
+  while (used && used.has(name)) name = `${baseName(entry.name)}-${state.frame}-${k++}.png`;
+  used?.add(name);
+  return name;
+}
+function renderBlob(i) {
+  const c = document.createElement('canvas');
+  render(c, 1600 * state.res, photos[i], seedFor(i));
+  return new Promise((resolve) => c.toBlob((b) => resolve({ blob: b, w: c.width, h: c.height }), 'image/png'));
+}
+const pause = () => new Promise((r) => setTimeout(r, 16));
+const outcome = (r) => ({ saved: 'Saved.', declined: 'Save cancelled.', too_large: 'That file is too large to save here. Choose a smaller export size.' }[r] || 'Saving isn\'t available in this view.');
+
+let single = null;
+$('export').addEventListener('click', async () => {
+  const btn = $('export');
+  btn.disabled = true; setStatus('Rendering…');
+  await pause();
+  const { blob, w, h } = await renderBlob(active);
+  const name = fileNameFor(photos[active]);
+  if (single) URL.revokeObjectURL(single.url);
+  single = { blob, name, url: URL.createObjectURL(blob) };
+  $('exportImg').src = single.url;
+  $('sheetTitle').textContent = `${name} · ${w} × ${h} px`;
+  $('overlay').hidden = false;
+  setStatus(outcome(await saveBlob(blob, name)));
+  btn.disabled = false;
+  draw();
+});
+$('download').addEventListener('click', async () => { if (single) setStatus(outcome(await saveBlob(single.blob, single.name))); });
+
+$('exportAll').addEventListener('click', async () => {
+  const btn = $('exportAll'), one = $('export');
+  btn.disabled = one.disabled = true;
+  const used = new Set();
+  const zip = window.JSZip ? new window.JSZip() : null;
+  let last = 'saved';
+  for (let i = 0; i < photos.length; i++) {
+    setStatus(`Rendering ${i + 1} of ${photos.length}…`);
+    await pause();
+    const { blob } = await renderBlob(i);
+    const name = fileNameFor(photos[i], used);
+    if (zip) zip.file(name, blob);
+    else {
+      // No ZIP library (offline): offer the files one at a time.
+      last = await saveBlob(blob, name);
+      if (last !== 'saved') break;
+    }
+  }
+  if (zip) {
+    setStatus('Packing the ZIP…');
+    const z = await zip.generateAsync({ type: 'blob', compression: 'STORE' });
+    last = await saveBlob(z, `framed-mockups-${state.frame}.zip`);
+  }
+  setStatus(last === 'saved' ? `Saved ${photos.length} mockup${photos.length === 1 ? '' : 's'}.` : outcome(last));
+  btn.disabled = one.disabled = false;
+  draw();
+});
+
+// Events --------------------------------------------------------------------
+$('file').addEventListener('change', (e) => { loadFiles(e.target.files); e.target.value = ''; });
+const drop = $('drop');
+['dragenter', 'dragover'].forEach((t) => drop.addEventListener(t, (e) => { e.preventDefault(); drop.classList.add('over'); }));
+['dragleave', 'drop'].forEach((t) => drop.addEventListener(t, (e) => { e.preventDefault(); drop.classList.remove('over'); }));
+drop.addEventListener('drop', (e) => loadFiles(e.dataTransfer.files));
+$('stage').addEventListener('dragover', (e) => e.preventDefault());
+$('stage').addEventListener('drop', (e) => { e.preventDefault(); loadFiles(e.dataTransfer.files); });
+window.addEventListener('paste', (e) => {
+  const files = [...(e.clipboardData?.items || [])].filter((i) => i.type.startsWith('image/')).map((i) => i.getAsFile());
+  if (files.length) loadFiles(files);
+});
+$('clearAll').addEventListener('click', () => {
+  photos.forEach((p) => p.img.src?.startsWith('blob:') && URL.revokeObjectURL(p.img.src));
+  photos = [];
+  addPhoto(samplePhoto(), 'Sample photo', true);
+  setActive(0);
+});
+$('prev').addEventListener('click', () => setActive(active - 1));
+$('next').addEventListener('click', () => setActive(active + 1));
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') $('overlay').hidden = true;
+  if (e.target.closest('input, select, textarea') || !$('overlay').hidden) return;
+  if (e.key === 'ArrowLeft') setActive(active - 1);
+  if (e.key === 'ArrowRight') setActive(active + 1);
+});
+
+$('zoom').addEventListener('input', (e) => {
+  photos[active].zoom = +e.target.value;
+  $('zoomOut').textContent = photos[active].zoom.toFixed(2) + '×';
+  draw();
+});
+
+document.querySelectorAll('[data-measure]').forEach((b) => b.addEventListener('click', () => {
+  state.measure = b.dataset.measure;
+  document.querySelectorAll('[data-measure]').forEach((o) => o.setAttribute('aria-pressed', o === b));
+  draw();
+}));
+$('sizeRange').addEventListener('input', (e) => setSize(e.target.value));
+$('sizeNum').addEventListener('change', (e) => setSize(e.target.value));
+
+$('reroll').addEventListener('click', () => { state.seed = 1 + Math.floor(Math.random() * 9999); paintThumbs(); draw(); });
+$('moulding').addEventListener('input', (e) => { state.moulding = +e.target.value; $('mouldingOut').textContent = inches(state.moulding); draw(); });
+
+document.querySelectorAll('[data-mat]').forEach((b) => b.addEventListener('click', () => setMatStyle(b.dataset.mat)));
+$('matW').addEventListener('input', (e) => { state.matW = +e.target.value; $('matWOut').textContent = inches(state.matW); draw(); });
+$('light').addEventListener('change', (e) => { state.light = e.target.checked; draw(); });
+$('shadow').addEventListener('change', (e) => { state.shadow = e.target.checked; draw(); });
+$('glare').addEventListener('change', (e) => { state.glare = e.target.checked; draw(); });
+$('pad').addEventListener('input', (e) => { state.pad = +e.target.value; $('padOut').textContent = state.pad + '%'; draw(); });
+
+document.querySelectorAll('[data-res]').forEach((b) => b.addEventListener('click', () => {
+  state.res = +b.dataset.res;
+  document.querySelectorAll('[data-res]').forEach((o) => o.setAttribute('aria-pressed', o === b));
+}));
+
+// Drag to pan the crop.
+let drag = null;
+view.addEventListener('pointerdown', (e) => {
+  drag = { x: e.clientX, y: e.clientY };
+  view.setPointerCapture(e.pointerId);
+  view.classList.add('dragging');
+});
+view.addEventListener('pointermove', (e) => {
+  if (!drag || !lastCrop) return;
+  const k = view.width / view.clientWidth;
+  const dx = (e.clientX - drag.x) * k, dy = (e.clientY - drag.y) * k;
+  drag = { x: e.clientX, y: e.clientY };
+  const { entry, s } = lastCrop;
+  entry.cx -= dx / s / entry.w;
+  entry.cy -= dy / s / entry.h;
+  draw();
+});
+['pointerup', 'pointercancel'].forEach((t) => view.addEventListener(t, () => { drag = null; view.classList.remove('dragging'); }));
+window.addEventListener('resize', draw);
+
+$('closeSheet').addEventListener('click', () => { $('overlay').hidden = true; });
+$('overlay').addEventListener('click', (e) => { if (e.target.id === 'overlay') $('overlay').hidden = true; });
+
+// Boot ------------------------------------------------------------------------
+if (CONFIG.descriptive) {
+  $('galleryHead').textContent = 'Flat profile';
+  $('roundHead').textContent = 'Rounded profile';
+  $('otherHead').textContent = 'More profiles';
+  $('looksHead').textContent = 'Styled looks';
+  $('credit').textContent = 'Previews are digital renderings for planning. Real hardwood varies in grain and tone from board to board.';
+}
+if (!CONFIG.credit) $('credit').hidden = true;
+document.querySelectorAll('[data-measure]').forEach((o) => o.setAttribute('aria-pressed', o.dataset.measure === state.measure));
+if (CONFIG.embed && window.parent !== window) {
+  // Report content height so the host page can size the iframe on phones.
+  const report = () => window.parent.postMessage({ type: 'miter-and-mat:height', height: document.documentElement.scrollHeight }, '*');
+  new ResizeObserver(report).observe(document.body);
+  window.addEventListener('load', report);
+}
+addPhoto(samplePhoto(), 'Sample photo', true);
+buildFrames();
+buildChips();
+buildSwatches($('matSwatches'), MATS, 'mat');
+buildSwatches($('wallSwatches'), WALLS, 'wall');
+syncSwatches();
+$('matWOut').textContent = inches(state.matW);
+$('padOut').textContent = state.pad + '%';
+renderFrameInfo();
+$('moulding').value = state.moulding;
+setMatStyle(state.matStyle);
+setSize(state.size);
+setActive(0);
+})();
+</script>
