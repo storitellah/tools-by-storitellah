@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Photobook</title>
+<meta name="description" content="Design 10 × 10 cm photobooks: drop photos, get a designed book, edit everything, preview it as a flipbook and export print-ready PDF and JPG.">
+<meta name="theme-color" content="#141414">
+<link rel="icon" href="assets/logos/Logo-07.png">
+<link rel="stylesheet" href="css/fonts.css">
+<link rel="stylesheet" href="css/app.css">
+<script type="module" src="js/main.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <div class="tb-left">
+    <button class="icon-btn" id="btn-books" title="Books, backup and restore" aria-label="Books menu"></button>
+    <input id="book-title" class="title-input" spellcheck="false" aria-label="Book title">
+    <span id="save-state" class="save-state" aria-live="polite"></span>
+  </div>
+  <div class="tb-mid seg" role="tablist" aria-label="Mode">
+    <button role="tab" id="mode-edit" aria-selected="true">Design</button>
+    <button role="tab" id="mode-preview" aria-selected="false">Preview</button>
+  </div>
+  <div class="tb-right">
+    <button class="icon-btn" id="btn-undo" title="Undo (Ctrl/Cmd+Z)" aria-label="Undo"></button>
+    <button class="icon-btn" id="btn-redo" title="Redo (Shift+Ctrl/Cmd+Z)" aria-label="Redo"></button>
+    <span class="sep"></span>
+    <button class="txt-btn" id="btn-photos" aria-pressed="false">Photos</button>
+    <button class="txt-btn" id="btn-design" aria-pressed="false">Book &amp; theme</button>
+    <button class="txt-btn primary" id="btn-export">Export</button>
+  </div>
+</header>
+
+<main class="workspace">
+  <aside class="tray" id="tray" hidden></aside>
+  <section class="stage-wrap" id="stage-wrap">
+    <div class="stage-scroll" id="stage-scroll">
+      <div class="stage" id="stage">
+        <canvas id="stage-canvas"></canvas>
+        <div class="overlay" id="overlay"></div>
+      </div>
+    </div>
+    <div class="pagebar" id="pagebar"></div>
+  </section>
+  <aside class="inspector" id="inspector"></aside>
+</main>
+
+<footer class="filmstrip" id="filmstrip"></footer>
+
+<div class="preview" id="preview" hidden></div>
+<div class="dropveil" id="dropveil" hidden><div><strong>Drop photos</strong><span>They'll be laid out into the book for you</span></div></div>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+<div class="boot" id="boot"><div class="boot-card"><img src="assets/logos/Logo-07.png" alt=""><p id="boot-msg">Opening your photobook…</p><div class="bar"><span id="boot-bar"></span></div></div></div>
+</body>
+</html>

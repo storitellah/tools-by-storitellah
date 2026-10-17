@@ -1,0 +1,28 @@
+# Xcode
+build/
+DerivedData/
+*.xcuserstate
+*.xcuserdatad/
+xcuserdata/
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+
+# Photobook: licensed font files are added locally, not committed
+Photobook/fonts/*.otf
+Photobook/fonts/*.ttf
+Photobook/fonts/*.woff
+Photobook/fonts/*.woff2
+
+# Photobook build outputs (the .dmg files are release downloads, not source)
+Photobook/.cache/
+Photobook/dist/*.dmg
