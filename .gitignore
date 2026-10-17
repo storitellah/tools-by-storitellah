@@ -16,3 +16,9 @@ xcuserdata/
 # Python
 __pycache__/
 *.pyc
+
+# Photobook: licensed font files are added locally, not committed
+Photobook/fonts/*.otf
+Photobook/fonts/*.ttf
+Photobook/fonts/*.woff
+Photobook/fonts/*.woff2
