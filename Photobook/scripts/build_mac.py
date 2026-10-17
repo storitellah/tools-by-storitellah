@@ -165,6 +165,8 @@ def build_dmg(arch, app):
     shutil.move(str(app), stage / "Photobook.app")
     os.symlink("/Applications", stage / "Applications")
     shutil.copy(MAC / "INSTALL.txt", stage / "How to install.txt")
+    shutil.copy(MAC / "Install Photobook.command", stage / "Install Photobook.command")
+    os.chmod(stage / "Install Photobook.command", 0o755)
     img = WORK / f"{arch}.hfs"
     hfs_image(stage, img, "Photobook")
     DIST.mkdir(exist_ok=True)

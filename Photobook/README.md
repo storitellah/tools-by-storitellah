@@ -17,20 +17,28 @@ framework and no dependencies. Your photos stay in your browser.
 
    To check which you have, open  → **About This Mac** and look at
    **Chip** or **Processor**.
-2. Double-click the `.dmg`. A window opens with Photobook, an Applications
-   folder and *How to install.txt*.
-3. Drag **Photobook** onto **Applications**, then eject the disk image.
-4. Open Photobook from Applications or Launchpad. The first time, macOS
-   blocks it because the app isn't registered with Apple (it has an ad-hoc
-   signature, not an Apple Developer ID):
-   - Click **Done** on the message.
-   - Open **System Settings → Privacy & Security**, scroll to *"Photobook was
-     blocked…"* and click **Open Anyway**. Confirm with your password.
-   - On macOS 14 Sonoma or earlier you can instead right-click the app,
-     choose **Open**, then **Open**.
+2. Double-click the `.dmg`. A window opens with Photobook, an
+   **Install Photobook** script, an Applications shortcut and
+   *How to install.txt*.
+3. Right-click **Install Photobook.command** and choose **Open**. If macOS
+   blocks it, open **System Settings → Privacy & Security**, click
+   **Open Anyway** next to it, and confirm.
+4. A Terminal window copies Photobook into Applications and opens it. Type
+   your password if asked.
 
-   If macOS says the app *"is damaged"*, run `xattr -cr /Applications/Photobook.app`
-   in Terminal and open it again.
+Why the script: the app has no Apple Developer ID, so macOS marks a
+downloaded copy as *"damaged"* and won't open it. The script clears the
+download flag (`xattr -cr`) and re-signs the app with the Mac's own
+`codesign`. To do it by hand, drag the app to Applications and run:
+
+```
+xattr -cr /Applications/Photobook.app
+codesign --force --deep --sign - /Applications/Photobook.app
+```
+
+To install with no warnings at all, the app needs a Developer ID signature
+and Apple notarization. That requires an Apple Developer account (US$99 a
+year); `rcodesign` can then sign and notarize from `scripts/build_mac.py`.
 
 Your books are stored in `~/Library/Application Support/Photobook` and stay
 there when you update or reinstall the app. The app needs macOS 11 Big Sur or

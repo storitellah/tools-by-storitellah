@@ -1,28 +1,27 @@
 PHOTOBOOK FOR MAC — HOW TO INSTALL
 ==================================
 
-1. Drag "Photobook" onto the "Applications" folder in this window.
+Photobook isn't registered with Apple, so macOS refuses a downloaded copy
+("Photobook.app is damaged") until it is signed on your own Mac. The
+installer does that for you.
 
-2. Eject the disk image (drag it to the Trash, or right-click > Eject).
+1. In this window, right-click "Install Photobook.command" and choose Open.
+   (If macOS blocks it: open System Settings > Privacy & Security, scroll
+   down, click "Open Anyway" next to "Install Photobook.command", and
+   confirm.)
 
-3. Open Photobook from Applications or Launchpad.
+2. A Terminal window installs Photobook into Applications and opens it.
+   Type your Mac password if it asks (the characters don't show).
 
-   The first time, macOS will say it can't check Photobook for malicious
-   software, because the app isn't registered with Apple. To allow it:
+3. Eject this disk image. From now on, open Photobook from Applications or
+   Launchpad like any other app.
 
-   - Click "Done" (or "OK") on that message.
-   - Open System Settings > Privacy & Security.
-   - Scroll down to "Photobook was blocked to protect your Mac" and
-     click "Open Anyway". Enter your password if asked, then click
-     "Open Anyway" again.
+DOING IT BY HAND INSTEAD
+------------------------
+Drag Photobook onto Applications, then in Terminal run:
 
-   You only need to do this once. (On macOS 14 Sonoma or earlier you can
-   also right-click Photobook in Applications, choose Open, then Open.)
-
-   If macOS says the app "is damaged and can't be opened", open Terminal
-   and run this once, then open the app again:
-
-       xattr -cr /Applications/Photobook.app
+    xattr -cr /Applications/Photobook.app
+    codesign --force --deep --sign - /Applications/Photobook.app
 
 WHERE YOUR WORK IS KEPT
 -----------------------
@@ -37,8 +36,7 @@ Book & theme > Fonts > Add font files and choose the .otf files.
 
 UPDATING
 --------
-Drag the new Photobook onto Applications and choose Replace.
-Your books stay where they are.
+Run the installer from the new disk image. Your books stay where they are.
 
 UNINSTALLING
 ------------
