@@ -1,0 +1,8 @@
+/* Fallback faces (SIL Open Font License, see fonts/fallback/), used until the
+   theme's own font files are added. Bundled so the tool works offline. */
+@font-face { font-family: "Lilita One"; font-weight: 400; font-style: normal; font-display: swap; src: url("../fonts/fallback/lilita-one-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Outfit"; font-weight: 300; font-style: normal; font-display: swap; src: url("../fonts/fallback/outfit-latin-300-normal.woff2") format("woff2"); }
+@font-face { font-family: "Outfit"; font-weight: 400; font-style: normal; font-display: swap; src: url("../fonts/fallback/outfit-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Outfit"; font-weight: 600; font-style: normal; font-display: swap; src: url("../fonts/fallback/outfit-latin-600-normal.woff2") format("woff2"); }
+@font-face { font-family: "Outfit"; font-weight: 700; font-style: normal; font-display: swap; src: url("../fonts/fallback/outfit-latin-700-normal.woff2") format("woff2"); }
+@font-face { font-family: "Outfit"; font-weight: 900; font-style: normal; font-display: swap; src: url("../fonts/fallback/outfit-latin-900-normal.woff2") format("woff2"); }

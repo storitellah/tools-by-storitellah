@@ -21,13 +21,14 @@ export function createEditor({ scroller, stage, canvas, overlay, onFilesDropped 
     hover: null,
     dropTarget: null,
     showGuides: true,
+    preview: null,       // an item shown instead of the current one while hovering a layout
   };
   let raf = 0;
   let ta = null; // textarea while editing text in place
 
   const book = () => app.book;
   const dims = () => {
-    const item = curItem();
+    const item = ed.preview || curItem();
     const { w, h: hh } = itemSize(book(), item);
     return { item, W: w, H: hh, b: book().spec.bleed };
   };
@@ -72,7 +73,7 @@ export function createEditor({ scroller, stage, canvas, overlay, onFilesDropped 
 
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, cw, ch);
-    renderItem(ctx, book(), item, { scale: s, bleed: true, quality: 'preview', editor: true, pageNumbers: pageNumbersFor(book(), app.cur), skip: ed.editing });
+    renderItem(ctx, book(), item, { scale: s, bleed: true, quality: 'preview', editor: true, pageNumbers: pageNumbersFor(book(), app.cur), skip: ed.preview ? null : ed.editing });
 
     if (ed.crop) drawCropGhost();
     if (ed.showGuides) drawGuides(W, H, b, s, item);
@@ -147,6 +148,10 @@ export function createEditor({ scroller, stage, canvas, overlay, onFilesDropped 
     // Clear everything except an open text editor (removing it would blur and close it).
     for (const c of [...overlay.children]) if (c !== ta) c.remove();
     const add = (n) => (ta && ta.parentNode === overlay ? overlay.insertBefore(n, ta) : overlay.append(n));
+    if (ed.preview) {
+      add(h('div.badge.spread', { style: { left: '50%', top: '8px', transform: 'translateX(-50%)' } }, 'PREVIEW — click the layout to apply it'));
+      return;
+    }
     // Low-resolution warnings
     for (const el of item.elements) {
       if (el.type !== 'image' || !el.asset) continue;
@@ -245,6 +250,7 @@ export function createEditor({ scroller, stage, canvas, overlay, onFilesDropped 
   let drag = null;
 
   stage.addEventListener('pointerdown', (e) => {
+    if (ed.preview) return;
     if (e.button !== 0 || ed.editing && e.target.closest('.inline-text')) return;
     if (ed.editing) finishTextEdit();
     const pt = toMm(e);
@@ -523,6 +529,7 @@ export function createEditor({ scroller, stage, canvas, overlay, onFilesDropped 
   new ResizeObserver(() => requestRender()).observe(scroller);
 
   return {
+    setPreview(item) { if (ed.preview === item) return; ed.preview = item; requestRender(); },
     requestRender, draw, enterCrop, exitCrop, startTextEdit, finishTextEdit, placePhoto, setZoom,
     get zoom() { return ed.zoom; },
     get cropping() { return ed.crop; },

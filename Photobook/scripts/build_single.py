@@ -18,7 +18,7 @@ OUT = ROOT / "dist" / "photobook.html"
 
 
 def data_url(path):
-    mime = mimetypes.guess_type(path.name)[0] or "application/octet-stream"
+    mime = mimetypes.guess_type(path.name)[0] or ("font/woff2" if path.suffix == ".woff2" else "application/octet-stream")
     return f"data:{mime};base64,{base64.b64encode(path.read_bytes()).decode()}"
 
 
@@ -37,6 +37,12 @@ def main():
 
     html = (ROOT / "index.html").read_text()
     html = html.replace('<link rel="stylesheet" href="css/app.css">', f"<style>\n{css}</style>")
+    fonts_css = re.sub(
+        r'url\("\.\./(fonts/[^"]+)"\)',
+        lambda m: f'url("{data_url(ROOT / m.group(1))}")',
+        (ROOT / "css" / "fonts.css").read_text(),
+    )
+    html = html.replace('<link rel="stylesheet" href="css/fonts.css">', f"<style>\n{fonts_css}</style>")
     html = html.replace(
         '<script type="module" src="js/main.js"></script>',
         "<script>window.PHOTOBOOK_EMBEDDED=" + json.dumps(embedded) + ";</script>",

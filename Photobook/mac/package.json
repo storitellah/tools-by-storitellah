@@ -1,0 +1,9 @@
+{
+  "name": "photobook",
+  "productName": "Photobook",
+  "version": "1.0.0",
+  "description": "Design 10 × 10 cm photobooks.",
+  "main": "main.js",
+  "author": "Storitellah",
+  "license": "UNLICENSED"
+}

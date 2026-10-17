@@ -5,7 +5,7 @@ import { app, on, emit, commit, undo, redo, canUndo, canRedo, curItem, selected,
 import { loadAssetIndex, importImage, fetchAsFile, registerFonts, waitForFonts, info } from './assets.js';
 import { createEditor } from './editor.js';
 import { renderTray, renderFilmstrip, renderPagebar, renderInspector, usageMap } from './panels.js';
-import { autoLayout, layoutMore, applyTemplate, makeElement, newItem } from './layout.js';
+import { autoLayout, layoutMore, applyTemplate, applyLayout, makeElement, newItem } from './layout.js';
 import { sideOf, isDoubleSpread } from './render.js';
 import { openFlipbook } from './flipbook.js';
 import { openDesign, addFontFiles } from './design.js';
@@ -119,21 +119,8 @@ const actions = {
     if (type === 'text') setTimeout(() => editor.startTextEdit(el.id), 30);
   },
   applyTemplate(tpl) {
-    const item = curItem();
-    const side = item.kind === 'spread' && tpl.scope === 'page' ? app.side : undefined;
-    if (item.kind === 'spread' && tpl.scope === 'page' && isDoubleSpread(item)) {
-      // Turning a double spread back into two pages: re-lay both sides.
-      const photos = item.elements.filter((e) => e.type === 'image' && e.asset).map((e) => e.asset);
-      item.elements = [];
-      item.tpl = [null, null];
-      const blank = app.templates.find((t) => t.id === 'page-blank');
-      if (blank) applyTemplate(app.book, item, blank, 1 - app.side);
-      applyTemplate(app.book, item, tpl, app.side);
-      item.elements.filter((e) => e.type === 'image').forEach((e, i) => { e.asset = photos[i] || null; });
-    } else {
-      const left = applyTemplate(app.book, item, tpl, side);
-      if (left.length) toast(`${left.length} photo${left.length > 1 ? 's' : ''} no longer on this page — still in Photos`);
-    }
+    const left = applyLayout(app.book, curItem(), tpl, app.side, app.templates);
+    if (left.length) toast(`${left.length} photo${left.length > 1 ? 's' : ''} no longer on this page — still in Photos`);
     app.sel = null;
     commit('page');
   },
@@ -293,7 +280,8 @@ function refresh(what) {
   if (what === 'saving' || what === 'saved') return updateSaveState();
   if (what === 'live') { editor.requestRender(); return; }
   if (what === 'thumbs') { renderFilmstrip($('filmstrip'), actions); return; }
-  if (full || what === 'selection' || what === 'crop') renderInspector($('inspector'), editor, actions);
+  if (full) editor.setPreview(null);
+  if (full || what === 'selection' || what === 'crop' || (what === 'side' && app.layoutsOpen)) renderInspector($('inspector'), editor, actions);
   if (full || what === 'side' || what === 'zoom') renderPagebar($('pagebar'), editor, actions);
   if (full) {
     if (document.activeElement !== $('book-title')) $('book-title').value = app.book.meta.title;
@@ -423,6 +411,8 @@ function wireChrome() {
   });
 
   window.addEventListener('keydown', onKey);
+  // The Mac app's Edit menu calls these.
+  window.photobook = { undo, redo };
 }
 
 let nudgeTimer;

@@ -4,9 +4,9 @@
 import { app, emit, commit, curItem, selected, saveTemplate } from './state.js';
 import { renderItem, itemSize, itemAssets, makeCanvas, pageNumbersFor, isDoubleSpread, sideOf, color, effectiveDpi } from './render.js';
 import { load, peek, info, thumbURL } from './assets.js';
-import { applyTemplate, newItem, templateFromItem } from './layout.js';
+import { applyTemplate, applyLayout, newItem, templateFromItem } from './layout.js';
 import { itemLabel } from './export.js';
-import { h, clamp } from './util.js';
+import { h, clamp, clone } from './util.js';
 import { icon } from './icons.js';
 import { LOGO_ROLE_NAMES } from './defaults.js';
 import { toast, popover, closePopover, promptDialog } from './dialogs.js';
@@ -181,7 +181,7 @@ export function renderPagebar(root, editor, actions) {
       h('button', { 'aria-pressed': String(app.side === 1), on: { click: () => { app.side = 1; emit('side'); } } }, lbl(1))));
   } else parts.push(h('span.label', item.kind === 'cover' ? 'Front cover' : 'Back cover'));
 
-  parts.push(h('button.chip', { on: { click: (e) => openTemplatePicker(e.currentTarget, actions) } }, icon('layout'), 'Layout'));
+  parts.push(h('button.chip', { 'aria-pressed': String(!!app.layoutsOpen), on: { click: () => { app.layoutsOpen = !app.layoutsOpen; if (app.layoutsOpen) app.sel = null; else editor.setPreview(null); emit('selection'); } } }, icon('layout'), 'Layout'));
   parts.push(h('button.chip', { title: 'Try another layout with the same photos', on: { click: actions.shuffle } }, icon('shuffle'), 'Shuffle'));
   parts.push(h('span.sep'));
   parts.push(h('button.chip', { on: { click: () => actions.addElement('image') } }, icon('image'), 'Frame'));
@@ -207,61 +207,99 @@ export function renderPagebar(root, editor, actions) {
   root.replaceChildren(...parts);
 }
 
-// ---------- Template picker ----------
+// ---------- Layouts panel ----------
+//
+// Every card is the real result: the current page is cloned, the template is
+// applied exactly as the Apply button would, and the clone is drawn by the
+// same renderer as the editor and the print files, with your photos, fonts
+// and colours. Hovering a card shows that result full size on the stage.
 
-function templatePreview(book, tpl, item, side, height) {
-  const scope = tpl.scope;
-  const fake = newItem(scope === 'spread' ? 'spread' : item.kind === 'spread' ? 'cover' : item.kind);
-  if (scope === 'cover') fake.kind = 'cover';
-  if (scope === 'back') fake.kind = 'back';
-  // Preview with the photos that would move into it.
-  const photos = item.elements.filter((el) => el.type === 'image' && el.asset && (scope !== 'page' || item.kind !== 'spread' || sideOf(item, el) === side)).map((el) => el.asset);
-  const tmpBook = { ...book, brand: book.brand };
-  applyTemplate(tmpBook, fake, tpl);
-  fake.elements.filter((e) => e.type === 'image').forEach((e, i) => { e.asset = photos[i] || book.photos[i] || null; });
-  const { w, h: hh } = itemSize(book, fake);
-  const scale = (height * 2) / hh;
-  const c = makeCanvas(w * scale, hh * scale);
-  const paint = () => renderItem(c.getContext('2d'), book, fake, { scale, bleed: false, quality: 'thumb', editor: true });
-  paint();
-  const missing = itemAssets(book, fake).filter((id) => !peek(id, 'thumb'));
-  if (missing.length) Promise.all(missing.map((id) => load(id, 'thumb'))).then(paint);
+const THUMB_PX = 120; // CSS height of a single-page card
+
+function previewItem(book, item, tpl, side) {
+  const c = clone(item);
+  c.id = item.id;
+  applyLayout(book, c, tpl, side, app.templates);
   return c;
 }
 
-export function openTemplatePicker(anchor, actions) {
+// Draw the whole item, or just one page of a spread.
+function drawCard(book, item, onlyPage, cssH) {
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const { w, h: hh } = itemSize(book, item);
+  const pageW = item.kind === 'spread' ? w / 2 : w;
+  const shownW = onlyPage != null ? pageW : w;
+  const scale = (cssH * dpr) / hh;
+  const c = makeCanvas(shownW * scale, hh * scale);
+  const paint = () => {
+    const ctx = c.getContext('2d');
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, c.width, c.height);
+    if (onlyPage) ctx.translate(-pageW * scale, 0);
+    renderItem(ctx, book, item, { scale, bleed: false, quality: 'preview', editor: true, pageNumbers: pageNumbersFor(book, app.cur) });
+  };
+  paint();
+  const missing = itemAssets(book, item).filter((id) => !peek(id, 'preview'));
+  if (missing.length) Promise.all(missing.map((id) => load(id, 'preview'))).then(paint);
+  return c;
+}
+
+export function renderLayouts(root, editor, actions) {
   const book = app.book;
   const item = curItem();
-  const side = item.kind === 'spread' ? app.side : 0;
-  const box = h('div', { style: { width: 'min(640px, 86vw)', padding: '6px' } });
-  const section = (title, tpls, wide) => {
-    if (!tpls.length) return null;
-    return h('div.section',
-      h('div.panel-title', title),
-      h('div.tpl-grid' + (wide ? '.spreads' : ''), tpls.map((t) => h('button.tpl', {
-        'aria-current': String(item.tpl?.[side] === t.id), title: t.name,
-        on: { click: () => { actions.applyTemplate(t); closePopover(); } },
-      }, templatePreview(book, t, item, side, 52), t.name))));
+  const spread = item.kind === 'spread';
+  const side = spread ? app.side : 0;
+  const stop = () => editor.setPreview(null);
+  const card = (t, onlyPage, cssH) => {
+    const result = previewItem(book, item, t, side);
+    const slots = t.elements.filter((e) => e.type === 'image').length;
+    const current = spread && t.scope === 'page' ? item.tpl?.[side] === t.id && !isDoubleSpread(item) : item.tpl?.[0] === t.id;
+    return h('button.tpl', {
+      'aria-current': String(current),
+      title: `${t.name} — ${slots} photo${slots === 1 ? '' : 's'}. Hover to preview, click to apply.`,
+      on: {
+        mouseenter: () => editor.setPreview(result),
+        focus: () => editor.setPreview(result),
+        mouseleave: stop,
+        blur: stop,
+        click: () => { stop(); actions.applyTemplate(t); },
+      },
+    }, drawCard(book, result, onlyPage, cssH), h('span', t.name, h('small', ` · ${slots}`)));
   };
-  if (item.kind === 'spread') {
-    box.append(
-      section(`Page layouts — ${side === 0 ? 'left' : 'right'} page`, app.templates.filter((t) => t.scope === 'page')),
-      section('Across the spread', app.templates.filter((t) => t.scope === 'spread'), true),
-    );
+  const section = (title, tpls, wide) => tpls.length ? h('div.section',
+    h('div.panel-title', title),
+    h('div.tpl-grid' + (wide ? '.spreads' : ''), tpls.map((t) => card(t, wide ? null : (spread ? side : null), wide ? 110 : THUMB_PX)))) : null;
+
+  const kids = [h('div.panel-title', 'Layouts', h('button.icon-btn', { title: 'Close', on: { click: () => { stop(); app.layoutsOpen = false; emit('selection'); } } }, icon('close')))];
+  kids.push(h('p.hint', 'Each preview is the real result with your photos. Hover to see it full size on the page, click to apply. Undo puts it back.'));
+  if (spread) {
+    kids.push(h('div.row', h('div.seg',
+      h('button', { 'aria-pressed': String(side === 0), on: { click: () => { app.side = 0; emit('side'); } } }, 'Left page'),
+      h('button', { 'aria-pressed': String(side === 1), on: { click: () => { app.side = 1; emit('side'); } } }, 'Right page'))));
+    kids.push(section(`Page layouts · ${side === 0 ? 'left' : 'right'} page`, app.templates.filter((t) => t.scope === 'page')));
+    kids.push(section('Across the spread', app.templates.filter((t) => t.scope === 'spread'), true));
   } else {
-    box.append(section(item.kind === 'cover' ? 'Cover layouts' : 'Back cover layouts', app.templates.filter((t) => t.scope === item.kind)));
+    kids.push(section(item.kind === 'cover' ? 'Front cover layouts' : 'Back cover layouts', app.templates.filter((t) => t.scope === item.kind)));
   }
-  box.append(h('div.section', h('div.row',
-    h('button.txt-btn.small', { on: { click: async () => {
-      closePopover();
-      const name = await promptDialog('Save as template', 'Template name', item.kind === 'spread' ? 'My page layout' : 'My layout');
-      if (!name) return;
-      const whole = item.kind !== 'spread' || isDoubleSpread(item);
-      await saveTemplate(templateFromItem(book, item, whole && item.kind === 'spread' ? null : side, name));
-      toast(`Saved “${name}” to your templates`);
-    } } }, icon('save'), item.kind === 'spread' ? (isDoubleSpread(item) ? 'Save spread as template' : 'Save this page as template') : 'Save as template'),
-    h('span.hint', 'Manage templates under Book & theme → Templates.'))));
-  popover(anchor, box, { place: 'above' });
+  kids.push(h('div.section', h('button.txt-btn.small', { on: { click: async () => {
+    const name = await promptDialog('Save as template', 'Template name', spread ? 'My page layout' : 'My layout');
+    if (!name) return;
+    const whole = !spread || isDoubleSpread(item);
+    await saveTemplate(templateFromItem(book, item, whole && spread ? null : side, name));
+    toast(`Saved “${name}” to your templates`);
+    emit('selection');
+  } } }, icon('save'), spread ? (isDoubleSpread(item) ? 'Save this spread as a template' : 'Save this page as a template') : 'Save as a template')));
+  root.classList.add('wide');
+  root.replaceChildren(...kids);
+}
+
+// A template on its own (for the template library), filled with book photos.
+export function templateThumb(book, tpl, cssH = 56) {
+  const kind = tpl.scope === 'spread' ? 'spread' : tpl.scope === 'back' ? 'back' : 'cover';
+  const fake = newItem(kind);
+  applyTemplate(book, fake, tpl);
+  fake.elements.filter((e) => e.type === 'image').forEach((e, i) => { e.asset = book.photos[i % Math.max(1, book.photos.length)] || null; });
+  return drawCard(book, fake, null, cssH);
 }
 
 // ---------- Inspector ----------
@@ -269,6 +307,8 @@ export function openTemplatePicker(anchor, actions) {
 export function renderInspector(root, editor, actions) {
   const book = app.book;
   const item = curItem();
+  root.classList.remove('wide');
+  if (app.layoutsOpen && !selected()) return renderLayouts(root, editor, actions);
   const el = selected();
   if (!el) { root.replaceChildren(); return; }
   const { w: W, h: H } = itemSize(book, item);

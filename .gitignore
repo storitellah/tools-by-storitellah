@@ -22,3 +22,7 @@ Photobook/fonts/*.otf
 Photobook/fonts/*.ttf
 Photobook/fonts/*.woff
 Photobook/fonts/*.woff2
+
+# Photobook build outputs (the .dmg files are release downloads, not source)
+Photobook/.cache/
+Photobook/dist/*.dmg

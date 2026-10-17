@@ -1,0 +1,46 @@
+PHOTOBOOK FOR MAC — HOW TO INSTALL
+==================================
+
+1. Drag "Photobook" onto the "Applications" folder in this window.
+
+2. Eject the disk image (drag it to the Trash, or right-click > Eject).
+
+3. Open Photobook from Applications or Launchpad.
+
+   The first time, macOS will say it can't check Photobook for malicious
+   software, because the app isn't registered with Apple. To allow it:
+
+   - Click "Done" (or "OK") on that message.
+   - Open System Settings > Privacy & Security.
+   - Scroll down to "Photobook was blocked to protect your Mac" and
+     click "Open Anyway". Enter your password if asked, then click
+     "Open Anyway" again.
+
+   You only need to do this once. (On macOS 14 Sonoma or earlier you can
+   also right-click Photobook in Applications, choose Open, then Open.)
+
+   If macOS says the app "is damaged and can't be opened", open Terminal
+   and run this once, then open the app again:
+
+       xattr -cr /Applications/Photobook.app
+
+WHERE YOUR WORK IS KEPT
+-----------------------
+Books, photos, templates and fonts are saved on this Mac in
+~/Library/Application Support/Photobook. Nothing is uploaded.
+Keep a backup: menu (☰) > Download backup, or Back up to a folder.
+
+FONTS
+-----
+To use the project typefaces (Bobby Jones Soft, TT Norms), open
+Book & theme > Fonts > Add font files and choose the .otf files.
+
+UPDATING
+--------
+Drag the new Photobook onto Applications and choose Replace.
+Your books stay where they are.
+
+UNINSTALLING
+------------
+Drag Photobook from Applications to the Trash. To remove your books
+too, delete ~/Library/Application Support/Photobook.

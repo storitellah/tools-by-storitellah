@@ -5,7 +5,7 @@
 import { uid, clone } from './util.js';
 import { ELEMENT_DEFAULTS } from './defaults.js';
 import { info } from './assets.js';
-import { sideOf } from './render.js';
+import { sideOf, isDoubleSpread } from './render.js';
 
 export function makeElement(type, props = {}) {
   return { id: uid('e'), type, x: 0.2, y: 0.2, w: 0.6, h: 0.6, rot: 0, opacity: 1, ...clone(ELEMENT_DEFAULTS[type] || {}), ...props };
@@ -56,6 +56,24 @@ export function applyTemplate(book, item, tpl, side) {
     item.tpl[side] = tpl.id;
   }
   return photos.slice(slotsOf(tpl).length); // photos that no longer have a frame
+}
+
+// What the Layout panel does when a template is chosen for the current page:
+// a page template on a spread replaces one side; on a double spread it turns
+// the spread back into two pages. Used for both the preview and the real thing.
+export function applyLayout(book, item, tpl, side, templates) {
+  if (item.kind === 'spread' && tpl.scope === 'page' && isDoubleSpread(item)) {
+    const photos = item.elements.filter((e) => e.type === 'image' && e.asset).map((e) => e.asset);
+    item.elements = [];
+    item.tpl = [null, null];
+    const blank = templates.find((t) => t.id === 'page-blank');
+    if (blank) applyTemplate(book, item, blank, 1 - side);
+    applyTemplate(book, item, tpl, side);
+    const frames = item.elements.filter((e) => e.type === 'image');
+    frames.forEach((e, i) => { e.asset = photos[i] || null; });
+    return photos.slice(frames.length);
+  }
+  return applyTemplate(book, item, tpl, item.kind === 'spread' && tpl.scope === 'page' ? side : undefined);
 }
 
 const byTag = (templates, scope, tag) => templates.filter((t) => t.scope === scope && (t.tags || []).includes(tag));

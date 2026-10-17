@@ -9,7 +9,39 @@ Preview the book as a flipbook and export print-ready PDF or high-resolution JPG
 It's a static site: plain HTML, CSS and ES modules, with no build step, no
 framework and no dependencies. Your photos stay in your browser.
 
-## Run it
+## Install on a Mac
+
+1. Download the disk image for your Mac:
+   - **Photobook-1.0.0-AppleSilicon.dmg**: Macs with an M1, M2, M3 or M4 chip
+   - **Photobook-1.0.0-Intel.dmg**: older Macs with an Intel processor
+
+   To check which you have, open  → **About This Mac** and look at
+   **Chip** or **Processor**.
+2. Double-click the `.dmg`. A window opens with Photobook, an Applications
+   folder and *How to install.txt*.
+3. Drag **Photobook** onto **Applications**, then eject the disk image.
+4. Open Photobook from Applications or Launchpad. The first time, macOS
+   blocks it because the app isn't registered with Apple (it has an ad-hoc
+   signature, not an Apple Developer ID):
+   - Click **Done** on the message.
+   - Open **System Settings → Privacy & Security**, scroll to *"Photobook was
+     blocked…"* and click **Open Anyway**. Confirm with your password.
+   - On macOS 14 Sonoma or earlier you can instead right-click the app,
+     choose **Open**, then **Open**.
+
+   If macOS says the app *"is damaged"*, run `xattr -cr /Applications/Photobook.app`
+   in Terminal and open it again.
+
+Your books are stored in `~/Library/Application Support/Photobook` and stay
+there when you update or reinstall the app. The app needs macOS 11 Big Sur or
+later and works offline.
+
+To build the disk images yourself (on Linux or macOS), run
+`python3 scripts/build_mac.py`. The script's docstring lists the tools it
+uses. The Mac app is the same web app inside a small Electron shell
+(`mac/main.js`).
+
+## Run it in a browser
 
 The modules and demo photos load over HTTP, so you need a local server:
 
@@ -56,8 +88,18 @@ pages are small. It also avoids repeating the previous layout.
 
 **Templates** cover front covers (5), back covers (4, all with the project
 logo), single pages (17, including title, quote, colophon and endpaper pages)
-and double spreads (4). In the editor, **Layout** applies a template to the
-selected page or to the whole spread. **Shuffle** cycles through layouts with
+and double spreads (4). **Layout** opens a panel of visual previews:
+
+- Every preview is the actual result for the page you're on. The tool copies
+  the page, applies the template exactly as Apply would, and draws it with the
+  same renderer used for print, so the preview shows your photos, fonts and
+  colours. Empty frames show as *Drop a photo*.
+- Hovering (or tabbing to) a preview shows that result full size on the page,
+  marked PREVIEW. Moving away restores your page. Clicking applies it.
+- On a spread, choose the left or right page; *Across the spread* layouts
+  preview the whole spread.
+- The template library (Book & theme → Templates) shows a thumbnail for every
+  template. **Shuffle** cycles through layouts with
 the same number of photos. **Save as template** turns any page you've designed
 into a new template. The library is stored with your data: rename, retag,
 duplicate, delete, export or import templates under **Book & theme →
@@ -137,8 +179,8 @@ Several books can live side by side. Open, duplicate or delete them from
 
 The default theme uses the project typefaces, **Bobby Jones Soft** (display)
 and **TT Norms** (body). They are licensed files, so they are not committed
-here. Until they're added, the tool uses **Lilita One** and **Outfit** from
-Google Fonts. Export flags this as a note, not an error. You can add the
+here. Until they're added, the tool uses **Lilita One** and **Outfit** (SIL Open
+Font License, bundled in `fonts/fallback/` so it works offline). Export flags this as a note, not an error. You can add the
 licensed fonts in either of two ways:
 
 - **In the app:** Book & theme → Fonts → *Add font files*, then choose
@@ -181,6 +223,9 @@ js/zip.js           ZIP writer/reader (backups, JPG export)
 js/backup.js        .photobook backups and folder backup
 js/books.js         books menu
 scripts/build_single.py  builds dist/photobook.html
+scripts/build_mac.py     builds the macOS .dmg files
+mac/                     Electron shell for the Mac app, install guide
+fonts/fallback/          Lilita One and Outfit (OFL)
 dist/photobook.html      the single-file build
 assets/logos/       This Is Where We're From logos (Logo-01 … Logo-08)
 demo/               demo photos

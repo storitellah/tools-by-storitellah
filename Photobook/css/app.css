@@ -126,6 +126,7 @@ svg { display: block; }
 .swatch-btn { width: 26px; height: 26px; border-radius: 7px; border: 1px solid var(--line-2); padding: 0; }
 .chip { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 9px; border: 1px solid var(--line-2); border-radius: 8px; background: transparent; color: var(--text); font-size: 12px; }
 .chip:hover { background: var(--bg-3); }
+.chip[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
 .chip svg { width: 14px; height: 14px; }
 
 /* ---------- Side panels ---------- */
@@ -136,6 +137,7 @@ svg { display: block; }
 .tray { border-right-width: 1px; padding: 12px; }
 .inspector { border-left-width: 1px; padding: 14px; }
 .inspector:empty { display: none; }
+.inspector.wide { width: 340px; }
 .panel-title { font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin: 2px 0 10px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .section { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px; }
 .section:first-child { border-top: 0; padding-top: 0; margin-top: 0; }
@@ -221,7 +223,12 @@ input[type="checkbox"] { accent-color: var(--accent); }
 .tpl { background: none; border: 1px solid transparent; border-radius: 8px; padding: 6px; display: grid; gap: 6px; text-align: center; color: var(--muted); font-size: 11.5px; }
 .tpl:hover { background: var(--bg-3); color: var(--text); }
 .tpl[aria-current="true"] { border-color: var(--accent); color: var(--text); }
-.tpl canvas { width: 100%; height: auto; border-radius: 2px; box-shadow: 0 2px 10px rgba(0,0,0,.45); }
+.tpl canvas { width: 100%; height: auto; border-radius: 2px; box-shadow: 0 2px 10px rgba(0,0,0,.45); background: #fff; }
+.tpl small { color: var(--faint); }
+.inspector .tpl-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.inspector .tpl-grid.spreads { grid-template-columns: minmax(0, 1fr); }
+.list-row .tthumb { flex: none; line-height: 0; }
+.list-row .tthumb canvas { height: 46px; width: auto; border-radius: 2px; box-shadow: 0 1px 6px rgba(0,0,0,.4); }
 
 .logo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
 .logo-card { border: 1px solid var(--line); border-radius: 8px; padding: 8px; display: grid; gap: 6px; }

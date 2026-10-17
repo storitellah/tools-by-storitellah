@@ -6,7 +6,7 @@ import { importImage, importFont, registerFonts, fontStatus, thumbURL } from './
 import { DEFAULT_META, LOGO_ROLE_NAMES, THEME_PRESETS } from './defaults.js';
 import { h, uid, pickFiles, download, clone, slugify } from './util.js';
 import { modal, toast, confirmDialog } from './dialogs.js';
-import { colorField, fontOptions } from './panels.js';
+import { colorField, fontOptions, templateThumb } from './panels.js';
 import { icon } from './icons.js';
 
 const TABS = [['book', 'Book'], ['print', 'Print'], ['theme', 'Colours'], ['fonts', 'Fonts'], ['brand', 'Brand'], ['templates', 'Templates']];
@@ -203,6 +203,7 @@ const PANES = {
   templates(redraw) {
     const groups = [['cover', 'Covers'], ['back', 'Back covers'], ['page', 'Pages'], ['spread', 'Double spreads']];
     const row = (t) => h('div.list-row',
+      h('span.tthumb', templateThumb(app.book, t, 46)),
       h('div.grow', text(t.name, async (v) => { t.name = v; await saveTemplate(t); })),
       h('div.field', { style: { maxWidth: '220px' } }, text((t.tags || []).join(', '), async (v) => { t.tags = v.split(',').map((x) => x.trim()).filter(Boolean); await saveTemplate(t); }, { title: 'Tags: photo, title, endpaper, colophon, filler, default' })),
       h('span.sub', `${t.elements.filter((e) => e.type === 'image').length} photo${t.elements.filter((e) => e.type === 'image').length === 1 ? '' : 's'}`),
