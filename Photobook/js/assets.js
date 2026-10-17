@@ -121,7 +121,9 @@ export async function thumbURL(id) {
 }
 
 export async function fetchAsFile(url, name) {
-  const r = await fetch(url);
+  // The single-file build (dist/photobook.html) carries its logos and demo
+  // photos inline as data: URLs, keyed by their usual path.
+  const r = await fetch(globalThis.PHOTOBOOK_EMBEDDED?.[url] || url);
   if (!r.ok) throw new Error(`${url}: ${r.status}`);
   const b = await r.blob();
   return new File([b], name || url.split('/').pop(), { type: b.type });

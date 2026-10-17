@@ -25,6 +25,13 @@ own book, open **☰ → New empty book** and drop photos onto the window.
 Any static host works: Cloudflare Pages, Netlify or GitHub Pages, with
 `Photobook/` as the site root.
 
+**Single file:** `dist/photobook.html` is the whole tool in one file — code,
+styles, logos and demo photos inlined. Double-click it to open it in Chrome,
+Edge, Firefox or Safari, no server needed. Rebuild it after changing the source
+with `python3 scripts/build_single.py` (needs Node for `npx esbuild`). Opened
+from disk, it can't read the licensed font files from `fonts/`; add them inside
+the tool under Book & theme → Fonts.
+
 ## What it does
 
 **Drop photos, get a book.** Drop photos onto an empty book and it lays out the
@@ -173,6 +180,8 @@ js/exportui.js      export dialog
 js/zip.js           ZIP writer/reader (backups, JPG export)
 js/backup.js        .photobook backups and folder backup
 js/books.js         books menu
+scripts/build_single.py  builds dist/photobook.html
+dist/photobook.html      the single-file build
 assets/logos/       This Is Where We're From logos (Logo-01 … Logo-08)
 demo/               demo photos
 fonts/              drop licensed font files here (git-ignored)
