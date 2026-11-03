@@ -249,7 +249,8 @@ footer.credit a{color:var(--accent);font-weight:600;text-decoration:none}
       </div>
     </section>
 
-    <aside class="right" id="controls">
+    <aside class="right">
+      <div id="controls">
       <h2 class="sec">Print size</h2>
       <div class="formats" id="formats"></div>
       <p class="small muted" id="fmt-desc" style="margin:8px 0 0"></p>
@@ -257,6 +258,7 @@ footer.credit a{color:var(--accent);font-weight:600;text-decoration:none}
       <h2 class="sec">Frame</h2>
       <div class="swatches" id="swatches"></div>
       <label class="toggle"><input type="checkbox" id="rounded" checked> Rounded corners</label>
+      <label class="toggle"><input type="checkbox" id="brandmark" checked> Tiny “Keepframe” mark on the border</label>
 
       <h2 class="sec">Film look</h2>
       <div class="chips" id="presets"></div>
@@ -307,7 +309,8 @@ footer.credit a{color:var(--accent);font-weight:600;text-decoration:none}
         <button class="btn" id="dl-all" type="button">Download all (.zip)</button>
         <button class="btn primary" id="go-print" type="button">Continue to print sheet →</button>
       </div>
-      <footer class="credit">Keepframe · made with care by <a href="https://storitellah.com" target="_blank" rel="noopener">Storitellah</a></footer>
+      </div>
+      <footer class="credit">Keepframe · made with care by <a href="https://storitellah.com" target="_blank" rel="noopener">Storitellah</a><br><a href="CHAT.md" class="chat-dl" download="Keepframe-build-chat.md">Download the build chat</a></footer>
     </aside>
   </div>
 
@@ -342,6 +345,7 @@ footer.credit a{color:var(--accent);font-weight:600;text-decoration:none}
         <button type="button" data-v="none">None</button>
       </div>
       <label class="toggle" style="margin-top:10px"><input type="checkbox" id="autorotate" checked> Rotate prints to fit more per page</label>
+      <label class="toggle"><input type="checkbox" id="credit" checked> “Keepframe by Storitellah” credit line</label>
 
       <h2 class="sec">Summary</h2>
       <div id="summary"></div>
@@ -357,7 +361,7 @@ footer.credit a{color:var(--accent);font-weight:600;text-decoration:none}
         <button class="btn ghost" id="back-design" type="button">← Back to design</button>
       </div>
       <p class="note" style="margin-top:14px"><b>For true size:</b> in the print dialog choose <i>Scale 100%</i> / <i>Actual size</i>, set margins to <i>None</i> or <i>Default</i>, and pick the matching paper size. Use matte photo paper or 200–300 gsm card for an instant-print feel.</p>
-      <footer class="credit">Keepframe by <a href="https://storitellah.com" target="_blank" rel="noopener">Storitellah</a></footer>
+      <footer class="credit">Keepframe by <a href="https://storitellah.com" target="_blank" rel="noopener">Storitellah</a> · <a href="CHAT.md" class="chat-dl" download="Keepframe-build-chat.md">Build chat</a></footer>
     </aside>
     <section class="stage">
       <div class="sheets" id="sheets"></div>
@@ -365,6 +369,52 @@ footer.credit a{color:var(--accent);font-weight:600;text-decoration:none}
   </div>
 </main>
 
+<!-- BUILD-CHAT:START (regenerate from CHAT.md) -->
+<script type="text/markdown" id="build-chat">
+# Keepframe — build chat
+
+A record of the conversation in which **Keepframe by [Storitellah](https://storitellah.com)** was designed and built with Claude Code (November 2026).
+The user's messages are verbatim. Claude's replies are condensed, and behind-the-scenes tool output (file edits, test runs) is summarised.
+
+---
+
+## 1 · Request
+
+> **User:** Design and develop and standalone html tool that I can use to transform and print photos into mini size / wide size and square instax style photo prints. This tool should be able to convert images of any format. Give it a unique name by Storitellah and hyperlink to storitellah.com
+
+### What Claude did
+
+- Looked over the `tools-by-storitellah` repo (it already had **Filmcase**, an iPhone film-camera app) and picked the name **Keepframe**.
+- Wrote the whole tool as a single file, `Keepframe/index.html`:
+  - **Sizes:** Mini 54 × 86 mm, Square 72 × 86 mm, Wide 108 × 86 mm (card + photo window).
+  - **Decoding:** native browser formats, plus on-demand HEIC (heic2any) and TIFF (UTIF.js). RAW and PSD files fall back to their embedded full-size JPEG preview.
+  - **Editing:** drag, zoom, pinch, rotate and mirror. Frame colours, film-look presets with fine-tune sliders, handwritten captions and a retro date stamp.
+  - **Output:** copies, "apply style to all", 300 dpi PNG/JPG downloads, and a zip of all prints (built-in zip writer).
+  - **Print sheet:** 7 paper sizes with auto-rotating packing, crop marks or outline guides, true-size print / save as PDF, and 300 dpi sheet PNGs.
+- Tested it end to end in headless Chromium with JPG, PNG, TIFF and a fake NEF. All decoded; the zip, sheet PNG (2550 × 3300 for Letter) and PDF page size were correct, with no console errors. Fixed two layout bugs the screenshots exposed.
+- Added `Keepframe/README.md` and a row in the root README. Committed, pushed and opened draft PR #6.
+
+### Claude's reply (summary)
+
+> Built **Keepframe by Storitellah** — a single HTML file you open in any browser, with nothing to install and no uploads… Things to know: HEIC/TIFF decoders and caption fonts load from public CDNs the first time they're needed; border sizes are close approximations of real film; print at 100% / "Actual size" for true dimensions.
+
+---
+
+## 2 · Follow-up
+
+> **User:** Include the tool name in the HTML render and add a downloadable version of this chat as well. Do this for all future projects
+
+### What Claude did
+
+- **Tool name in the render:**
+  - Every rendered print now carries a tiny "Keepframe · Storitellah" mark in the bottom-right corner of its border (on by default; toggle under *Frame*).
+  - Every print sheet (screen preview, PNG export, and print/PDF) has a "Made with Keepframe by Storitellah · storitellah.com" credit line below the prints (toggle under *Cutting guides*).
+- **Downloadable chat:**
+  - Added this file (`Keepframe/CHAT.md`).
+  - Embedded a copy inside `index.html`, so the **Download the build chat** link works even when the HTML file is used on its own.
+- **For all future projects:** added a repo-level `CLAUDE.md` asking every future tool to show its name (by Storitellah, linked to storitellah.com) in what it renders, and to ship a downloadable `CHAT.md` of its build conversation.
+</script>
+<!-- BUILD-CHAT:END -->
 <div id="print-root"></div>
 <div id="toast" role="status" aria-live="polite"></div>
 <div id="busy"><div><span class="spin"></span><span id="busy-text">Working…</span></div></div>
@@ -414,7 +464,7 @@ const MAX_SRC = 4200; // longest edge kept in memory
    ====================================================================== */
 const state = {
   items: [], sel: null, view: 'design',
-  sheet: { paper: guessPaper(), orient:'portrait', margin:6, gap:3, guides:'marks', autorotate:true },
+  sheet: { paper: guessPaper(), orient:'portrait', margin:6, gap:3, guides:'marks', autorotate:true, credit:true },
   defaults: null,
 };
 let uid = 1;
@@ -431,7 +481,7 @@ function fileDate(f){
 function newItem(name, src, file){
   const base = state.defaults ? structuredCloneSafe(state.defaults) : {
     format:'mini', frame:'#fbfaf7', rounded:true, preset:'instant',
-    adj:{...ZERO, ...PRESETS.instant.a}, capFont:'Caveat', capSize:6, capAlign:'center', ink:'auto', datestamp:false,
+    adj:{...ZERO, ...PRESETS.instant.a}, capFont:'Caveat', capSize:6, capAlign:'center', ink:'auto', datestamp:false, brandmark:true,
   };
   return Object.assign(base, {
     id: uid++, name, src, sw: src.width, sh: src.height,
@@ -440,7 +490,7 @@ function newItem(name, src, file){
   });
 }
 function structuredCloneSafe(o){ return JSON.parse(JSON.stringify(o)); }
-const STYLE_KEYS = ['format','frame','rounded','preset','adj','capFont','capSize','capAlign','ink','datestamp'];
+const STYLE_KEYS = ['format','frame','rounded','brandmark','preset','adj','capFont','capSize','capAlign','ink','datestamp'];
 const cur = () => state.items.find(i => i.id === state.sel) || null;
 
 /* ======================================================================
@@ -782,7 +832,7 @@ function renderCard(it, dpi){
     ctx.font = `${weight}${fs}px ${fam}`;
     const widest = Math.max(...lines.map(l => ctx.measureText(l).width));
     const lh = 1.08;
-    const avail = (bottom - top) - 3*k;
+    const avail = (bottom - top) - (it.brandmark ? 5.5 : 3)*k;
     const scale = Math.min(1, maxW / Math.max(1, widest), avail / (fs * lh * lines.length));
     fs *= scale; ctx.font = `${weight}${fs}px ${fam}`;
     ctx.fillStyle = ink; ctx.textBaseline = 'middle';
@@ -791,6 +841,13 @@ function renderCard(it, dpi){
     const mid = top + (bottom - top) * 0.47;
     const total = fs * lh * lines.length;
     lines.forEach((l, i) => ctx.fillText(l, x, mid - total/2 + fs*lh*(i + 0.5)));
+  }
+  // tiny tool mark in the bottom-right corner of the border
+  if (it.brandmark) {
+    ctx.font = `600 ${1.6*k}px "DM Sans", system-ui, sans-serif`;
+    ctx.textAlign = 'right'; ctx.textBaseline = 'alphabetic';
+    ctx.fillStyle = luminance(it.frame) > 0.5 ? 'rgba(0,0,0,0.28)' : 'rgba(255,255,255,0.35)';
+    ctx.fillText('Keepframe · Storitellah', W - f.img.x*k - 0.5*k, H - 2.2*k);
   }
   ctx.restore();
   // faint edge so light frames read on white paper
@@ -916,6 +973,7 @@ function syncControls(){
   if (isCustom) cl.querySelector('input').value = it.frame;
   document.querySelectorAll('#ink-swatches .sw').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === it.ink)));
   $('#rounded').checked = it.rounded;
+  $('#brandmark').checked = !!it.brandmark;
   syncPresetChips();
   document.querySelectorAll('#sliders input[type=range]').forEach(inp => { const k = inp.dataset.k; inp.value = it.adj[k] || 0; inp.nextSibling.textContent = fmtAdj(it.adj[k] || 0); });
   $('#bw').checked = !!it.adj.bw;
@@ -943,6 +1001,7 @@ function refreshAll(){
 
 function wireDesign(){
   $('#rounded').onchange = e => setProp('rounded', e.target.checked);
+  $('#brandmark').onchange = e => setProp('brandmark', e.target.checked);
   $('#caption').oninput = e => { const it = cur(); if (!it) return; it.caption = e.target.value; schedulePreview(); };
   $('#cap-font').onchange = e => { setProp('capFont', e.target.value); document.fonts && document.fonts.load(`40px "${e.target.value}"`).then(schedulePreview); };
   document.querySelectorAll('#cap-align button').forEach(b => b.onclick = () => setProp('capAlign', b.dataset.v));
@@ -1169,9 +1228,24 @@ function drawPage(pg, PW, PH, dpi, cache){
     for (const [x1, y1, x2, y2] of guideLines(pg.cards, PW, PH)) { ctx.moveTo(x1*k, y1*k); ctx.lineTo(x2*k, y2*k); }
     ctx.stroke(); ctx.setLineDash([]);
   }
+  const cr = creditPos(pg, PW, PH);
+  if (cr) {
+    ctx.font = `${cr.size*k}px "DM Sans", system-ui, sans-serif`;
+    ctx.fillStyle = '#9a9086'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(CREDIT, PW/2*k, cr.y*k);
+  }
   return c;
 }
 
+const CREDIT = 'Made with Keepframe by Storitellah · storitellah.com';
+// Where the sheet credit line goes (centre y in mm), or null if it doesn't fit below the prints.
+function creditPos(pg, PW, PH){
+  if (!state.sheet.credit || !pg.cards.length) return null;
+  const bottom = Math.max(...pg.cards.map(c => c.y + c.h));
+  const space = PH - bottom;
+  if (space < 3.5) return null;
+  return { y: bottom + Math.min(space / 2, 9), size: Math.min(2.4, space * 0.45) };
+}
 let sheetTimer = null;
 function renderSheets(){
   clearTimeout(sheetTimer);
@@ -1238,6 +1312,8 @@ async function doPrint(){
       if (state.sheet.guides === 'outline') {
         const top = svg.cloneNode(false); top.append(mkLines()); s.append(top);
       }
+      const cr = creditPos(pg, L.PW, L.PH);
+      if (cr) s.append(el('div', { style:`position:absolute;left:0;width:${L.PW}mm;top:${cr.y - cr.size}mm;height:${cr.size*2}mm;line-height:${cr.size*2}mm;text-align:center;font:${cr.size}mm "DM Sans",system-ui,sans-serif;color:#9a9086` }, CREDIT));
       root.append(s);
     }
     await Promise.all(loads);
@@ -1273,6 +1349,7 @@ function syncSheetControls(){
   $('#margin').value = s.margin; $('#margin-v').textContent = s.margin + 'mm';
   $('#gap').value = s.gap; $('#gap-v').textContent = s.gap + 'mm';
   $('#autorotate').checked = s.autorotate;
+  $('#credit').checked = s.credit;
 }
 function wirePrint(){
   const upd = () => { syncSheetControls(); renderSheets(); };
@@ -1282,6 +1359,7 @@ function wirePrint(){
   $('#margin').oninput = e => { state.sheet.margin = parseFloat(e.target.value); upd(); };
   $('#gap').oninput = e => { state.sheet.gap = parseFloat(e.target.value); upd(); };
   $('#autorotate').onchange = e => { state.sheet.autorotate = e.target.checked; upd(); };
+  $('#credit').onchange = e => { state.sheet.credit = e.target.checked; upd(); };
   $('#do-print').onclick = doPrint;
   $('#dl-sheets').onclick = downloadSheets;
   $('#back-design').onclick = () => setView('design');
@@ -1326,6 +1404,13 @@ function wireInput(){
   window.addEventListener('afterprint', () => { const r = $('#print-root'); r.querySelectorAll('img').forEach(i => URL.revokeObjectURL(i.src)); r.innerHTML = ''; });
 }
 
+// Build-chat download: use the copy embedded in this file so it works standalone.
+document.querySelectorAll('.chat-dl').forEach(a => a.addEventListener('click', e => {
+  const md = ($('#build-chat')?.textContent || '').trim();
+  if (!md) return; // fall back to the CHAT.md link
+  e.preventDefault();
+  downloadBlob(new Blob([md + '\n'], { type:'text/markdown' }), 'Keepframe-build-chat.md');
+}));
 buildStaticControls();
 wireDesign(); wirePrint(); wireInput();
 syncSheetControls();

@@ -22,6 +22,7 @@ Open `index.html` in any modern browser. There's nothing to install and no build
 - **Film looks.** Instant, Sunny, Faded, Cool, Vivid, Mono and Sepia presets. You can fine-tune brightness, contrast, saturation, warmth, tint, fade, vignette, grain and glow.
 - **Captions.** Handwritten, marker, script, typewriter or serif text on the bottom border, with ink colours and an optional retro orange date stamp.
 - **Batch tools.** Add copies of any print, apply one style to every photo, and download every print as a 300 dpi PNG or JPG (zipped).
+- **Tool name on every render.** Each print has a tiny "Keepframe · Storitellah" mark on its border, and each sheet has a "Made with Keepframe by Storitellah" credit line. Both are on by default and can be switched off.
 - **Print sheet.** A4, Letter, A5, A3, Legal, 4×6 or 5×7, in portrait or landscape, with adjustable margin and gap. Prints rotate automatically when that fits more on a page. Choose corner crop marks, a dashed outline or no guides. Print or save as PDF at true size, or download the sheets as 300 dpi PNGs to send to a photo lab.
 
 ## Printing tips
@@ -31,3 +32,7 @@ In the print dialog, set **Scale 100% / Actual size** and choose the same paper 
 ## Note on offline use
 
 Everything works offline except the HEIC/TIFF decoders and the caption fonts, which load from public CDNs the first time they're needed. Offline, captions fall back to system fonts.
+
+## Build chat
+
+[`CHAT.md`](CHAT.md) is the conversation this tool was built in. A copy is embedded in `index.html`, so the **Download the build chat** link in the footer works even when the HTML file is used on its own. After editing `CHAT.md`, refresh the embedded copy with `python3 Scripts/embed_chat.py Keepframe`.
