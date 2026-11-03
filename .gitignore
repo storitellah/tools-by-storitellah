@@ -16,3 +16,6 @@ xcuserdata/
 # Python
 __pycache__/
 *.pyc
+
+# Built artifact pages
+*/dist/

@@ -353,14 +353,15 @@ footer.credit a{color:var(--accent);font-weight:600;text-decoration:none}
 
       <div class="divider"></div>
       <div class="actions">
-        <button class="btn primary" id="do-print" type="button">
+        <button class="btn primary" id="dl-pdf" type="button">Download true-size PDF</button>
+        <button class="btn" id="do-print" type="button">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M6 9V3h12v6M6 18H4a1 1 0 0 1-1-1v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6a1 1 0 0 1-1 1h-2"/><path d="M6 14h12v7H6z"/></svg>
-          Print / Save as PDF
+          Print
         </button>
         <button class="btn" id="dl-sheets" type="button">Download sheets as PNG (300 dpi)</button>
         <button class="btn ghost" id="back-design" type="button">← Back to design</button>
       </div>
-      <p class="note" style="margin-top:14px"><b>For true size:</b> in the print dialog choose <i>Scale 100%</i> / <i>Actual size</i>, set margins to <i>None</i> or <i>Default</i>, and pick the matching paper size. Use matte photo paper or 200–300 gsm card for an instant-print feel.</p>
+      <p class="note" style="margin-top:14px"><b>For true size:</b> open the PDF (or use Print) and in the print dialog choose <i>Scale 100%</i> / <i>Actual size</i>, set margins to <i>None</i> or <i>Default</i>, and pick the matching paper size. Use matte photo paper or 200–300 gsm card for an instant-print feel.</p>
       <footer class="credit">Keepframe by <a href="https://storitellah.com" target="_blank" rel="noopener">Storitellah</a> · <a href="CHAT.md" class="chat-dl" download="Keepframe-build-chat.md">Build chat</a></footer>
     </aside>
     <section class="stage">
@@ -413,6 +414,23 @@ The user's messages are verbatim. Claude's replies are condensed, and behind-the
   - Added this file (`Keepframe/CHAT.md`).
   - Embedded a copy inside `index.html`, so the **Download the build chat** link works even when the HTML file is used on its own.
 - **For all future projects:** added a repo-level `CLAUDE.md` asking every future tool to show its name (by Storitellah, linked to storitellah.com) in what it renders, and to ship a downloadable `CHAT.md` of its build conversation.
+
+---
+
+## 3 · Publishing
+
+> **User:** Publish Keepframe as a live web page I can share, include the tool name in the HTML render, and add a downloadable version of this tool in the chat. Do this for all future projects
+
+### What Claude did
+
+- **Live page:** published Keepframe as a claude.ai page at <https://claude.ai/artifact/KwiGmLpKLJKLvkAth6sSJP>. It starts private; share it from the page's **Share** menu.
+- **Hosted mode.** The claude.ai viewer blocks plain downloads and the print dialog, so the tool now:
+  - asks the viewer before each download (prints, zips, sheets and this chat);
+  - adds a **Download true-size PDF** button, which works everywhere and replaces Print on the hosted page;
+  - uses a two-tap "Clear all" in place of a confirm dialog.
+- **Tool name:** "Keepframe by Storitellah" is the page title, the header, the footer, a mark on every print and a credit line on every sheet and PDF (the PDF metadata names it too).
+- **Downloadable copy in the chat:** sent `Keepframe/index.html` as a file in the chat. It is the standalone version, which runs in any browser with no install.
+- **For all future projects:** `CLAUDE.md` now says to publish every tool as a live page (`Scripts/build_artifact.py` turns `index.html` into the hosted page body) and to send the standalone file in the chat.
 </script>
 <!-- BUILD-CHAT:END -->
 <div id="print-root"></div>
@@ -525,7 +543,22 @@ function roundRect(ctx,x,y,w,h,r){
   ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath();
 }
 function safeName(n){ return (n || 'photo').replace(/\.[^.]+$/,'').replace(/[^\w\-]+/g,'_').slice(0,60) || 'photo'; }
-function downloadBlob(blob, name){
+// Hosted on claude.ai the page can't start downloads itself; it asks the viewer through the
+// `downloads` capability instead. Standalone, a plain link download is used.
+const isHosted = () => !!(window.claude && typeof window.claude.use === 'function');
+let dlNs;
+async function downloadBlob(blob, name){
+  if (isHosted()) {
+    dlNs ??= window.claude.use('downloads').catch(() => null);
+    const ns = await dlNs;
+    if (!ns) { toast('Downloads are not available in this view.'); return; }
+    try { await ns.save({ filename: name, data: blob }); toast('Saved ' + name); }
+    catch (e) {
+      if (e && e.code === 'declined') return;
+      toast(e && e.code === 'rate_limited' ? 'A save is already waiting for your answer.' : 'Could not save the file here.');
+    }
+    return;
+  }
   const a = el('a', {href: URL.createObjectURL(blob), download: name});
   document.body.append(a); a.click(); a.remove();
   setTimeout(()=>URL.revokeObjectURL(a.href), 4000);
@@ -1141,6 +1174,36 @@ function makeZip(files){
   return new Blob([...parts, ...central, e.buffer], { type:'application/zip' });
 }
 
+/* ---- minimal PDF writer: one full-page JPEG per page, sized in real millimetres ---- */
+function makePdf(pages){
+  const enc = new TextEncoder(), chunks = [], offs = [];
+  let len = 0;
+  const push = d => { const u = typeof d === 'string' ? enc.encode(d) : d; chunks.push(u); len += u.length; };
+  const obj = (n, body, stream) => {
+    offs[n] = len;
+    push(`${n} 0 obj\n${body}\n`);
+    if (stream) { push('stream\n'); push(stream); push('\nendstream\n'); }
+    push('endobj\n');
+  };
+  push('%PDF-1.4\n%\xE2\xE3\xCF\xD3\n');
+  const n = pages.length, kids = pages.map((_, i) => `${3 + i*3} 0 R`).join(' ');
+  obj(1, '<< /Type /Catalog /Pages 2 0 R >>');
+  obj(2, `<< /Type /Pages /Kids [${kids}] /Count ${n} >>`);
+  pages.forEach((pg, i) => {
+    const pid = 3 + i*3, cid = pid + 1, iid = pid + 2;
+    const W = (pg.PW * 72 / 25.4).toFixed(3), H = (pg.PH * 72 / 25.4).toFixed(3);
+    const content = `q ${W} 0 0 ${H} 0 0 cm /Im0 Do Q`;
+    obj(pid, `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${W} ${H}] /Resources << /XObject << /Im0 ${iid} 0 R >> >> /Contents ${cid} 0 R >>`);
+    obj(cid, `<< /Length ${content.length} >>`, enc.encode(content));
+    obj(iid, `<< /Type /XObject /Subtype /Image /Width ${pg.w} /Height ${pg.h} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${pg.jpeg.length} >>`, pg.jpeg);
+  });
+  const total = 3 + n*3, xref = len;
+  let x = `xref\n0 ${total}\n0000000000 65535 f \n`;
+  for (let i = 1; i < total; i++) x += String(offs[i]).padStart(10, '0') + ' 00000 n \n';
+  push(x + `trailer\n<< /Size ${total} /Root 1 0 R /Info << /Producer (Keepframe by Storitellah) /Title (Keepframe print sheets) >> >>\nstartxref\n${xref}\n%%EOF\n`);
+  return new Blob(chunks, { type:'application/pdf' });
+}
+
 /* ======================================================================
    Print sheet
    ====================================================================== */
@@ -1266,9 +1329,9 @@ function _renderSheets(){
   if (L.skipped.size) $('#sheet-warn').append(el('div', { class:'warn' }, `${[...L.skipped].map(f => FORMATS[f].name).join(' & ')} prints don't fit this paper — try a bigger size, landscape, or a smaller margin.`));
   if (!state.items.length) {
     host.append(el('div', { class:'empty', style:'position:relative;inset:auto;min-height:50vh;width:100%' }, el('h3', {}, 'No prints yet'), el('p', {}, 'Add some photos first, then come back to lay them out.'), el('button', { class:'btn primary', type:'button', onclick: () => setView('design') }, '← Back to design')));
-    $('#do-print').disabled = $('#dl-sheets').disabled = true; return;
+    $('#do-print').disabled = $('#dl-sheets').disabled = $('#dl-pdf').disabled = true; return;
   }
-  $('#do-print').disabled = $('#dl-sheets').disabled = !L.pages.length;
+  $('#do-print').disabled = $('#dl-sheets').disabled = $('#dl-pdf').disabled = !L.pages.length;
   const cache = new Map();
   const dpi = Math.min(90, 520 / L.PH * 25.4);
   L.pages.forEach((pg, i) => {
@@ -1325,6 +1388,20 @@ async function doPrint(){
   window.print();
 }
 
+async function downloadPdf(){
+  const L = computeLayout(); if (!L.pages.length) return;
+  busy(true, 'Building a true-size PDF…');
+  try {
+    const cache = new Map(), pages = [];
+    for (const [i, pg] of L.pages.entries()) {
+      $('#busy-text').textContent = `Rendering page ${i+1} of ${L.pages.length}…`; await nextFrame();
+      const c = drawPage(pg, L.PW, L.PH, PRINT_DPI, cache);
+      const jpeg = new Uint8Array(await (await canvasBlob(c, 'image/jpeg', 0.93)).arrayBuffer());
+      pages.push({ jpeg, w: c.width, h: c.height, PW: L.PW, PH: L.PH });
+    }
+    downloadBlob(makePdf(pages), `keepframe_sheets_${state.sheet.paper}.pdf`);
+  } finally { busy(false); }
+}
 async function downloadSheets(){
   const L = computeLayout(); if (!L.pages.length) return;
   busy(true, 'Rendering sheets at 300 dpi…');
@@ -1361,6 +1438,7 @@ function wirePrint(){
   $('#autorotate').onchange = e => { state.sheet.autorotate = e.target.checked; upd(); };
   $('#credit').onchange = e => { state.sheet.credit = e.target.checked; upd(); };
   $('#do-print').onclick = doPrint;
+  $('#dl-pdf').onclick = downloadPdf;
   $('#dl-sheets').onclick = downloadSheets;
   $('#back-design').onclick = () => setView('design');
 }
@@ -1384,7 +1462,14 @@ function wireInput(){
   const fi = $('#file-input');
   ['#add-btn','#add-btn-2','#add-btn-3'].forEach(s => $(s).onclick = () => fi.click());
   fi.onchange = () => { addFiles(fi.files); fi.value = ''; };
-  $('#clear-btn').onclick = () => { if (confirm('Remove all photos?')) { state.items = []; state.sel = null; refreshAll(); } };
+  // Two-step clear (dialogs like confirm() are blocked when hosted).
+  let clearArmed = null;
+  $('#clear-btn').onclick = () => {
+    const b = $('#clear-btn');
+    if (!clearArmed) { b.textContent = 'Tap again to remove all'; clearArmed = setTimeout(() => { clearArmed = null; b.textContent = 'Clear all'; }, 3000); return; }
+    clearTimeout(clearArmed); clearArmed = null; b.textContent = 'Clear all';
+    state.items = []; state.sel = null; refreshAll();
+  };
   $('#tab-design').onclick = () => setView('design');
   $('#tab-print').onclick = () => setView('print');
   let depth = 0;
@@ -1411,6 +1496,9 @@ document.querySelectorAll('.chat-dl').forEach(a => a.addEventListener('click', e
   e.preventDefault();
   downloadBlob(new Blob([md + '\n'], { type:'text/markdown' }), 'Keepframe-build-chat.md');
 }));
+// The claude.ai viewer can't open the print dialog; the PDF covers printing there.
+const hidePrintIfHosted = () => { if (isHosted()) $('#do-print').hidden = true; };
+hidePrintIfHosted(); window.addEventListener('load', hidePrintIfHosted);
 buildStaticControls();
 wireDesign(); wirePrint(); wireInput();
 syncSheetControls();

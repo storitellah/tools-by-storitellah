@@ -40,3 +40,20 @@ The user's messages are verbatim. Claude's replies are condensed, and behind-the
   - Added this file (`Keepframe/CHAT.md`).
   - Embedded a copy inside `index.html`, so the **Download the build chat** link works even when the HTML file is used on its own.
 - **For all future projects:** added a repo-level `CLAUDE.md` asking every future tool to show its name (by Storitellah, linked to storitellah.com) in what it renders, and to ship a downloadable `CHAT.md` of its build conversation.
+
+---
+
+## 3 · Publishing
+
+> **User:** Publish Keepframe as a live web page I can share, include the tool name in the HTML render, and add a downloadable version of this tool in the chat. Do this for all future projects
+
+### What Claude did
+
+- **Live page:** published Keepframe as a claude.ai page at <https://claude.ai/artifact/KwiGmLpKLJKLvkAth6sSJP>. It starts private; share it from the page's **Share** menu.
+- **Hosted mode.** The claude.ai viewer blocks plain downloads and the print dialog, so the tool now:
+  - asks the viewer before each download (prints, zips, sheets and this chat);
+  - adds a **Download true-size PDF** button, which works everywhere and replaces Print on the hosted page;
+  - uses a two-tap "Clear all" in place of a confirm dialog.
+- **Tool name:** "Keepframe by Storitellah" is the page title, the header, the footer, a mark on every print and a credit line on every sheet and PDF (the PDF metadata names it too).
+- **Downloadable copy in the chat:** sent `Keepframe/index.html` as a file in the chat. It is the standalone version, which runs in any browser with no install.
+- **For all future projects:** `CLAUDE.md` now says to publish every tool as a live page (`Scripts/build_artifact.py` turns `index.html` into the hosted page body) and to send the standalone file in the chat.

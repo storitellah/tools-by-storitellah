@@ -4,7 +4,9 @@
 
 Keepframe is one self-contained HTML file. It turns any photo into a mini, square or wide instant-film style print, then lays the prints out on a true-size sheet so you can print and cut them at home.
 
-Open `index.html` in any modern browser. There's nothing to install and no build step. Your photos never leave your device.
+**Live page:** <https://claude.ai/artifact/KwiGmLpKLJKLvkAth6sSJP> (private until shared from its Share menu).
+
+Or open `index.html` in any modern browser. There's nothing to install and no build step. Your photos never leave your device.
 
 ## Print sizes
 
@@ -23,7 +25,7 @@ Open `index.html` in any modern browser. There's nothing to install and no build
 - **Captions.** Handwritten, marker, script, typewriter or serif text on the bottom border, with ink colours and an optional retro orange date stamp.
 - **Batch tools.** Add copies of any print, apply one style to every photo, and download every print as a 300 dpi PNG or JPG (zipped).
 - **Tool name on every render.** Each print has a tiny "Keepframe · Storitellah" mark on its border, and each sheet has a "Made with Keepframe by Storitellah" credit line. Both are on by default and can be switched off.
-- **Print sheet.** A4, Letter, A5, A3, Legal, 4×6 or 5×7, in portrait or landscape, with adjustable margin and gap. Prints rotate automatically when that fits more on a page. Choose corner crop marks, a dashed outline or no guides. Print or save as PDF at true size, or download the sheets as 300 dpi PNGs to send to a photo lab.
+- **Print sheet.** A4, Letter, A5, A3, Legal, 4×6 or 5×7, in portrait or landscape, with adjustable margin and gap. Prints rotate automatically when that fits more on a page. Choose corner crop marks, a dashed outline or no guides. Download a true-size PDF, print directly (standalone only), or download the sheets as 300 dpi PNGs to send to a photo lab.
 
 ## Printing tips
 
@@ -36,3 +38,7 @@ Everything works offline except the HEIC/TIFF decoders and the caption fonts, wh
 ## Build chat
 
 [`CHAT.md`](CHAT.md) is the conversation this tool was built in. A copy is embedded in `index.html`, so the **Download the build chat** link in the footer works even when the HTML file is used on its own. After editing `CHAT.md`, refresh the embedded copy with `python3 Scripts/embed_chat.py Keepframe`.
+
+## Hosted page
+
+The live page is built from `index.html` with `python3 Scripts/build_artifact.py Keepframe`. When it runs on claude.ai, it asks the viewer before saving each download, and the PDF button stands in for Print, which the viewer blocks.
