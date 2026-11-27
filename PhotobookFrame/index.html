@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Photobook Frame Pro</title>
+  <title>Photobook Frame — by Storitellah</title>
+  <meta name="description" content="Photobook Frame by Storitellah: lay out cover wraps and double-page photobook spreads in your browser, with zero-crop frames, film looks, EXIF date stamps and true-size PDF printing." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23141416'/%3E%3Cpath d='M12 18c7-3 13-3 20 1v29c-7-4-13-4-20-1z' fill='%23F59E0B'/%3E%3Cpath d='M52 18c-7-3-13-3-20 1v29c7-4 13-4 20-1z' fill='%23FCD34D'/%3E%3C/svg%3E" />
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
   <style>
@@ -301,6 +303,18 @@
       background: rgba(217, 119, 6, 0.14) !important;
     }
 
+    /* Small "Photobook Frame by Storitellah" credit preview on the spread */
+    .spread-credit {
+      position: absolute;
+      pointer-events: none;
+      white-space: nowrap;
+      font-family: 'Inter', sans-serif;
+      letter-spacing: 0.04em;
+      z-index: 20;
+    }
+
+    .is-on { background: #3F3F46 !important; color: #FFFFFF !important; }
+
     /* Timeline thumbnail active ring */
     .timeline-card.active {
       border-color: var(--accent-hi);
@@ -322,11 +336,12 @@
         page-break-after: always;
         break-after: page;
         width: 100%;
-        height: 96vh;
+        height: 100vh;
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 12px;
+        padding: 0;
+        overflow: hidden;
       }
       .print-spread:last-child { page-break-after: auto; break-after: auto; }
       .print-spread img {
@@ -350,7 +365,7 @@
         <div class="w-6 h-6 rounded bg-amber-600/20 border border-amber-500/40 text-amber-400 flex items-center justify-center shrink-0">
           <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
         </div>
-        <span class="text-xs font-semibold tracking-wide text-amber-400 shrink-0 hidden sm:inline">Photobook Frame Pro</span>
+        <span class="text-xs font-semibold tracking-wide text-amber-400 shrink-0 hidden sm:inline">Photobook Frame <span class="font-normal text-zinc-500">by <a href="https://storitellah.com" target="_blank" rel="noopener" class="text-zinc-300 hover:text-amber-300 underline decoration-zinc-600 underline-offset-2">Storitellah</a></span></span>
         <span class="text-zinc-600 hidden sm:inline">/</span>
         <input
           id="book-title-input"
@@ -597,7 +612,7 @@
           </button>
           <button data-inspector="snapseed" class="insp-tab py-2 text-[10px] font-semibold flex flex-col items-center gap-0.5 border-b-2 border-transparent text-zinc-400 hover:text-zinc-200">
             <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5"></i>
-            <span>Snapseed</span>
+            <span>Looks</span>
           </button>
           <button data-inspector="dates" class="insp-tab py-2 text-[10px] font-semibold flex flex-col items-center gap-0.5 border-b-2 border-transparent text-zinc-400 hover:text-zinc-200">
             <i data-lucide="calendar-clock" class="w-3.5 h-3.5"></i>
@@ -735,6 +750,18 @@
                 <input id="slider-spread-margin" type="range" min="0" max="12" value="5" class="w-full" />
               </div>
             </div>
+
+            <!-- Export credit -->
+            <div class="border-t border-[#2C2C33] pt-3 space-y-2">
+              <div class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">Export</div>
+              <label class="flex items-center justify-between gap-2 text-[11px] text-zinc-200 cursor-pointer p-2 rounded bg-[#141416] border border-[#2C2C33]">
+                <div>
+                  <div class="font-medium">Credit on exports</div>
+                  <div class="text-[10px] text-zinc-500">Adds a small “Photobook Frame by Storitellah · storitellah.com” line to PNGs, PDFs and edited photos</div>
+                </div>
+                <input id="toggle-credit" type="checkbox" checked class="accent-amber-500 w-3.5 h-3.5 shrink-0" />
+              </label>
+            </div>
           </div>
 
           <!-- ========================================================= -->
@@ -760,7 +787,7 @@
                   <div id="arr-photo-ratio" class="text-[10px] font-mono-film text-emerald-400">16:9 Original</div>
                 </div>
                 <button id="btn-jump-snapseed" class="px-2 py-1 rounded bg-[#232328] hover:bg-amber-600 text-zinc-200 hover:text-white text-[10px] font-medium shrink-0">
-                  Snapseed →
+                  Edit look →
                 </button>
               </div>
 
@@ -871,7 +898,7 @@
           <div id="insp-snapseed" class="hidden space-y-3">
             <div class="flex items-center justify-between">
               <div class="min-w-0">
-                <div class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">Snapseed Studio</div>
+                <div class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">Photo Studio</div>
                 <div id="snap-target-name" class="text-[11px] text-zinc-200 truncate">Select a photo</div>
               </div>
               <div class="flex items-center gap-1 shrink-0">
@@ -1037,6 +1064,8 @@
         <div class="flex items-center gap-2">
           <span class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">Photobook Timeline</span>
           <span id="timeline-summary" class="text-[10px] font-mono-film text-zinc-500">Cover + 2 Spreads (4 Pages)</span>
+          <span class="hidden md:inline text-zinc-700">·</span>
+          <span class="hidden md:inline text-[10px] text-zinc-500">Photobook Frame by <a href="https://storitellah.com" target="_blank" rel="noopener" class="text-zinc-300 hover:text-amber-300">Storitellah</a> · <a href="CHAT.md" class="chat-dl text-zinc-300 hover:text-amber-300" download="PhotobookFrame-build-chat.md">Download the build chat</a></span>
         </div>
         <div class="flex items-center gap-1.5">
           <button id="btn-spread-left" title="Move spread earlier" class="px-1.5 py-0.5 rounded bg-[#1E1E24] hover:bg-[#2A2A32] border border-[#2C2C33] text-[10px] text-zinc-300 disabled:opacity-35">← Move</button>
@@ -1131,7 +1160,7 @@
           if (offset + 8 <= view.byteLength &&
               view.getUint32(offset + 2, false) === 0x45786966 &&
               view.getUint16(offset + 6, false) === 0x0000) {
-            parseTiff(view, offset + 8, meta);
+            try { parseTiff(view, offset + 8, meta); } catch (e) { /* keep whatever was read */ }
             break;
           }
           offset += length;
@@ -1174,17 +1203,20 @@
         const cnt = view.getUint32(e + 4, le);
         const sz = ({ 1:1, 2:1, 3:2, 4:4, 5:8, 7:1, 9:4, 10:8 })[type] || 1;
         const dataOff = cnt * sz > 4 ? tiffStart + view.getUint32(e + 8, le) : e + 8;
-        if (type === 2) tags[tag] = readAscii(view, dataOff, cnt);
-        else if (type === 3) tags[tag] = view.getUint16(dataOff, le);
-        else if (type === 4) tags[tag] = view.getUint32(dataOff, le);
-        else if (type === 5) {
-          if (cnt === 1) tags[tag] = readRational(view, dataOff, le);
-          else {
-            const arr = [];
-            for (let k = 0; k < cnt; k++) arr.push(readRational(view, dataOff + k * 8, le));
-            tags[tag] = arr;
+        if (dataOff + Math.min(sz, 8) > view.byteLength) continue; // value points outside the file
+        try {
+          if (type === 2) tags[tag] = readAscii(view, dataOff, cnt);
+          else if (type === 3) tags[tag] = view.getUint16(dataOff, le);
+          else if (type === 4) tags[tag] = view.getUint32(dataOff, le);
+          else if (type === 5) {
+            if (cnt === 1) tags[tag] = readRational(view, dataOff, le);
+            else {
+              const arr = [];
+              for (let k = 0; k < Math.min(cnt, 16); k++) arr.push(readRational(view, dataOff + k * 8, le));
+              tags[tag] = arr;
+            }
           }
-        }
+        } catch (err) { /* skip a damaged tag, keep the rest */ }
       }
       return tags;
     }
@@ -1221,7 +1253,7 @@
           let lon = gps[4][0] + gps[4][1] / 60 + gps[4][2] / 3600;
           if (gps[1] === 'S') lat = -lat;
           if (gps[3] === 'W') lon = -lon;
-          if (!Number.isNaN(lat) && !Number.isNaN(lon)) meta.gps = lat.toFixed(4) + ', ' + lon.toFixed(4);
+          if (Number.isFinite(lat) && Number.isFinite(lon)) meta.gps = lat.toFixed(4) + ', ' + lon.toFixed(4);
         }
       }
     }
@@ -1332,9 +1364,13 @@
       selectedItemId: null, // spread item id (photo or text)
       activePhotoId: null,  // photo currently inspected in Snapseed / EXIF
       compareOriginal: false,
+      showCredit: true,     // "Photobook Frame by Storitellah" line on exports
+      userChanges: false,   // set once the user adds their own photos (for the leave-page warning)
       imageCache: new Map(),
-      renderedCache: new Map()
+      renderedCache: new Map() // one entry per photo + size: { key, url }
     };
+
+    const CREDIT_TEXT = 'Photobook Frame by Storitellah · storitellah.com';
 
     const SAMPLE_PHOTOS = [
       {
@@ -1416,14 +1452,56 @@
       });
     }
 
-    function buildFilterString(edits) {
+    function filterParams(edits) {
       const b = 100 + (edits.brightness || 0) * 0.9 + (edits.ambiance || 0) * 0.25;
       const c = 100 + (edits.contrast || 0) * 1.15 + (edits.ambiance || 0) * 0.3;
       const s = Math.max(0, 100 + (edits.saturation || 0) + (edits.ambiance || 0) * 0.35);
       const sep = edits.warmth > 0 ? Math.min(35, edits.warmth * 0.45) : 0;
-      const arr = [`brightness(${Math.max(20, b).toFixed(1)}%)`, `contrast(${Math.max(30, c).toFixed(1)}%)`, `saturate(${s.toFixed(1)}%)`];
-      if (sep > 0) arr.push(`sepia(${sep.toFixed(1)}%)`);
+      return { b: Math.max(20, b), c: Math.max(30, c), s, sep };
+    }
+
+    function buildFilterString(edits) {
+      const f = filterParams(edits);
+      const arr = [`brightness(${f.b.toFixed(1)}%)`, `contrast(${f.c.toFixed(1)}%)`, `saturate(${f.s.toFixed(1)}%)`];
+      if (f.sep > 0) arr.push(`sepia(${f.sep.toFixed(1)}%)`);
       return arr.join(' ');
+    }
+
+    // Safari before 18 has no CanvasRenderingContext2D.filter, so edits were silently dropped there.
+    const CANVAS_FILTER_OK = (() => {
+      try {
+        const c = document.createElement('canvas').getContext('2d');
+        if (!('filter' in c)) return false;
+        c.filter = 'brightness(50%)';
+        return c.filter === 'brightness(50%)';
+      } catch (e) { return false; }
+    })();
+
+    // Pixel version of brightness() contrast() saturate() sepia(), same maths as the CSS filters.
+    function applyFilterPixels(ctx, w, h, edits) {
+      const f = filterParams(edits);
+      const b = f.b / 100, c = f.c / 100, s = f.s / 100, a = 1 - f.sep / 100;
+      if (b === 1 && c === 1 && s === 1 && a === 1) return;
+      const sm = [0.213 + 0.787 * s, 0.715 - 0.715 * s, 0.072 - 0.072 * s,
+                  0.213 - 0.213 * s, 0.715 + 0.285 * s, 0.072 - 0.072 * s,
+                  0.213 - 0.213 * s, 0.715 - 0.715 * s, 0.072 + 0.928 * s];
+      const pm = [0.393 + 0.607 * a, 0.769 - 0.769 * a, 0.189 - 0.189 * a,
+                  0.349 - 0.349 * a, 0.686 + 0.314 * a, 0.168 - 0.168 * a,
+                  0.272 - 0.272 * a, 0.534 - 0.534 * a, 0.131 + 0.869 * a];
+      const cl = v => v < 0 ? 0 : v > 255 ? 255 : v;
+      const data = ctx.getImageData(0, 0, w, h);
+      const px = data.data;
+      for (let i = 0; i < px.length; i += 4) {
+        let r = cl(px[i] * b), g = cl(px[i + 1] * b), bl = cl(px[i + 2] * b);
+        r = cl((r - 127.5) * c + 127.5); g = cl((g - 127.5) * c + 127.5); bl = cl((bl - 127.5) * c + 127.5);
+        let r2 = cl(sm[0] * r + sm[1] * g + sm[2] * bl), g2 = cl(sm[3] * r + sm[4] * g + sm[5] * bl), b2 = cl(sm[6] * r + sm[7] * g + sm[8] * bl);
+        if (a !== 1) {
+          const r3 = pm[0] * r2 + pm[1] * g2 + pm[2] * b2, g3 = pm[3] * r2 + pm[4] * g2 + pm[5] * b2, b3 = pm[6] * r2 + pm[7] * g2 + pm[8] * b2;
+          r2 = cl(r3); g2 = cl(g3); b2 = cl(b3);
+        }
+        px[i] = r2; px[i + 1] = g2; px[i + 2] = b2;
+      }
+      ctx.putImageData(data, 0, 0);
     }
 
     function drawPhotoToCanvas(canvas, img, photo, opts = {}) {
@@ -1442,9 +1520,12 @@
 
       const edits = photo.edits || DEFAULT_EDITS();
       ctx.save();
-      ctx.filter = skipEdits ? 'none' : buildFilterString(edits);
+      if (CANVAS_FILTER_OK) ctx.filter = skipEdits ? 'none' : buildFilterString(edits);
       ctx.drawImage(img, 0, 0, w, h);
       ctx.restore();
+      if (!CANVAS_FILTER_OK && !skipEdits) {
+        try { applyFilterPixels(ctx, w, h, edits); } catch (e) { /* tainted or out of memory: keep the plain photo */ }
+      }
 
       if (!skipEdits) {
         if (edits.warmth && edits.warmth !== 0) {
@@ -1564,15 +1645,33 @@
         showToast(`Selected "${existing.name}".`);
         return;
       }
+      if (/['"\\;{}<>]/.test(clean)) {
+        showToast('Font names can only contain letters, numbers and spaces.');
+        return;
+      }
       const encoded = encodeURIComponent(clean).replace(/%20/g, '+');
-      const link = document.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = `https://fonts.googleapis.com/css2?family=${encoded}:ital,wght@0,400;0,600;0,700;1,400&display=swap`;
-      document.head.appendChild(link);
+      // Ask for the common styles first; families without them (e.g. single-weight display
+      // fonts) make Google Fonts answer 400, so fall back to the bare family.
+      const tryCss = (href) => new Promise(res => {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = href;
+        link.onload = () => res(true);
+        link.onerror = () => { link.remove(); res(false); };
+        document.head.appendChild(link);
+      });
+      showToast(`Loading "${clean}"…`);
+      const base = `https://fonts.googleapis.com/css2?family=${encoded}`;
+      const ok = await tryCss(`${base}:ital,wght@0,400;0,600;0,700;1,400&display=swap`) || await tryCss(`${base}&display=swap`);
+      if (!ok) {
+        showToast(`Couldn't find "${clean}" on Google Fonts. Check the spelling, or you're offline.`);
+        return;
+      }
+      // Wait for the font files themselves, so canvas renders (date stamps, exports) use them.
+      try { await document.fonts.load(`16px "${clean}"`); } catch (e) {}
 
       state.customFonts.push({ id: clean, name: clean, category: 'Google Font', css: `'${clean}', sans-serif` });
       state.bookFont = clean;
-      try { await document.fonts.load(`16px "${clean}"`); } catch (e) {}
       populateFontSelects();
       state.renderedCache.clear();
       renderAll();
@@ -1581,7 +1680,7 @@
 
     async function loadCustomFontFile(file) {
       if (!file) return;
-      const baseName = file.name.replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ').trim() || 'Custom Font';
+      const baseName = file.name.replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ').replace(/['"\\;{}<>]/g, '').trim() || 'Custom Font';
       try {
         const buffer = await file.arrayBuffer();
         const face = new FontFace(baseName, buffer);
@@ -1625,7 +1724,12 @@
         const rx = x - px, ry = y - fs * 0.5 - py, rw = tw + px * 2, rh = fs + py * 2;
         ctx.fillStyle = 'rgba(18, 18, 22, 0.72)';
         ctx.beginPath();
-        ctx.roundRect(rx, ry, rw, rh, rh / 2);
+        if (ctx.roundRect) ctx.roundRect(rx, ry, rw, rh, rh / 2);
+        else {
+          const r = rh / 2;
+          ctx.moveTo(rx + r, ry); ctx.lineTo(rx + rw - r, ry); ctx.arc(rx + rw - r, ry + r, r, -Math.PI / 2, Math.PI / 2);
+          ctx.lineTo(rx + r, ry + rh); ctx.arc(rx + r, ry + r, r, Math.PI / 2, Math.PI * 1.5); ctx.closePath();
+        }
         ctx.fill();
         ctx.fillStyle = '#FFFFFF';
         ctx.fillText(text, x, y + 1);
@@ -1649,14 +1753,18 @@
     }
 
     async function getRenderedPhotoUrl(photo, maxDim = 900) {
-      const key = [photo.id, photo.date, photo.location, JSON.stringify(photo.edits), JSON.stringify(photo.stamp), maxDim].join('|');
-      if (state.renderedCache.has(key)) return state.renderedCache.get(key);
+      // Keep only the latest render per photo + size. Caching every slider position leaked
+      // a full JPEG data URL per step, so a few slider drags held tens of MB.
+      const key = [photo.date, photo.location, JSON.stringify(photo.edits), JSON.stringify(photo.stamp), state.bookFont].join('|');
+      const slot = photo.id + '|' + maxDim;
+      const hit = state.renderedCache.get(slot);
+      if (hit && hit.key === key) return hit.url;
       const img = await getImageElement(photo);
       if (!img) return photo.src;
       const off = document.createElement('canvas');
       drawPhotoToCanvas(off, img, photo, { maxDim });
       const url = off.toDataURL('image/jpeg', 0.9);
-      state.renderedCache.set(key, url);
+      state.renderedCache.set(slot, { key, url });
       return url;
     }
 
@@ -1694,6 +1802,16 @@
       };
     }
 
+    // Items a template creates carry fromTemplate (plus a role for text and a slot for photos),
+    // so a layout rebuild can tell them apart from things the user added and keep those.
+    function tplText(role, text, x, y, w, opts) {
+      return Object.assign(makeTextItem(text, x, y, w, opts), { fromTemplate: true, role });
+    }
+    function tplPhoto(slot, photoId, x, y, w, h, z) {
+      return Object.assign(makePhotoItem(photoId, x, y, w, h, z), { fromTemplate: true, slot });
+    }
+
+    // existingPhotoIds = [frontPhotoId, backPhotoId]
     function buildCoverSpreadItems(frontTpl, backTpl, existingPhotoIds) {
       const pFront = existingPhotoIds[0] || (state.photos[0] && state.photos[0].id) || null;
       const pBack  = existingPhotoIds[1] || (state.photos[state.photos.length - 1] && state.photos[state.photos.length - 1].id) || null;
@@ -1703,34 +1821,42 @@
 
       // BACK COVER (Left half: x 0% -> 47.5%)
       if (backTpl === 'colophon') {
-        items.push(makeTextItem('LUNA & LARA ARCHIVE', 8, 42, 31, { font: 'sans', size: 11, color: muted, tracking: 3, align: 'center' }));
-        items.push(makeTextItem('Printed & Bound · 2026', 8, 50, 31, { font: 'serif', size: 14, color: ink, italic: true, align: 'center' }));
+        items.push(tplText('back-kicker', 'LUNA & LARA ARCHIVE', 8, 42, 31, { font: 'sans', size: 11, color: muted, tracking: 3, align: 'center' }));
+        items.push(tplText('back-line', 'Printed & Bound · 2026', 8, 50, 31, { font: 'serif', size: 14, color: ink, italic: true, align: 'center' }));
       } else if (backTpl === 'keepsake' && pBack) {
-        items.push(makePhotoItem(pBack, 13, 24, 21, 44, 2));
-        items.push(makeTextItem('2026', 13, 73, 21, { font: 'serif', size: 13, color: muted, italic: true, align: 'center' }));
+        items.push(tplPhoto('back', pBack, 13, 24, 21, 44, 2));
+        items.push(tplText('back-year', '2026', 13, 73, 21, { font: 'serif', size: 13, color: muted, italic: true, align: 'center' }));
       } else if (backTpl === 'dedication') {
-        items.push(makeTextItem('“The days are long, but the years are short — every little moment kept forever.”', 8, 40, 31, { font: 'serif', size: 15, color: ink, italic: true, align: 'center' }));
+        items.push(tplText('back-quote', '“The days are long, but the years are short — every little moment kept forever.”', 8, 40, 31, { font: 'serif', size: 15, color: ink, italic: true, align: 'center' }));
       }
 
       // FRONT COVER (Right half: x 52.5% -> 100%)
       if (frontTpl === 'editorial') {
-        items.push(makeTextItem('PHOTOBOOK ARCHIVE', 56, 8, 40, { font: 'sans', size: 10, color: muted, tracking: 3, align: 'center' }));
-        items.push(makeTextItem(state.bookTitle, 56, 14, 40, { font: 'serif', size: 28, color: ink, bold: true, align: 'center' }));
-        if (pFront) items.push(makePhotoItem(pFront, 57, 30, 38, 58, 2));
+        items.push(tplText('front-kicker', 'PHOTOBOOK ARCHIVE', 56, 8, 40, { font: 'sans', size: 10, color: muted, tracking: 3, align: 'center' }));
+        items.push(tplText('title', state.bookTitle, 56, 14, 40, { font: 'serif', size: 28, color: ink, bold: true, align: 'center' }));
+        if (pFront) items.push(tplPhoto('front', pFront, 57, 30, 38, 58, 2));
       } else if (frontTpl === 'full-wrap') {
-        if (pFront) items.push(makePhotoItem(pFront, 53.5, 4, 44, 78, 2));
-        items.push(makeTextItem(state.bookTitle, 55, 85, 41, { font: 'serif', size: 22, color: ink, bold: true, align: 'center' }));
+        if (pFront) items.push(tplPhoto('front', pFront, 53.5, 4, 44, 78, 2));
+        items.push(tplText('title', state.bookTitle, 55, 85, 41, { font: 'serif', size: 22, color: ink, bold: true, align: 'center' }));
       } else if (frontTpl === 'plaque') {
-        if (pFront) items.push(makePhotoItem(pFront, 61, 16, 30, 54, 2));
-        items.push(makeTextItem(state.bookTitle, 57, 76, 38, { font: 'serif', size: 22, color: ink, align: 'center' }));
-        items.push(makeTextItem('JANUARY — NOVEMBER 2026', 57, 86, 38, { font: 'sans', size: 9, color: muted, tracking: 2.5, align: 'center' }));
+        if (pFront) items.push(tplPhoto('front', pFront, 61, 16, 30, 54, 2));
+        items.push(tplText('title', state.bookTitle, 57, 76, 38, { font: 'serif', size: 22, color: ink, align: 'center' }));
+        items.push(tplText('front-dates', 'JANUARY — NOVEMBER 2026', 57, 86, 38, { font: 'sans', size: 9, color: muted, tracking: 2.5, align: 'center' }));
       } else if (frontTpl === 'typographic') {
-        items.push(makeTextItem(state.bookTitle, 56, 16, 40, { font: 'serif', size: 34, color: ink, bold: true, align: 'center' }));
-        items.push(makeTextItem('A YEAR IN ORIGINAL FRAMES', 56, 34, 40, { font: 'sans', size: 10, color: muted, tracking: 3, align: 'center' }));
-        if (pFront) items.push(makePhotoItem(pFront, 64, 45, 24, 44, 2));
+        items.push(tplText('title', state.bookTitle, 56, 16, 40, { font: 'serif', size: 34, color: ink, bold: true, align: 'center' }));
+        items.push(tplText('front-kicker', 'A YEAR IN ORIGINAL FRAMES', 56, 34, 40, { font: 'sans', size: 10, color: muted, tracking: 3, align: 'center' }));
+        if (pFront) items.push(tplPhoto('front', pFront, 64, 45, 24, 44, 2));
       }
 
       return items;
+    }
+
+    // The cover's current front & back photos, by slot (older items fall back to which half they sit on).
+    function getCoverPhotoIds(sp) {
+      const photos = sp.items.filter(i => i.type === 'photo' && i.fromTemplate !== false);
+      const front = photos.find(i => i.slot === 'front') || photos.find(i => !i.slot && i.x + i.w / 2 >= 50);
+      const back = photos.find(i => i.slot === 'back') || photos.find(i => !i.slot && i.x + i.w / 2 < 50);
+      return [front ? front.photoId : null, back ? back.photoId : null];
     }
 
     function buildInsideSpreadItems(templateId, photoIds, margin = 5) {
@@ -1739,32 +1865,80 @@
       const ink = (PAPER_THEMES[state.paper] || PAPER_THEMES.ivory).text;
       const muted = (PAPER_THEMES[state.paper] || PAPER_THEMES.ivory).muted;
       const p = (i) => photoIds[i] || null;
+      const ph = (i, x, y, w, h, z) => { if (p(i)) items.push(tplPhoto(i, p(i), x, y, w, h, z)); };
 
       if (templateId === 'duo-balanced') {
-        if (p(0)) items.push(makePhotoItem(p(0), m, 10, 47 - m * 1.4, 80, 2));
-        if (p(1)) items.push(makePhotoItem(p(1), 53 + m * 0.4, 10, 47 - m * 1.4, 80, 3));
+        ph(0, m, 10, 47 - m * 1.4, 80, 2);
+        ph(1, 53 + m * 0.4, 10, 47 - m * 1.4, 80, 3);
       } else if (templateId === 'panorama') {
-        if (p(0)) items.push(makePhotoItem(p(0), m, 8, 100 - m * 2, 84, 2));
+        ph(0, m, 8, 100 - m * 2, 84, 2);
       } else if (templateId === 'hero-duo') {
-        if (p(0)) items.push(makePhotoItem(p(0), m, 8, 47 - m * 1.4, 84, 2));
-        if (p(1)) items.push(makePhotoItem(p(1), 53 + m * 0.4, 8, 47 - m * 1.4, 39, 3));
-        if (p(2)) items.push(makePhotoItem(p(2), 53 + m * 0.4, 52, 47 - m * 1.4, 40, 4));
+        ph(0, m, 8, 47 - m * 1.4, 84, 2);
+        ph(1, 53 + m * 0.4, 8, 47 - m * 1.4, 39, 3);
+        ph(2, 53 + m * 0.4, 52, 47 - m * 1.4, 40, 4);
       } else if (templateId === 'trio-gallery') {
-        if (p(0)) items.push(makePhotoItem(p(0), m, 14, 29, 72, 2));
-        if (p(1)) items.push(makePhotoItem(p(1), 35.5, 14, 29, 72, 3));
-        if (p(2)) items.push(makePhotoItem(p(2), 71 - m, 14, 29, 72, 4));
+        ph(0, m, 14, 29, 72, 2);
+        ph(1, 35.5, 14, 29, 72, 3);
+        ph(2, 71 - m, 14, 29, 72, 4);
       } else if (templateId === 'quad-spread') {
         const w = 44 - m;
-        if (p(0)) items.push(makePhotoItem(p(0), m, 8, w, 39, 2));
-        if (p(1)) items.push(makePhotoItem(p(1), m, 52, w, 40, 3));
-        if (p(2)) items.push(makePhotoItem(p(2), 53 + m * 0.3, 8, w, 39, 4));
-        if (p(3)) items.push(makePhotoItem(p(3), 53 + m * 0.3, 52, w, 40, 5));
+        ph(0, m, 8, w, 39, 2);
+        ph(1, m, 52, w, 40, 3);
+        ph(2, 53 + m * 0.3, 8, w, 39, 4);
+        ph(3, 53 + m * 0.3, 52, w, 40, 5);
       } else if (templateId === 'story-photo') {
-        items.push(makeTextItem('Chapter Notes', m + 3, 24, 38, { font: 'serif', size: 24, color: ink, bold: true, align: 'left' }));
-        items.push(makeTextItem('Double-click or edit in the Arrange tab to write a memory, date, or dedication for this spread.', m + 3, 38, 36, { font: 'serif', size: 13, color: muted, italic: true, align: 'left' }));
-        if (p(0)) items.push(makePhotoItem(p(0), 53 + m * 0.4, 8, 47 - m * 1.4, 84, 2));
+        items.push(tplText('story-heading', 'Chapter Notes', m + 3, 24, 38, { font: 'serif', size: 24, color: ink, bold: true, align: 'left' }));
+        items.push(tplText('story-body', 'Double-click this text, or edit it in the Arrange tab, to write a memory, date, or dedication for this spread.', m + 3, 38, 36, { font: 'serif', size: 13, color: muted, italic: true, align: 'left' }));
+        ph(0, 53 + m * 0.4, 8, 47 - m * 1.4, 84, 2);
       }
       return items;
+    }
+
+    // Replace a spread's template items with freshly built ones, keeping:
+    //  - everything the user added themselves (text boxes, extra photos),
+    //  - edited template text (matched by role), and
+    //  - per-photo framing (aspect lock, inner zoom & pan) for photos that stay.
+    // sameTemplate = only the margins changed, so keep the old text styling too.
+    function mergeTemplateLayout(sp, built, sameTemplate) {
+      const oldTexts = new Map(sp.items.filter(i => i.fromTemplate && i.type === 'text' && i.role).map(i => [i.role, i]));
+      const oldPhotos = sp.items.filter(i => i.fromTemplate && i.type === 'photo');
+      const userItems = sp.items.filter(i => !i.fromTemplate && !built.some(b => b.type === 'photo' && b.consumedId === i.id));
+      built.forEach(b => {
+        if (b.type === 'text' && oldTexts.has(b.role)) {
+          const o = oldTexts.get(b.role);
+          const keep = sameTemplate ? ['text', 'font', 'size', 'color', 'bold', 'italic', 'tracking', 'align'] : ['text', 'font', 'color'];
+          if (b.role === 'title') keep.splice(keep.indexOf('text'), 1); // the title follows the book title box
+          keep.forEach(k => { b[k] = o[k]; });
+        } else if (b.type === 'photo') {
+          const o = oldPhotos.find(x => x.photoId === b.photoId);
+          if (o) { b.aspectLocked = o.aspectLocked; b.zoom = o.zoom; b.panX = o.panX; b.panY = o.panY; }
+        }
+        delete b.consumedId;
+      });
+      sp.items = [...built, ...userItems];
+    }
+
+    // Rebuild an inside spread for a (possibly new) template.
+    function relayoutInsideSpread(sp, sameTemplate, fillFromLibrary) {
+      const tplPhotos = sp.items.filter(i => i.fromTemplate && i.type === 'photo').sort((a, b) => (a.slot ?? 0) - (b.slot ?? 0));
+      const userPhotos = sp.items.filter(i => !i.fromTemplate && i.type === 'photo');
+      const needed = (INSIDE_TEMPLATES.find(x => x.id === sp.template) || { slots: 2 }).slots;
+      const pool = [...tplPhotos.map(i => ({ id: i.photoId })), ...(sameTemplate ? [] : userPhotos.map(i => ({ id: i.photoId, itemId: i.id })))];
+      const chosen = [];
+      for (const c of pool) { if (chosen.length >= needed) break; if (!chosen.some(x => x.id === c.id)) chosen.push(c); }
+      if (fillFromLibrary) {
+        const used = getUsedPhotoIds();
+        const ordered = [...state.photos.filter(p => !used.has(p.id)), ...state.photos.filter(p => used.has(p.id))];
+        for (const p of ordered) { if (chosen.length >= needed) break; if (!chosen.some(x => x.id === p.id)) chosen.push({ id: p.id }); }
+      }
+      const built = buildInsideSpreadItems(sp.template, chosen.map(c => c.id), sp.margin ?? 5);
+      // Photos the user had placed that now fill a template slot shouldn't also stay as loose copies.
+      built.forEach(b => { if (b.type === 'photo') { const c = chosen[b.slot]; if (c && c.itemId) b.consumedId = c.itemId; } });
+      mergeTemplateLayout(sp, built, sameTemplate);
+    }
+
+    function relayoutCoverSpread(sp) {
+      mergeTemplateLayout(sp, buildCoverSpreadItems(sp.frontTemplate, sp.backTemplate, getCoverPhotoIds(sp)), false);
     }
 
     // =========================================================================
@@ -1794,18 +1968,10 @@
     // =========================================================================
     // 6B. WORKING RULERS, CUSTOM GUIDES & MAGNETIC SNAP-TO ENGINE
     // =========================================================================
+    // Same clamped size the layout uses, so rulers, grid and snapping always agree with the page.
     function getActiveBookSize() {
-      if (state.bookSizeId === 'custom') {
-        return {
-          w: Math.max(2, Number(state.customSize.w) || 8),
-          h: Math.max(2, Number(state.customSize.h) || 6),
-          unit: state.customSize.unit || 'in'
-        };
-      }
-      const p = (typeof BOOK_SIZES !== 'undefined' && BOOK_SIZES[state.bookSizeId])
-        ? BOOK_SIZES[state.bookSizeId]
-        : { w: 8, h: 6, unit: 'in' };
-      return { w: p.w || 8, h: p.h || 6, unit: p.unit || 'in' };
+      const d = getActiveBookDimensions();
+      return { w: d.w, h: d.h, unit: d.unit };
     }
 
     function getSpreadPhysicalDims() {
@@ -2240,9 +2406,25 @@
       });
     }
 
+    // Several renders can be in flight at once (slider drags fire many input events and each
+    // render awaits photo encodes). Only the newest one may touch the DOM, otherwise each
+    // stale render appended its own copy of every item.
+    let renderSeq = 0;
+
     async function renderActiveSpread() {
       const spread = getActiveSpread();
       if (!spread) return;
+      const seq = ++renderSeq;
+
+      // Encode every photo first (async), then build the DOM in one synchronous pass.
+      const urls = new Map();
+      for (const item of spread.items) {
+        if (item.type !== 'photo') continue;
+        const photo = getPhotoById(item.photoId);
+        if (photo && !urls.has(photo.id)) urls.set(photo.id, await getRenderedPhotoUrl(photo, 1000));
+        if (seq !== renderSeq) return;
+      }
+
       const surface = document.getElementById('spread-surface');
       const { w, h } = computeSpreadBaseSize();
       surface.style.width = w + 'px';
@@ -2251,7 +2433,7 @@
       const theme = PAPER_THEMES[state.paper] || PAPER_THEMES.ivory;
       surface.style.backgroundColor = theme.bg;
       if (spread.customBg) {
-        surface.style.backgroundImage = `url(${spread.customBg})`;
+        surface.style.backgroundImage = `url("${spread.customBg}")`;
         surface.style.backgroundSize = 'cover';
         surface.style.backgroundPosition = 'center';
       } else {
@@ -2261,12 +2443,13 @@
       surface.innerHTML = '';
 
       // Labels
+      const tplName = (list, id) => (list.find(t => t.id === id) || { name: id }).name;
       document.getElementById('stage-spread-label').textContent = spread.isCover
         ? 'Cover & Back Wrap'
         : `Spread ${state.activeSpreadIdx} (Pages ${state.activeSpreadIdx * 2 - 1}–${state.activeSpreadIdx * 2})`;
       document.getElementById('stage-template-label').textContent = spread.isCover
-        ? `${spread.frontTemplate} / ${spread.backTemplate}`
-        : spread.template;
+        ? `${tplName(FRONT_COVER_TEMPLATES, spread.frontTemplate)} / ${tplName(BACK_COVER_TEMPLATES, spread.backTemplate)}`
+        : tplName(INSIDE_TEMPLATES, spread.template);
 
       // Guides & Gutter
       if (state.spreadMode === 'double') {
@@ -2325,12 +2508,11 @@
           el.style.height = item.h + '%';
           const photo = getPhotoById(item.photoId);
           if (photo) {
-            const url = await getRenderedPhotoUrl(photo, 1000);
             const inner = document.createElement('div');
             inner.className = 'w-full h-full flex items-center justify-center overflow-hidden';
 
             const img = document.createElement('img');
-            img.src = url;
+            img.src = urls.get(photo.id) || photo.src;
             img.alt = photo.name;
             img.draggable = false;
 
@@ -2338,9 +2520,11 @@
               // 100% original aspect ratio — zero crop
               img.className = 'max-w-full max-h-full w-auto h-auto object-contain block shadow-md';
             } else {
-              // User unlocked aspect ratio to pan/zoom inside frame
+              // Pan & zoom inside the frame. Zooming around the pan point keeps the
+              // preview identical to the exported/printed crop.
               img.className = 'w-full h-full object-cover block shadow-md';
               img.style.objectPosition = `${item.panX ?? 50}% ${item.panY ?? 50}%`;
+              img.style.transformOrigin = `${item.panX ?? 50}% ${item.panY ?? 50}%`;
               img.style.transform = `scale(${(item.zoom || 100) / 100})`;
             }
             inner.appendChild(img);
@@ -2351,18 +2535,22 @@
           handle.dataset.resizeItem = item.id;
           el.appendChild(handle);
         } else if (item.type === 'text') {
-          const ff = resolveFontCss(item.font);
-          const scaledFont = Math.max(8, Math.round(item.size * (w / 920)));
-          el.style.fontFamily = ff;
+          const k = w / 920; // text sizes are stored relative to a 920px-wide spread
+          const scaledFont = Math.max(4, item.size * k);
+          el.style.fontFamily = resolveFontCss(item.font);
           el.style.fontSize = scaledFont + 'px';
           el.style.color = item.color;
           el.style.textAlign = item.align || 'center';
           el.style.fontWeight = item.bold ? '600' : '400';
           el.style.fontStyle = item.italic ? 'italic' : 'normal';
-          el.style.letterSpacing = (item.tracking || 0) + 'px';
+          el.style.letterSpacing = ((item.tracking || 0) * k) + 'px';
           el.style.lineHeight = '1.35';
-          el.style.padding = '3px 6px';
+          el.style.padding = `${3 * k}px ${6 * k}px`;
           el.style.whiteSpace = 'pre-wrap';
+          el.style.overflowWrap = 'break-word';
+          // Pin variable fonts' optical size to the design size, as the export does. Otherwise
+          // the browser picks it from the on-screen pixel size and line breaks differ from print.
+          el.style.fontVariationSettings = `"opsz" ${item.size}`;
           el.textContent = item.text;
 
           const handle = document.createElement('div');
@@ -2374,11 +2562,40 @@
         surface.appendChild(el);
       }
 
+      if (state.showCredit) {
+        const c = getCreditPlacement(spread, w, h);
+        const el = document.createElement('div');
+        el.className = 'spread-credit';
+        el.style.left = c.x + 'px';
+        el.style.top = c.y + 'px';
+        el.style.fontSize = c.size + 'px';
+        el.style.color = c.color;
+        el.style.opacity = '0.8';
+        el.style.transform = c.align === 'center' ? 'translate(-50%, -50%)' : 'translate(-100%, -50%)';
+        el.textContent = CREDIT_TEXT;
+        surface.appendChild(el);
+      }
+
       renderCustomRulerGuides(spread);
       renderSnapGuidesOverlay([]);
       requestAnimationFrame(drawDeskRulers);
+      renderSelectionHud();
+    }
 
-      // Selection HUD
+    // Where the export credit goes: centred at the foot of the back cover on the cover wrap,
+    // bottom-right corner of the right-hand page on inside spreads.
+    function getCreditPlacement(spread, W, H) {
+      const theme = PAPER_THEMES[state.paper] || PAPER_THEMES.ivory;
+      const size = Math.max(5, W * (state.spreadMode === 'double' ? 0.0068 : 0.011));
+      const y = H - Math.max(size * 1.6, H * 0.025);
+      if (spread.isCover && state.spreadMode === 'double') {
+        return { x: W * 0.2375, y, size, color: theme.muted, align: 'center' };
+      }
+      return { x: W - Math.max(size * 1.6, W * 0.012), y, size, color: theme.muted, align: 'right' };
+    }
+
+    // Show/hide the floating selection toolbar without rebuilding the spread.
+    function renderSelectionHud() {
       const sel = getSelectedItem();
       const hud = document.getElementById('selection-hud');
       if (sel) {
@@ -2396,6 +2613,14 @@
         hud.classList.add('hidden');
         hud.classList.remove('flex');
       }
+    }
+
+    // Move the selection outline to another item without re-rendering every photo.
+    function updateSelectionOutline() {
+      document.querySelectorAll('#spread-surface .spread-item').forEach(el => {
+        el.classList.toggle('is-selected', el.dataset.itemId === state.selectedItemId);
+      });
+      renderSelectionHud();
     }
 
     function renderInspector() {
@@ -2490,7 +2715,11 @@
         document.getElementById('val-text-size').textContent = (sel.size || 22) + 'px';
         document.getElementById('slider-text-track').value = sel.tracking || 0;
         document.getElementById('val-text-track').textContent = sel.tracking || 0;
+        document.querySelectorAll('.text-align-btn').forEach(btn => btn.classList.toggle('is-on', (sel.align || 'center') === btn.dataset.align));
+        document.getElementById('btn-text-bold').classList.toggle('is-on', Boolean(sel.bold));
+        document.getElementById('btn-text-italic').classList.toggle('is-on', Boolean(sel.italic));
       }
+      document.getElementById('toggle-credit').checked = state.showCredit;
 
       // --- TAB 3 & 4: SNAPSEED & EXIF/DATES ---
       const activePhoto = getPhotoById(state.activePhotoId) || state.photos[0];
@@ -2546,6 +2775,15 @@
             <div class="text-[10px] text-zinc-200 font-medium truncate">${escapeHtml(v)}</div>
           </div>
         `).join('');
+      } else {
+        // No photos left: don't keep showing the last photo's settings.
+        state.activePhotoId = null;
+        document.getElementById('snap-target-name').textContent = 'Add a photo to edit its look';
+        const mc = document.getElementById('snapseed-mini-canvas');
+        mc.width = 1; mc.height = 1;
+        document.getElementById('snapseed-presets-grid').innerHTML = '';
+        document.getElementById('metadata-grid').innerHTML = '<div class="col-span-2 text-[10px] text-zinc-500">No photo selected.</div>';
+        document.getElementById('meta-source-badge').textContent = '—';
       }
     }
 
@@ -2631,7 +2869,77 @@
     // =========================================================================
     // 8. HIGH-RES SPREAD PNG & PRINT PDF EXPORTER
     // =========================================================================
+    // Pixel width for a spread at a given dpi (capped so very large books stay within canvas limits).
+    function spreadPixelWidth(dpi, cap) {
+      const size = getActiveBookSize();
+      let wIn = size.unit === 'cm' ? size.w / 2.54 : size.w;
+      if (state.spreadMode === 'double') wIn *= 2;
+      return Math.max(1200, Math.min(cap, Math.round(wIn * dpi)));
+    }
+
+    async function fontsReady() {
+      try { if (document.fonts && document.fonts.ready) await document.fonts.ready; } catch (e) {}
+    }
+
+    // Draw a text item exactly as the stage lays it out: same padding, tracking,
+    // line height and word wrapping (the old export squashed each paragraph onto one line).
+    function drawTextItem(ctx, item, rx, ry, rw, W, theme) {
+      // Lay text out at its design size (a 920px-wide spread) and scale up, so variable fonts
+      // use the same optical size as the stage and the line breaks match.
+      const k = W / 920;
+      const fs = Math.max(4 / k, item.size);
+      const padX = 6, padY = 3, lineH = fs * 1.35;
+      const maxW = Math.max(1, rw / k - padX * 2) * 1.004;
+      ctx.save();
+      ctx.translate(rx, ry);
+      ctx.scale(k, k);
+      rx = 0; ry = 0; rw = rw / k;
+      ctx.fillStyle = item.color || theme.text;
+      ctx.font = `${item.italic ? 'italic ' : ''}${item.bold ? '600 ' : '400 '}${fs}px ${resolveFontCss(item.font)}`;
+      if ('letterSpacing' in ctx) ctx.letterSpacing = (item.tracking || 0) + 'px';
+      ctx.textBaseline = 'middle';
+      ctx.textAlign = item.align || 'center';
+      const lines = [];
+      String(item.text || '').split('\n').forEach(par => {
+        const words = par.split(/(\s+)/);
+        let line = '';
+        for (const word of words) {
+          const test = line + word;
+          if (line && ctx.measureText(test.trimEnd()).width > maxW) {
+            lines.push(line.trimEnd());
+            line = word.trimStart();
+            // A single word wider than the box breaks by character, like overflow-wrap: break-word.
+            while (line && ctx.measureText(line).width > maxW) {
+              let n = line.length - 1;
+              while (n > 1 && ctx.measureText(line.slice(0, n)).width > maxW) n--;
+              lines.push(line.slice(0, n)); line = line.slice(n);
+            }
+          } else {
+            line = test;
+          }
+        }
+        lines.push(line.trimEnd());
+      });
+      const tx = item.align === 'left' ? rx + padX : item.align === 'right' ? rx + rw - padX : rx + rw / 2;
+      lines.forEach((ln, i) => ctx.fillText(ln, tx, ry + padY + lineH * (i + 0.5)));
+      ctx.restore();
+    }
+
+    function drawCredit(ctx, spread, W, H) {
+      const c = getCreditPlacement(spread, W, H);
+      ctx.save();
+      ctx.globalAlpha = 0.8;
+      ctx.fillStyle = c.color;
+      ctx.font = `400 ${c.size}px 'Inter', sans-serif`;
+      if ('letterSpacing' in ctx) ctx.letterSpacing = (c.size * 0.04) + 'px';
+      ctx.textBaseline = 'middle';
+      ctx.textAlign = c.align === 'center' ? 'center' : 'right';
+      ctx.fillText(CREDIT_TEXT, c.x, c.y);
+      ctx.restore();
+    }
+
     async function renderSpreadToCanvas(spread, widthPx = 2400) {
+      await fontsReady();
       const ratio = getActiveSpreadAspectRatio();
       const W = widthPx;
       const H = Math.round(W / ratio);
@@ -2648,7 +2956,12 @@
         const bgImg = await new Promise(res => {
           const i = new Image(); i.onload = () => res(i); i.onerror = () => res(null); i.src = spread.customBg;
         });
-        if (bgImg) ctx.drawImage(bgImg, 0, 0, W, H);
+        if (bgImg) {
+          // background-size: cover, like the stage
+          const sc = Math.max(W / bgImg.naturalWidth, H / bgImg.naturalHeight);
+          const bw = bgImg.naturalWidth * sc, bh = bgImg.naturalHeight * sc;
+          ctx.drawImage(bgImg, (W - bw) / 2, (H - bh) / 2, bw, bh);
+        }
       }
 
       const sortedItems = [...spread.items].sort((a, b) => (a.z || 1) - (b.z || 1));
@@ -2664,7 +2977,8 @@
           const img = await getImageElement(photo);
           if (!img) continue;
           const off = document.createElement('canvas');
-          drawPhotoToCanvas(off, img, photo, { maxDim: 1800 });
+          const z = item.aspectLocked !== false ? 1 : (item.zoom || 100) / 100;
+          drawPhotoToCanvas(off, img, photo, { maxDim: Math.min(4096, Math.ceil(Math.max(rw, rh) * z * 1.1)) });
 
           if (item.aspectLocked !== false) {
             const sc = Math.min(rw / off.width, rh / off.height);
@@ -2676,7 +2990,6 @@
             ctx.beginPath();
             ctx.rect(rx, ry, rw, rh);
             ctx.clip();
-            const z = (item.zoom || 100) / 100;
             const sc = Math.max(rw / off.width, rh / off.height) * z;
             const dw = off.width * sc, dh = off.height * sc;
             const dx = rx + (rw - dw) * ((item.panX ?? 50) / 100);
@@ -2685,53 +2998,108 @@
             ctx.restore();
           }
         } else if (item.type === 'text') {
-          const fs = Math.round(item.size * (W / 920));
-          const ff = resolveFontCss(item.font);
-          ctx.save();
-          ctx.fillStyle = item.color || theme.text;
-          ctx.font = `${item.italic ? 'italic ' : ''}${item.bold ? '600 ' : '400 '}${fs}px ${ff}`;
-          ctx.textBaseline = 'top';
-          ctx.textAlign = item.align || 'center';
-          const tx = item.align === 'left' ? rx : item.align === 'right' ? rx + rw : rx + rw / 2;
-          const lines = String(item.text || '').split('\n');
-          lines.forEach((ln, idx) => ctx.fillText(ln, tx, ry + idx * fs * 1.35, rw));
-          ctx.restore();
+          drawTextItem(ctx, item, rx, ry, rw, W, theme);
         }
       }
+      if (state.showCredit) drawCredit(ctx, spread, W, H);
       return canvas;
     }
 
-    async function exportActiveSpreadPng() {
-      const sp = getActiveSpread();
-      const canvas = await renderSpreadToCanvas(sp, 2400);
+    function canvasToBlob(canvas, type, quality) {
+      return new Promise((res, rej) => canvas.toBlob(b => b ? res(b) : rej(new Error('Canvas export failed')), type, quality));
+    }
+
+    function downloadBlob(blob, name) {
+      const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      const slug = (state.bookTitle || 'photobook').toLowerCase().replace(/[^a-z0-9]+/g, '-');
-      a.download = `${slug}-${sp.isCover ? 'cover-wrap' : 'spread-' + state.activeSpreadIdx}.png`;
-      a.href = canvas.toDataURL('image/png');
+      a.href = url;
+      a.download = name;
+      document.body.appendChild(a);
       a.click();
-      showToast('Exported high-resolution spread PNG.');
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 4000);
+    }
+
+    function bookSlug() {
+      return (state.bookTitle || 'photobook').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'photobook';
+    }
+
+    let exportBusy = false;
+
+    async function exportActiveSpreadPng() {
+      if (exportBusy) return;
+      exportBusy = true;
+      try {
+        const sp = getActiveSpread();
+        showToast('Rendering spread at 300 dpi…');
+        const canvas = await renderSpreadToCanvas(sp, spreadPixelWidth(300, 7200));
+        const blob = await canvasToBlob(canvas, 'image/png');
+        downloadBlob(blob, `${bookSlug()}-${sp.isCover ? 'cover-wrap' : 'spread-' + state.activeSpreadIdx}.png`);
+        showToast(`Exported spread PNG (${canvas.width} × ${canvas.height} px).`);
+      } catch (err) {
+        console.error(err);
+        showToast('Export failed. Try a smaller book size.');
+      } finally {
+        exportBusy = false;
+      }
     }
 
     async function printEntireBook() {
+      if (exportBusy) return;
+      exportBusy = true;
       const container = document.getElementById('print-book-container');
+      container.querySelectorAll('img').forEach(i => URL.revokeObjectURL(i.src));
       container.innerHTML = '';
-      for (const sp of state.spreads) {
-        const canvas = await renderSpreadToCanvas(sp, 1800);
-        const div = document.createElement('div');
-        div.className = 'print-spread';
-        const img = document.createElement('img');
-        img.src = canvas.toDataURL('image/jpeg', 0.94);
-        div.appendChild(img);
-        container.appendChild(div);
+      try {
+        showToast(`Preparing ${state.spreads.length} spread${state.spreads.length === 1 ? '' : 's'} for print…`);
+        // One PDF page per spread, at the book's true size.
+        const size = getActiveBookSize();
+        let wIn = size.unit === 'cm' ? size.w / 2.54 : size.w;
+        const hIn = size.unit === 'cm' ? size.h / 2.54 : size.h;
+        if (state.spreadMode === 'double') wIn *= 2;
+        let pageStyle = document.getElementById('print-page-size');
+        if (!pageStyle) {
+          pageStyle = document.createElement('style');
+          pageStyle.id = 'print-page-size';
+          document.head.appendChild(pageStyle);
+        }
+        pageStyle.textContent = `@page { size: ${wIn.toFixed(3)}in ${hIn.toFixed(3)}in; margin: 0; }`;
+
+        const widthPx = spreadPixelWidth(300, 6000);
+        const loads = [];
+        for (const sp of state.spreads) {
+          const canvas = await renderSpreadToCanvas(sp, widthPx);
+          const blob = await canvasToBlob(canvas, 'image/jpeg', 0.92);
+          const div = document.createElement('div');
+          div.className = 'print-spread';
+          const img = document.createElement('img');
+          loads.push(new Promise(res => { img.onload = res; img.onerror = res; }));
+          img.src = URL.createObjectURL(blob);
+          div.appendChild(img);
+          container.appendChild(div);
+        }
+        await Promise.all(loads);
+        window.print();
+      } catch (err) {
+        console.error(err);
+        showToast('Could not prepare the print. Try a smaller book size.');
+      } finally {
+        exportBusy = false;
       }
-      window.print();
     }
+
+    window.addEventListener('afterprint', () => {
+      const container = document.getElementById('print-book-container');
+      container.querySelectorAll('img').forEach(i => URL.revokeObjectURL(i.src));
+      container.innerHTML = '';
+    });
 
     // =========================================================================
     // 9. INTERACTIVE DRAG / REPOSITION / RESIZE / STAGE PANNING
     // =========================================================================
     let dragCtx = null;
     let spaceHeld = false;
+    let lastItemClick = { id: null, t: 0 };
 
     function initPointerInteractions() {
       const desk = document.getElementById('desk-canvas-area');
@@ -2771,15 +3139,30 @@
           const id = itemEl.dataset.itemId;
           const item = getActiveSpread().items.find(i => i.id === id);
           if (item) {
+            // Double-click: text opens in the Arrange tab, photos open their Looks.
+            // (Detected here because the browser's dblclick needs the same element twice.)
+            const now = performance.now();
+            const isDouble = lastItemClick.id === id && now - lastItemClick.t < 380;
+            lastItemClick = { id, t: now };
             state.selectedItemId = id;
             if (item.type === 'photo') state.activePhotoId = item.photoId;
+            if (isDouble) {
+              state.inspectorTab = item.type === 'text' ? 'arrange' : 'snapseed';
+              renderInspector();
+              updateSelectionOutline();
+              if (item.type === 'text') {
+                const ta = document.getElementById('input-text-content');
+                setTimeout(() => { ta.focus(); ta.select(); }, 0);
+              }
+              return;
+            }
             dragCtx = {
               mode: 'move-item', item, rect,
               startX: e.clientX, startY: e.clientY,
               origX: item.x, origY: item.y
             };
             desk.setPointerCapture(e.pointerId);
-            renderActiveSpread();
+            updateSelectionOutline();
             renderInspector();
             renderPhotoWell();
           }
@@ -2787,9 +3170,11 @@
         }
 
         // Clicked empty desk -> deselect
-        state.selectedItemId = null;
-        renderActiveSpread();
-        renderInspector();
+        if (state.selectedItemId) {
+          state.selectedItemId = null;
+          updateSelectionOutline();
+          renderInspector();
+        }
       });
 
       desk.addEventListener('pointermove', (e) => {
@@ -2843,7 +3228,7 @@
         }
       });
 
-      desk.addEventListener('pointerup', () => {
+      const endDrag = () => {
         if (!dragCtx) return;
         const wasMoveOrResize = dragCtx.mode === 'move-item' || dragCtx.mode === 'resize';
         dragCtx = null;
@@ -2852,7 +3237,10 @@
           renderInspector();
           renderTimeline();
         }
-      });
+      };
+      desk.addEventListener('pointerup', endDrag);
+      desk.addEventListener('pointercancel', endDrag);
+      desk.addEventListener('lostpointercapture', endDrag);
 
       // Live cursor tracking on working top & left rulers
       desk.addEventListener('mousemove', (e) => {
@@ -2892,11 +3280,30 @@
         applyTransformToStage();
       }, { passive: false });
 
+      const typing = () => {
+        const a = document.activeElement;
+        return a && (['INPUT', 'TEXTAREA', 'SELECT'].includes(a.tagName) || a.isContentEditable);
+      };
       window.addEventListener('keydown', (e) => {
-        if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
+        if (typing()) return;
         if (e.code === 'Space') {
+          // Stop Space from also "clicking" whichever button was last clicked.
+          e.preventDefault();
+          if (document.activeElement && document.activeElement !== document.body) document.activeElement.blur();
           spaceHeld = true;
           desk.classList.add('desk-pan-mode');
+        } else if (e.metaKey || e.ctrlKey || e.altKey) {
+          return;
+        } else if (e.key === 'v' || e.key === 'V') {
+          document.getElementById('tool-select').click();
+        } else if (e.key === 'h' || e.key === 'H') {
+          document.getElementById('tool-pan').click();
+        } else if (e.key === 'r' || e.key === 'R') {
+          document.getElementById('btn-toggle-rulers').click();
+        } else if (e.key === 'Escape' && state.selectedItemId) {
+          state.selectedItemId = null;
+          updateSelectionOutline();
+          renderInspector();
         } else if (e.key === 'ArrowRight' && state.activeSpreadIdx < state.spreads.length - 1) {
           state.activeSpreadIdx++; state.selectedItemId = null; renderAll();
         } else if (e.key === 'ArrowLeft' && state.activeSpreadIdx > 0) {
@@ -2908,6 +3315,7 @@
 
       window.addEventListener('keyup', (e) => {
         if (e.code === 'Space') {
+          if (!typing()) e.preventDefault();
           spaceHeld = false;
           if (state.activeTool !== 'pan') desk.classList.remove('desk-pan-mode');
         }
@@ -2934,18 +3342,31 @@
       renderAll();
     }
 
+    const IMAGE_EXT = /\.(jpe?g|png|gif|webp|avif|bmp|svg|ico|heic|heif|tiff?|jfif)$/i;
+
+    function localIsoDate(d) {
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+
     async function handlePhotoUploads(fileList) {
-      const files = Array.from(fileList || []).filter(f => f.type.startsWith('image/'));
-      if (!files.length) return;
+      // Some systems give HEIC/TIFF files an empty MIME type, so accept by extension too.
+      const files = Array.from(fileList || []).filter(f => (f.type || '').startsWith('image/') || IMAGE_EXT.test(f.name));
+      if (!files.length) {
+        if (fileList && fileList.length) showToast('Those files are not images.');
+        return;
+      }
       let count = 0;
+      const failed = [];
       for (const f of files) {
         try {
           const buf = await f.arrayBuffer();
-          const exif = parseExifFromArrayBuffer(buf);
+          let exif;
+          try { exif = parseExifFromArrayBuffer(buf); }
+          catch (e) { exif = { source: 'File Metadata' }; } // damaged EXIF shouldn't stop the photo loading
           const src = await new Promise((res, rej) => {
             const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(f);
           });
-          const fallbackDate = f.lastModified ? new Date(f.lastModified).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10);
+          const fallbackDate = localIsoDate(f.lastModified ? new Date(f.lastModified) : new Date());
           const photo = {
             id: 'p-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6),
             name: f.name, src, isSample: false,
@@ -2958,15 +3379,20 @@
             stamp: DEFAULT_STAMP()
           };
           const img = await getImageElement(photo);
-          if (img) { photo.width = img.naturalWidth; photo.height = img.naturalHeight; }
+          if (!img || !img.naturalWidth) { failed.push(f.name); continue; } // e.g. HEIC outside Safari
+          photo.width = img.naturalWidth; photo.height = img.naturalHeight;
           state.photos.push(photo);
           state.activePhotoId = photo.id;
+          state.userChanges = true;
           count++;
-        } catch (err) { console.error(err); }
+        } catch (err) { console.error(err); failed.push(f.name); }
       }
       if (count) {
-        showToast(`Uploaded ${count} photo${count > 1 ? 's' : ''} with EXIF metadata.`);
+        showToast(`Added ${count} photo${count > 1 ? 's' : ''} with EXIF metadata.`);
         renderAll();
+      }
+      if (failed.length) {
+        showToast(`This browser couldn't open ${failed.length === 1 ? failed[0] : failed.length + ' files'}. Convert to JPG or PNG and try again.`);
       }
     }
 
@@ -3011,7 +3437,8 @@
         state.bookTitle = e.target.value;
         const sp = state.spreads[0];
         if (sp && sp.isCover) {
-          const titleItem = sp.items.find(i => i.type === 'text' && i.x > 50 && i.size >= 20);
+          const titleItem = sp.items.find(i => i.type === 'text' && i.role === 'title')
+            || sp.items.find(i => i.type === 'text' && i.x > 50 && i.size >= 20);
           if (titleItem) titleItem.text = state.bookTitle;
           if (state.activeSpreadIdx === 0) renderActiveSpread();
         }
@@ -3151,9 +3578,21 @@
       const dz = document.getElementById('dropzone-box');
       dz.addEventListener('click', () => photoInput.click());
       photoInput.addEventListener('change', (e) => { handlePhotoUploads(e.target.files); photoInput.value = ''; });
-      dz.addEventListener('dragover', (e) => { e.preventDefault(); dz.classList.add('drop-active'); });
-      dz.addEventListener('dragleave', () => dz.classList.remove('drop-active'));
-      dz.addEventListener('drop', (e) => { e.preventDefault(); dz.classList.remove('drop-active'); handlePhotoUploads(e.dataTransfer.files); });
+      // Accept photo drops anywhere. Before, a drop outside the small drop box made the
+      // browser open the file in place of the app, losing the whole book.
+      const hasFiles = (e) => e.dataTransfer && Array.from(e.dataTransfer.types || []).includes('Files');
+      window.addEventListener('dragover', (e) => {
+        if (!hasFiles(e)) return;
+        e.preventDefault();
+        dz.classList.add('drop-active');
+      });
+      window.addEventListener('dragleave', (e) => { if (!e.relatedTarget) dz.classList.remove('drop-active'); });
+      window.addEventListener('drop', (e) => {
+        if (!hasFiles(e)) return;
+        e.preventDefault();
+        dz.classList.remove('drop-active');
+        handlePhotoUploads(e.dataTransfer.files);
+      });
 
       // Custom Spread Background Upload
       const bgInput = document.getElementById('bg-file-input');
@@ -3163,6 +3602,7 @@
         if (!f) return;
         const r = new FileReader();
         r.onload = () => {
+          state.userChanges = true;
           getActiveSpread().customBg = r.result;
           renderActiveSpread();
           showToast('Applied custom background to spread.');
@@ -3203,7 +3643,18 @@
 
       // Paper stock & Double/Single mode & margin
       document.querySelectorAll('.paper-btn').forEach(btn => {
-        btn.addEventListener('click', () => { state.paper = btn.dataset.paper; renderAll(); });
+        btn.addEventListener('click', () => {
+          const from = PAPER_THEMES[state.paper] || PAPER_THEMES.ivory;
+          const to = PAPER_THEMES[btn.dataset.paper] || PAPER_THEMES.ivory;
+          // Text still in the old paper's default ink follows the new paper, so dark text
+          // doesn't disappear on Dark stock (custom colours are left alone).
+          const map = { [from.text.toLowerCase()]: to.text, [from.muted.toLowerCase()]: to.muted };
+          state.spreads.forEach(sp => sp.items.forEach(it => {
+            if (it.type === 'text' && it.color && map[it.color.toLowerCase()]) it.color = map[it.color.toLowerCase()];
+          }));
+          state.paper = btn.dataset.paper;
+          renderAll();
+        });
       });
       document.getElementById('btn-mode-double').addEventListener('click', () => { state.spreadMode = 'double'; renderAll(); });
       document.getElementById('btn-mode-single').addEventListener('click', () => { state.spreadMode = 'single'; renderAll(); });
@@ -3272,15 +3723,14 @@
         renderInspector();
         renderActiveSpread();
       });
+      document.getElementById('slider-spread-margin').addEventListener('change', () => renderTimeline());
       document.getElementById('slider-spread-margin').addEventListener('input', (e) => {
         const sp = getActiveSpread();
         sp.margin = Number(e.target.value);
         document.getElementById('val-spread-margin').textContent = sp.margin + '%';
-        if (!sp.isCover) {
-          const pids = sp.items.filter(i => i.type === 'photo').map(i => i.photoId);
-          const texts = sp.items.filter(i => i.type === 'text');
-          sp.items = [...buildInsideSpreadItems(sp.template, pids, sp.margin), ...texts];
-        }
+        // Re-flow the template for the new margin. Before, this re-added the template's own
+        // text boxes on every slider step (8 copies after a short drag) and dropped extra photos.
+        if (!sp.isCover) relayoutInsideSpread(sp, true, false);
         renderActiveSpread();
       });
 
@@ -3387,7 +3837,7 @@
         p.edits = DEFAULT_EDITS();
         state.compareOriginal = false;
         renderAll();
-        showToast('Reset Snapseed edits.');
+        showToast('Reset photo edits.');
       });
       document.getElementById('btn-apply-filter-all').addEventListener('click', () => {
         const p = getPhotoById(state.activePhotoId); if (!p) return;
@@ -3398,13 +3848,30 @@
       document.getElementById('btn-download-edited-photo').addEventListener('click', async () => {
         const p = getPhotoById(state.activePhotoId); if (!p) return;
         const img = await getImageElement(p);
+        if (!img) { showToast('This photo could not be read.'); return; }
+        await fontsReady();
         const off = document.createElement('canvas');
         drawPhotoToCanvas(off, img, p, { maxDim: 4000 });
-        const a = document.createElement('a');
-        a.download = p.name.replace(/\.[^.]+$/, '') + '-edited.png';
-        a.href = off.toDataURL('image/png');
-        a.click();
-        showToast('Downloaded edited photo.');
+        if (state.showCredit) {
+          // Tiny credit in the corner opposite the date stamp.
+          const ctx = off.getContext('2d');
+          const fs = Math.max(9, Math.round(Math.min(off.width, off.height) * 0.016));
+          const pad = Math.round(Math.min(off.width, off.height) * 0.02);
+          const left = !/left/.test((p.stamp && p.stamp.position) || '') || !(p.stamp && p.stamp.enabled);
+          ctx.save();
+          ctx.font = `400 ${fs}px 'Inter', sans-serif`;
+          ctx.textBaseline = 'bottom';
+          ctx.textAlign = left ? 'left' : 'right';
+          ctx.shadowColor = 'rgba(0,0,0,0.55)';
+          ctx.shadowBlur = fs * 0.4;
+          ctx.fillStyle = 'rgba(255,255,255,0.72)';
+          ctx.fillText(CREDIT_TEXT, left ? pad : off.width - pad, off.height - pad);
+          ctx.restore();
+        }
+        try {
+          downloadBlob(await canvasToBlob(off, 'image/png'), p.name.replace(/\.[^.]+$/, '') + '-edited.png');
+          showToast('Downloaded edited photo.');
+        } catch (err) { showToast('Could not export this photo.'); }
       });
 
       // EXIF & Date Stamp Controls
@@ -3431,10 +3898,12 @@
 
       // Timeline Spread Actions
       function appendNewSpread(templateId, toastMsg) {
-        state.spreads.push({
+        const sp = {
           id: 'sp-' + Date.now(), isCover: false, template: templateId || 'duo-balanced',
           margin: 5, customBg: null, items: []
-        });
+        };
+        relayoutInsideSpread(sp, false, true); // a new page used to start empty despite its template
+        state.spreads.push(sp);
         state.activeSpreadIdx = state.spreads.length - 1;
         state.selectedItemId = null;
         renderAll();
@@ -3445,10 +3914,13 @@
 
       document.getElementById('btn-duplicate-spread').addEventListener('click', () => {
         const sp = getActiveSpread();
+        if (sp.isCover) { showToast('The cover wrap can’t be duplicated. Select an inside spread.'); return; }
         const copy = JSON.parse(JSON.stringify(sp));
         copy.id = 'sp-' + Date.now();
         copy.isCover = false;
-        copy.items.forEach(i => { i.id = 'it-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6); });
+        copy.guides = (copy.guides || []).map(g => ({ ...g, id: 'g-' + Date.now() + '-' + Math.random().toString(36).slice(2, 5) }));
+        copy.items.forEach(i => { i.id = (i.type === 'text' ? 'txt-' : 'it-') + Date.now() + '-' + Math.random().toString(36).slice(2, 6); });
+        state.selectedItemId = null;
         state.spreads.splice(state.activeSpreadIdx + 1, 0, copy);
         state.activeSpreadIdx++;
         renderAll();
@@ -3510,28 +3982,20 @@
         } else if (act === 'set-front-tpl') {
           const sp = getActiveSpread(); if (!sp.isCover) return;
           sp.frontTemplate = t.dataset.tpl;
-          const pids = sp.items.filter(i => i.type === 'photo').map(i => i.photoId);
-          sp.items = buildCoverSpreadItems(sp.frontTemplate, sp.backTemplate, pids);
+          relayoutCoverSpread(sp); // keeps front/back photos in place and any text you added
           state.selectedItemId = null;
           renderAll();
         } else if (act === 'set-back-tpl') {
           const sp = getActiveSpread(); if (!sp.isCover) return;
           sp.backTemplate = t.dataset.tpl;
-          const pids = sp.items.filter(i => i.type === 'photo').map(i => i.photoId);
-          sp.items = buildCoverSpreadItems(sp.frontTemplate, sp.backTemplate, pids);
+          relayoutCoverSpread(sp);
           state.selectedItemId = null;
           renderAll();
         } else if (act === 'set-inside-tpl') {
           const sp = getActiveSpread(); if (sp.isCover) return;
           sp.template = t.dataset.tpl;
-          const pids = sp.items.filter(i => i.type === 'photo').map(i => i.photoId);
-          // Fill empty slots from library if available
-          const needed = (INSIDE_TEMPLATES.find(x => x.id === sp.template) || { slots: 2 }).slots;
-          for (const ph of state.photos) {
-            if (pids.length >= needed) break;
-            if (!pids.includes(ph.id)) pids.push(ph.id);
-          }
-          sp.items = buildInsideSpreadItems(sp.template, pids, sp.margin ?? 5);
+          // Keeps your text boxes; empty slots are filled from the library, unused photos first.
+          relayoutInsideSpread(sp, false, true);
           state.selectedItemId = null;
           renderAll();
         } else if (act === 'apply-preset') {
@@ -3546,6 +4010,30 @@
       });
 
       window.addEventListener('resize', () => { renderActiveSpread(); });
+
+      document.getElementById('toggle-credit').addEventListener('change', (e) => {
+        state.showCredit = e.target.checked;
+        renderActiveSpread();
+      });
+
+      // Rulers were measured mid-zoom-animation and ended up slightly off; redraw once it settles.
+      document.getElementById('spread-transform-layer').addEventListener('transitionend', () => drawDeskRulers());
+
+      // The book only lives in this tab, so warn before closing once the user has added photos.
+      window.addEventListener('beforeunload', (e) => {
+        if (!state.userChanges) return;
+        e.preventDefault();
+        e.returnValue = '';
+      });
+
+      // "Download the build chat" uses the copy embedded in this file, so it works offline too.
+      document.querySelectorAll('.chat-dl').forEach(a => a.addEventListener('click', (e) => {
+        const el = document.getElementById('build-chat');
+        const md = el ? el.textContent.trim() : '';
+        if (!md) return; // fall back to the CHAT.md link
+        e.preventDefault();
+        downloadBlob(new Blob([md + '\n'], { type: 'text/markdown' }), 'PhotobookFrame-build-chat.md');
+      }));
     }
 
     function initApp() {
@@ -3573,9 +4061,70 @@
       bindEvents();
       initPointerInteractions();
       renderAll();
+
+      // Date stamps are painted onto canvas. If that happened before the web fonts arrived,
+      // they stayed in the fallback font for good, so repaint once the fonts are in.
+      if (document.fonts) {
+        const families = ['JetBrains Mono', 'Inter', 'Newsreader'];
+        Promise.all(families.map(f => document.fonts.load(`600 24px "${f}"`).catch(() => {})))
+          .then(() => document.fonts.ready)
+          .then(() => { state.renderedCache.clear(); renderAll(); });
+      }
     }
 
     window.addEventListener('DOMContentLoaded', initApp);
   </script>
+
+<!-- BUILD-CHAT:START (regenerate from CHAT.md) -->
+<script type="text/markdown" id="build-chat">
+# Photobook Frame — build chat
+
+A record of the conversation in which **Photobook Frame by [Storitellah](https://storitellah.com)** was reviewed, fixed and published with Claude Code (November 2026).
+The user's messages are verbatim. Claude's replies are condensed, and behind-the-scenes tool output (file edits, test runs) is summarised.
+
+---
+
+## 1 · Request
+
+> **User:** *(attached `photobook_frame_pro_1.html`)* Analyse this tool, create a GitHub repo to host the code, and name it Photobook Frame. Check for any bugs and fix them. Make the repo visually interesting in the README and host it on GitHub.io
+
+### Claude
+
+**Analysis.** The upload is a single 5.4 MB HTML file. About 5 MB of that is four sample photos embedded as base64. The rest is a three-column photobook editor built with Tailwind (Play CDN) and Lucide icons:
+
+- a photo library with EXIF parsing (date, camera, exposure, GPS);
+- a desk with rulers, draggable guides and magnetic snapping, holding the cover wrap or a double-page spread;
+- an inspector with cover/spread templates, paper, book size, fonts, arrange controls, 14 film looks with 7 sliders, and EXIF date stamps;
+- a spread timeline;
+- PNG export of a spread and print-to-PDF of the whole book.
+
+**Where it lives.** This session can only push to `storitellah/tools-by-storitellah`, so creating a separate repository wasn't possible. Following that repo's conventions, the tool went in as its own folder, `PhotobookFrame/`, with a README, a build chat and a row in the root table. GitHub Pages serves it from that folder once Pages is switched on for the repository.
+
+**Bug hunt.** The original was first committed unchanged. A headless-browser harness then loaded it with the CDNs served from local copies, and scripted repros confirmed these bugs:
+
+1. Overlapping async renders: rapid slider input left 28 elements on the spread for 2 photos.
+2. The margin slider re-added the story template's text boxes on every step (8 after a short drag) and dropped extra photos.
+3. Switching cover templates swapped the front and back photos and deleted user text. Switching inside templates also deleted user text.
+4. Holding Space to pan also "clicked" the last button pressed. The V/H/R shortcuts in the tooltips did nothing.
+5. Double-click to edit text never worked, because the first click rebuilt the DOM.
+6. Exported text was squeezed onto one line instead of wrapping, and ignored tracking.
+7. The on-screen zoom origin differed from the export, so prints were cropped differently from the preview.
+8. Custom backgrounds were stretched in exports.
+9. Print came out at Letter size, about 110 dpi, with no font wait.
+10. Text disappeared on dark paper.
+11. Undecodable uploads were added as broken photos. Damaged EXIF made valid photos fail. A drop outside the drop box replaced the app with the file.
+12. The render cache kept a JPEG for every slider position.
+13. Date stamps baked in the fallback font. The Google Font loader didn't wait for the font or check that it existed.
+14. Canvas filters are missing in Safari before 18, so looks did nothing there.
+15. Rulers and snapping used a different custom-size clamp from the layout.
+16. Smaller issues: the cover could be duplicated, the Looks tab kept stale photo data, the UTC date was used as the fallback, and there was no warning before leaving.
+
+**Fixes.** All of the above were fixed and re-tested. Template-made items are now tagged (role and slot), so a re-layout keeps user content. Export text is laid out at design size, so wrapping and variable-font optical size match the screen. A pixel fallback for canvas filters matches Chrome to within 0.74/255 on average.
+
+**Branding.** The app is now "Photobook Frame by Storitellah" with a link to storitellah.com. Exports (spread PNGs, the print/PDF and edited photos) carry a small "Photobook Frame by Storitellah · storitellah.com" credit. It's on by default and can be turned off under *Templates → Export*. The visible "Snapseed" labels became "Looks" and "Photo Studio". There's a favicon, a "Download the build chat" link, and this chat embedded in the page.
+
+**README.** A banner graphic, badges, a feature grid, screenshots of the real app and its exports, usage steps, keyboard shortcuts and a table of the bugs fixed.
+</script>
+<!-- BUILD-CHAT:END -->
 </body>
 </html>
